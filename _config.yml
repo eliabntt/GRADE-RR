@@ -13,15 +13,15 @@
 # you will see them accessed via {{ site.title }}, {{ site.email }}, and so on.
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
-title: EPIC Kitchens
-year: 2022
-email: uob-epic-kitchens@bristol.ac.uk
+title: GRADE for Robotics Research
+year: 2023
+email: elia.bonetto@tuebingen.mpg.de
 description: >-
-  EPIC Kitchens
+  GRADE dataset
 baseurl: "" # the subpath of your site, e.g. /blog
-url: "http://epic-kitchens.github.io" # the base hostname & protocol for your site, e.g. http://example.com
+url: "http://grade-rr.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: ""
-github_username: ""
+github_username: "eliabntt"
 
 # Build settings
 markdown: kramdown

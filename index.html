@@ -1,21 +1,21 @@
 ---
-title: EPIC Kitchens
+title: GRADE-RR
 ---
 
-{% capture url_current_year %}{{ site.url }}{{ site.baseurl }}/{{ site.year }}{% endcapture %}
+{% capture home_url %}{{ site.url }}{{ site.baseurl }}/home{% endcapture %}
 <!DOCTYPE HTML>
 <html lang="en-GB">
   <head>
     <meta name="theme-color" content="#373435ff"/>
     <meta charset="UTF-8">
-    <meta http-equiv="refresh" content="1; url={{ url_current_year }}">
+    <meta http-equiv="refresh" content="1; url={{ home_url }}">
     <script type="text/javascript">
-      window.location.href = "{{ url_current_year }}"
+      window.location.href = "{{ home_url }}"
     </script>
-    <title>Redirecting to EPIC Kitchens {{ site.year }}</title>
+    <title>Redirecting to GRADE-RR home</title>
   </head>
   <body>
     If you are not redirected automatically, follow this 
-    <a href="{{ url_current_year }}">EPIC Kitchens {{ site.year }}</a>.
+    <a href="{{ home_url }}">GRADE-RR Home</a>.
   </body>
 </html>

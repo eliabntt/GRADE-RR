@@ -729,4 +729,22 @@ i.fas {
 
 }
 
+.ClipboardButton {
+  background-color: #f3f4f6
+}
 
+.right-0 {
+  right: 0!important;
+}
+
+.top-0 {
+  top: 0!important;
+}
+
+.m-2 {
+  margin: 0.5rem!important;
+}
+
+.p-0 {
+  padding: 0!important;
+}
