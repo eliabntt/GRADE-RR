@@ -1,0 +1,21 @@
+---
+title: EPIC Kitchens
+---
+
+{% capture url_current_year %}{{ site.url }}{{ site.baseurl }}/{{ site.year }}{% endcapture %}
+<!DOCTYPE HTML>
+<html lang="en-GB">
+  <head>
+    <meta name="theme-color" content="#373435ff"/>
+    <meta charset="UTF-8">
+    <meta http-equiv="refresh" content="1; url={{ url_current_year }}">
+    <script type="text/javascript">
+      window.location.href = "{{ url_current_year }}"
+    </script>
+    <title>Redirecting to EPIC Kitchens {{ site.year }}</title>
+  </head>
+  <body>
+    If you are not redirected automatically, follow this 
+    <a href="{{ url_current_year }}">EPIC Kitchens {{ site.year }}</a>.
+  </body>
+</html>

@@ -1,0 +1,840 @@
+---
+title: "EPIC-KITCHENS Dataset - 2020 Challenge Details"
+layout: default
+---
+
+<!-- About -->
+<section class="bg-light" id="about">
+  <div class="container">
+
+   <div class="row">
+      <div class="col-lg-12">
+        <hr/>
+        <h5 class="text-muted" style="text-align:left;">
+          <ul>
+              
+            <li>For extended dataset EPIC-KITCHENS-100, <a href="2020-100.html">CLICK HERE</a></li>
+          </ul>
+        </h5>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-12">
+        <h2 class="section-heading text-uppercase">EPIC-KITCHENS-55</h2>
+        <h5 class="text-muted" style="text-align:left;">
+          <ul>
+            <li>2020 challenge winner <a href="https://youtu.be/H3nepU4b4YU">talks available online</a>. Technical reports <a href="./Reports/EPIC-KITCHENS-Challenges-2020-Report.pdf">available here</a>.</li>
+            <li>2020 Challenge Winners Announced - <a href="#results">see results</a>.</li>
+            <li>2020 Challenges have now closed. Winners will be announced in <a href="https://eyewear-computing.org/EPIC_CVPR20/">EPIC@CVPR2020 Workshop</a></li>
+            <li>Object Detection Models available to <a href="#arModels">download</a></li>
+            <li>EPIC-Kitchens 2020 Challenges open now - winners announced in Seattle alongside CVPR this June</li>
+              <li>Action Recognition Models available to <a href="#arModels">download</a></li>
+            <li>News coverage: <a href="http://www.bristol.ac.uk/news/2018/april/epic-kitchens.html">UoB</a>, <a href="https://thespoon.tech/how-an-obscure-academic-project-may-have-just-started-a-kitchen-robot-revolution/">The Spoon</a>, <a href="http://nova.ilsole24ore.com/esperienze/dataset-in-prima-persona/">Il Sole 24 Ore</a>, <a href="http://www.lasicilia.it/news/tech/160460/deep-learning-e-il-dataset-in-prima-persona-come-le-macchine-riconoscono-le-interazioni-umane.html">La Sicilia</a>, <a href="https://retina.elpais.com/retina/2018/05/16/tendencias/1526475854_896892.html">Elpais</a></li>
+            <li>EPIC-Kitchens Released: 9th of April 2018!!!</li>
+            <li>Watch <a href="https://youtu.be/Dj6Y3H0ubDw" target="_blank">YouTube Release Trailer here</a></li>
+          </ul>
+        </h5>
+      </div>
+    </div>
+
+    <div class="row">
+      <!-- news column -->
+      <div class="col-md-4">
+        <h4 class="service-heading">What is EPIC-Kitchens?</h4>
+        <p class="text-muted">The <b>largest dataset in first-person (egocentric) vision</b>; multi-faceted <b>non-scripted</b> recordings in native environments - i.e. the wearers' homes, capturing all daily activities in the kitchen over multiple days. Annotations are collected using a novel `live' audio commentary approach.</p>
+      </div>
+      <!-- characteristics column -->
+      <div class="col-md-4">
+        <h4 class="service-heading">Characteristics</h4>
+        <ul class="text-muted">
+          <li class="text-muted">32 kitchens - 4 cities</li>
+          <li class="text-muted">Head-mounted camera</li>
+          <li class="text-muted">55 hours of recording - Full HD, 60fps</li>
+          <li class="text-muted">11.5M frames</li>
+          <li class="text-muted">Multi-language narrations</li>
+          <li class="text-muted">39,594 action segments</li>
+          <li class="text-muted">454,255 object bounding boxes</li>
+          <li class="text-muted">125 verb classes, 331 noun classes</li>
+        </ul>
+      </div>
+      <!-- udated column -->
+      <div class="col-md-4">
+        <h4 class="service-heading">Updates</h4>
+        <p class="text-muted">Stay tuned with updates on epic-kitchens, as well as EPIC workshop series by
+          joining the <strong>epic-community mailing list</strong>
+          send an email to:
+          <a href="mailto:epic-community@bristol.ac.uk?subject=subscribe%20epic-community">
+            epic-community@bristol.ac.uk
+          </a>
+          with the subject <em>SUBSCRIBE EPIC-COMMUNITY</em> and a
+          <em>blank</em> message body.
+        </p>
+      </div>
+    </div>
+    <!-- video banner row -->
+    <div class="row">
+      <div class="col-lg-12">
+        <video autoplay muted loop width="100%">
+          <source src="{{ site.baseurl }}/static/videos/04x04_vp9.webm" type="video/webm">
+            <source src="{{ site.baseurl }}/static/videos/04x04_h265_720.mp4" type="video/mp4">
+              <source src="{{ site.baseurl }}/static/videos/04x04_h264_720.mp4" type="video/mp4">
+                Sorry, we cannot display the EPIC-Kitchens video wall as
+                your browser doesn't support HTML5 video.
+        </video>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- Stats -->
+<section id="stats">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12 text-center">
+        <h2 class="section-heading text-uppercase">EPIC-Kitchens Stats</h2>
+        <h3 class="section-subheading text-muted">Some graphical representations of our dataset and annotations</h3>
+      </div>
+    </div>
+    <!-- to add graphs follow below example -->
+    <div class="row justify-content-md-center text-center">
+      <div class="col-md-4 centered" style="padding:1rem;">
+        <img src="{{ site.baseurl }}/static/img/stats-figures/timeOfDay.png" style="width: 100%" class="img-responsive"/> 
+        <h4>Time Of Day</h4>
+      </div>
+      <div class="col-md-4 centered" style="padding:1rem; vertical-align:bottom">
+        <!-- TO ADD GRAPH: replace div below, ex: above <img> tag -->
+        <img src="{{ site.baseurl }}/static/img/stats-figures/pie.png" style="width: 100%" class="img-responsive"/>  
+        <h4>Activities</h4>
+      </div>
+      <div class="col-md-4 centered" style="padding:1rem;">
+        <img src="{{ site.baseurl }}/static/img/stats-figures/Wordle-min.png" style="width: 100%" class="img-responsive"/>  
+        <h4>Wordle of annotations</h4>
+      </div>
+    </div>
+
+
+    <div class="row justify-content-md-center text-center">
+      <div class="col-md centered" style="padding:1rem;">
+        <img src="{{ site.baseurl }}/static/img/stats-figures/verb_stats.png" style="width: 100%" class="img-responsive"/> 
+      </div>
+    </div>
+
+    <div class="row justify-content-md-center text-center">
+      <div class="col-md centered" style="padding:1rem;">
+        <img src="{{ site.baseurl }}/static/img/stats-figures/nouns-stats.png" style="width: 100%" class="img-responsive"/> 
+      </div>
+    </div>
+
+    <!-- <div class="row justify-content-md-center text-center">
+      <div class="col-md-4 centered" style="padding:1rem;">
+      <div id="graph4" style="width: 100%" class="img-responsive"></div>
+      <h4>Resolution</h4>
+      </div>
+      <div class="col-md-4 centered" style="padding:1rem;">
+      <div id="graph5" style="width: 100%" class="img-responsive"></div>
+      <h4>Number of Frames</h4>
+      </div>
+      <div class="col-md-4 centered" style="padding:1rem;">
+      <div id="graph6" style="width: 100%" class="img-responsive"></div>
+      <h4>Total number of hours</h4>
+      </div>
+      </div>
+      <div class="row justify-content-md-center text-center">
+      <div class="col-md-4 centered" style="padding:1rem;">
+      <div id="graph7" style="width: 100%" class="img-responsive"></div>
+      <h4>Number of annotators</br>used per video</h4>
+      </div>
+      <div class="col-md-4 centered" style="padding:1rem;">
+      <div id="graph8" style="width: 100%" class="img-responsive"></div>
+      <h4>Splits</h4>
+      </div>
+      </div> -->
+
+      <!-- <div class="col-md-6">
+        <div class="card" style="border: solid 2px; background-color: #373435ff; margin-bottom:5px;">
+        <h1 style=" color: white; text-decoration: underline; text-decoration-color: #ed323eff;"> Baseline Models </h1>
+        <div id="graph9"></div>
+        </div>
+
+        <div class="card" style="border: solid 2px; background-color: #ed323eff;">
+        <h1 style=" color: white; text-decoration: underline; text-decoration-color: #373435ff;"> State of the Art Results </h1>
+        <div id="graph10"></div>
+        </div>
+
+        </div> -->
+  </div>
+</section>
+
+<section class="bg-light" id="downloads">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12 text-center">
+        <h2 class="section-heading text-uppercase">Download</h2>
+        <h3 class="section-subheading text-muted">Dataset publicly available for research purposes</h3>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <h4 class="section-subheading">Sequences and Annotations</h4>
+        <p>
+          Sequences: Available at <a href="http://dx.doi.org/10.5523/bris.3h91syskeag572hl6tvuovwv4d">Data.Bris servers (1TB zipped)</a>
+        </p>
+        <p>
+          To download parts of the dataset, we provide three scripts for downloading the 
+          <ul>
+            <li><a href="https://github.com/epic-kitchens/download-scripts/blob/master/download_videos.sh">videos</a></li>
+            <li><a href="https://github.com/epic-kitchens/download-scripts/blob/master/download_frames_rgb_flow.sh">frames</a></li> 
+            <li><a href="https://github.com/epic-kitchens/download-scripts/blob/master/download_object_detection_images.sh">object annotation images</a> separately</li>
+          </ul>
+        </p>
+        <aside>
+        Note: These scripts will work for Linux and Mac. For Windows users a bash installation should work.<br/>
+        Annotations: Available at <a href="https://github.com/epic-kitchens/annotations">GitHub Repo epic-kitchens/annotations</a>
+        </aside>
+        <section id="arModels">
+          <h4 class="section-subheading">Pretrained Models</h4>
+          <p>
+           We release several pretrained models for action recognition (PyTorch) as well as object detection faster RCNN model</p>
+          <ul>
+            <li><a href="https://github.com/epic-kitchens/action-models">Download Action Recognition Models (July 2019)</a></li>
+            <li><a href="https://data.bris.ac.uk/data/dataset/gw5q146a9dqd2t82jhu8noe3m">Download Object Detection Models (Jan 2020)</a></li>
+            <li><a href="http://arxiv.org/abs/1908.00867">Technical Report</a></li> 
+          </ul>
+
+          <h4 class="section-subheading">Publication(s)</h4>
+          <p>Cite the following paper 
+            (<a href="https://arxiv.org/abs/1804.02748">available now on Arxiv</a> and 
+            <a href="http://openaccess.thecvf.com/content_ECCV_2018/html/Dima_Damen_Scaling_Egocentric_Vision_ECCV_2018_paper.html">the CVF</a>):</p>
+          <pre class="bibtex"><code>@INPROCEEDINGS{Damen2018EPICKITCHENS,
+   title={Scaling Egocentric Vision: The EPIC-KITCHENS Dataset},
+   author={Damen, Dima and Doughty, Hazel and Farinella, Giovanni Maria  and Fidler, Sanja and 
+           Furnari, Antonino and Kazakos, Evangelos and Moltisanti, Davide and Munro, Jonathan 
+           and Perrett, Toby and Price, Will and Wray, Michael},
+   booktitle={European Conference on Computer Vision (ECCV)},
+   year={2018}
+} </code></pre>
+            
+          <p>An extended version is now
+              (<a href="https://arxiv.org/abs/2005.00343">available now on Arxiv</a> and <a href="https://ieeexplore.ieee.org/document/9084270">IEEE Early Access</a>):</p>
+          <pre class="bibtex"><code>@ARTICLE{Damen2020Collection,
+   title={The EPIC-KITCHENS Dataset: Collection, Challenges and Baselines},
+   author={Damen, Dima and Doughty, Hazel and Farinella, Giovanni Maria  and Fidler, Sanja and 
+           Furnari, Antonino and Kazakos, Evangelos and Moltisanti, Davide and Munro, Jonathan 
+           and Perrett, Toby and Price, Will and Wray, Michael},
+   journal={IEEE Transactions on Pattern Analysis and Machine Intelligence (TPAMI)},
+   year={2020}
+} </code></pre>
+        </section>
+
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12">
+        <h4 class="section-subheading">Copyright <img alt="Creative Commons License" style="border-width:1px;float:left;margin-right:15px;margin-bottom:0px;" src="https://i.creativecommons.org/l/by-nc/3.0/88x31.png"/></h4>
+        <p>
+          All datasets and benchmarks on this page are copyright by us and published under the <a rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution-NonCommercial 4.0 International</a> License. This means that  you must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use. You may not use the material for commercial purposes.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Challenges -->
+<section id="challenges">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12 text-center">
+        <h2 class="section-heading text-uppercase">2020 Challenges</h2>
+        <h3 class="section-subheading text-muted">Challenge and Leaderboard Details</h3>
+      </div>
+    </div>
+      
+        <div class="row">
+      <div class="col-md-12">
+        For 2019 Challenge Results and winners, go to: <a href="https://epic-kitchens.github.io/2019.html#results">Challenge 2019 Details</a>.
+        <h4 class="subheading">EPIC-Kitchens Challenges @CVPR2020, Seattle, Washington- Dates</h4>
+        <div class="row">
+            <div class="col-md-3">
+                Jan 1, 2020
+            </div>
+            <div class="col-md-9">
+                EPIC-Kitchens Challenges 2020 Launched!
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3">
+                May 29, 2020
+            </div>
+            <div class="col-md-9">
+                Server Submission Deadline at 23:59:59 GMT
+            </div>
+        </div>  
+        <div class="row">
+            <div class="col-md-3">
+                Jun 5, 2020
+            </div>
+            <div class="col-md-9">
+                Deadline for Submission of Technical Reports
+            </div>
+        </div>  
+        <div class="row">
+            <div class="col-md-3">
+                June 14-19, 2020
+            </div>
+            <div class="col-md-9">
+                Results announced at <a href="https://eyewear-computing.org/EPIC_CVPR20/">EPIC@CVPR2020</a> and <a href="http://activity-net.org/challenges/2020/">ActivityNet@CVPR2020</a> Workshops
+            </div>
+        </div>  
+      </div>
+    </div>
+<br/>
+    <div class="row">
+      <div class="col-md-12">
+        <h4 class="subheading">Challenges Guidelines</h4>
+        <p>The three challenges below and their test sets and evaluation servers are available via CodaLab. The leaderboards will decide the winners for each individual challenge. When comparing to state of the art (i.e. in papers), results should be reported on both test sets (S1 and S2) via submitting your predictions to the evaluation server.</p>
+          <p>For each challenge, the CodaLab server page details submission format and evaluation metrics. To <b>enter any of the three competitions</b>, you need to register an account for that challenge using a valid institute (university/company) email address. A single registration per research team is allowed. For all challenges the maximum submissions per day is limited to 1, and the overall maximum number of submissions per team is limited to 50 overall, submitted once a day.</p>
+          <p>To <b>submit</b> your results, follow the JSON submission format, upload your results and give time for the evaluation to complete (in the order of several minutes). After the evaluation is complete, the results automatically appear on the public leaderboards but you are allowed to withdraw these at any point in time.</p>
+        <p>To <b>participate</b> in the challenge, you need to have your results on the public leaderboard, along with an informative team name (that represents your institute or the collection of institutes participating in the work), as well as brief information on your method. You are also required to submit a report on your method (in the form of 2-6 pages) to the EPIC@CVPR workshop by June 5th, detailing your entry's technical details.</p>
+          <p>To <b>submit your technical report</b>, use the <a href="http://cvpr2020.thecvf.com/submission/main-conference/author-guidelines#submission-guidelines">CVPR 2020 camera ready author kit (no blind submission)</a>, and submit a report of 2-6 pages inclusive of any references to the EPIC@CVPR2020 CMT3 website (<a href="https://cmt3.research.microsoft.com/EPICCVPR2020/Submission/Index">Link here</a>). Please select the track "EPIC-Kitchens 2020 Challenges - Technical Papers" when submitting your pdf. These technical reports will be combined into an overall report of the EPIC-Kitchens challenges.</p>
+          <p>Make the most of the starter packs available with the challenges, and should you have any questions, please use our info email <a href="mailto:uob-epic-kitchens2018@bristol.ac.uk">uob-epic-kitchens2018@bristol.ac.uk</a></p>
+      </div>
+    </div>
+      
+          <div class="row">
+      <div class="col-md-12">
+        <h4 class="subheading">Frequently Asked Questions</h4>
+        <ul>
+           <li>
+                <b>Q.</b> Who is allowed to participate?<br/>
+                <b>A.</b> Any researcher, whether in academia or industry, is invited to participate in the EPIC-Challenges. We only request a valid official email address, associated with an institution, for registraton. This ensures we limit the number of submissions per team. Do not use your personal email for registration. You registration request will be declined without further explanation.
+            </li>
+            <li>
+                <b>Q.</b> Can I participate in more than one challenge? Do I need to register separately for each challenge?<br/>
+                <b>A.</b> Yes, and yes. You can participate in all three challenges but you need to register separately for each. Winners for each challenge will be announced and there will be no 'overall' winner across challenges.
+            </li>
+            <li>
+                <b>Q.</b> Can I get additional submission limits to debug my file format?<br/>
+                <b>A.</b> No. Please check your format in advance. We do not offer additional allowance for submission failures.
+            </li>
+            <li>
+                <b>Q.</b> Can I participate in the challenge but not submit a report describing my method?<br/>
+                <b>A.</b> We do not allow that option. Entries to the challenge will only be considered if a technical report is submitted on time. This should not affect later publications of your method if you restrict your report to 4 pages including references. 
+            </li>
+            <li>
+                <b>Q.</b> Should I disclose the team's name on the public leaderboard?<br/>
+                <b>A.</b> Yes, you need to have a team name that represents your institution before the server's closing time.
+            </li>
+            <li>
+                <b>Q.</b> What happens after the server closes?<br/>
+                <b>A.</b> We will close the test server after the deadline and until the workshops, but open it again later for normal submissions of future papers.
+            </li>
+            <li>
+                <b>Q.</b> Are there any prizes given?<br/>
+                <b>A.</b> This is under discussion. Certificates will be awarded.
+            </li>
+            <li>
+                <b>Q.</b> Can I add other members to my team?<br/>
+                <b>A.</b> Yes you can.
+            </li>
+            <li>
+                <b>Q.</b> What is the submission limit?<br/>
+                <b>A.</b> Once a day, with a maximum of 50 submissions.
+            </li>
+            <li>
+                <b>Q.</b> Is the submission limit for the user or for the team?<br/>
+                <b>A.</b> For the team.
+            </li>
+            <li>
+                <b>Q.</b> Can you give me access to features of pre-trained models of baselines?<br/>
+                <b>A.</b> Yes, we hare released several action recognition models tuned for EPIC-Kitchens <a href="#arModels">here</a>
+            </li> 
+        </ul>
+      </div>
+    </div>
+    <section class="challenge" id="challenge-action-recognition">
+      <div class="row">
+        <div class="col-md-12">
+          <h4 class="subheading"><a href="https://competitions.codalab.org/competitions/20115">Action-Recognition Challenge</a></h4>
+          <p class="text-muted">
+            Given a trimmed action segment, the challenge is to classify the
+            segment into its action class composed of the pair of verb and noun
+            classes. To participate in this challenge, predictions for all
+            segments in the seen (S1) and unseen (S2) test sets should be
+            provided. For each test segment we require the confidence scores
+            for each verb and noun class.
+          </p>
+        </div>
+      </div>
+
+
+      <div class="details row text-center">
+        <div class="col-md">
+          <a href="https://github.com/epic-kitchens/starter-kit-action-recognition">
+            <i class="text-center centered fas fa-4x fa-seedling"></i>
+          </a>
+          <br />
+          <p class="text-muted">Get started with the 
+            <a href="https://github.com/epic-kitchens/starter-kit-action-recognition">starter pack</a>
+          </p>
+        </div>
+        <div class="col-md">
+          <a href="https://competitions.codalab.org/competitions/20115#learn_the_details-submission-format">
+            <i class="text-center centered fas fa-4x fa-info"></i>
+          </a>
+          <br />
+          <p class="text-muted">Learn about the 
+            <a href="https://competitions.codalab.org/competitions/20115#learn_the_details-submission-format">submission format details</a>
+          </p>
+        </div>
+        <div class="col-md">
+          <a href="https://competitions.codalab.org/competitions/20115#results">
+            <i class="text-center centered fas fa-4x fa-trophy"></i>
+          </a>
+          <p class="text-muted">Submit your results on 
+            <a href="https://competitions.codalab.org/competitions/20115#results">CodaLab website</a>
+          </p>
+        </div>
+      </div>
+      <figure class="text-muted">
+        <figcaption>Sample qualitative results from the challenge's baseline</figcaption>
+        <img src="{{ site.baseurl }}/static/img/stats-figures/challenge2.png" style="width: 100%" class="img-responsive"/> 
+      </figure>
+    </section>
+
+
+    <section class="challenge" id="challenge-action-anticipation">
+      <div class="row">
+        <div class="col-md-12">
+          <h4 class="subheading">
+            <a href="https://competitions.codalab.org/competitions/20071">Action-Anticipation Challenge</a>
+          </h4>
+          <p class="text-muted">
+            Given an anticipation time, set to 1s before the action starts, the
+            challenge is to classify the future action into its action class
+            composed of the pair of verb and noun classes. To participate in
+            this challenge, predictions for all segments in the seen (S1) and
+            unseen (S2) test sets should be provided. For each test segment we
+            require the confidence scores for each verb and noun class.
+          </p>
+        </div>
+      </div>
+
+      <div class="details row text-center">
+        <div class="col-md">
+          <a href="https://competitions.codalab.org/competitions/20071#learn_the_details-submission-format">
+            <i class="text-center centered fas fa-4x fa-info"></i>
+          </a>
+          <br />
+          <p class="text-muted">Learn about the 
+            <a href="https://competitions.codalab.org/competitions/20071#learn_the_details-submission-format">submission format details</a>
+          </p>
+        </div>
+        <div class="col-md">
+          <a href="https://competitions.codalab.org/competitions/20071#results">
+            <i class="text-center centered fas fa-4x fa-trophy"></i>
+          </a>
+          <p class="text-muted">Submit your results on 
+            <a href="https://competitions.codalab.org/competitions/20071#results">CodaLab website</a>
+          </p>
+        </div>
+      </div>
+
+      <figure class="text-muted">
+        <figcaption>Sample qualitative results from the challenge's baseline</figcaption>
+        <img src="{{ site.baseurl }}/static/img/stats-figures/challenge3.png" style="width: 100%" class="img-responsive"/> 
+      </figure>
+    </section>
+
+    <section class="challenge" id="challenge-object-detection">
+      <div class="row">
+        <div class="col-md-12">
+          <h4 class="subheading"><a href="https://competitions.codalab.org/competitions/20111">Object-Detection Challenge</a></h4>
+          <p class="text-muted">
+            This challenge focuses on object detection and localisation.  Note
+            that our annotations only capture the ‘active’ objects pre-,
+            during- and post- interaction. To participate in the challenge
+            bounding box predictions with confidence scores should be submitted
+            for sampled frames from the seen (S1) and unseen (S2) test sets.
+          </p>
+        </div>
+      </div>
+
+      <div class="details row text-center">
+        <div class="col-md">
+          <a href="https://competitions.codalab.org/competitions/20111#learn_the_details-submission-format">
+            <i class="text-center centered fas fa-4x fa-info"></i>
+          </a>
+          <br />
+          <p class="text-muted">Learn about the 
+            <a href="https://competitions.codalab.org/competitions/20111#learn_the_details-submission-format">submission format details</a>
+          </p>
+        </div>
+        <div class="col-md">
+          <a href="https://competitions.codalab.org/competitions/20111#results">
+            <i class="text-center centered fas fa-4x fa-trophy"></i>
+          </a>
+          <p class="text-muted">Submit your results on 
+            <a href="https://competitions.codalab.org/competitions/20111#results">CodaLab website</a>
+          </p>
+        </div>
+      </div>
+
+      <figure class="text-muted">
+        <figcaption>Sample qualitative results from the challenge's baseline</figcaption>
+        <img src="{{ site.baseurl }}/static/img/stats-figures/challenge1.png" style="width: 100%" class="img-responsive"/> 
+      </figure>
+    </section>
+
+
+  </div>
+</section>
+
+<!-- Team -->
+<section class="bg-light" id="team">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12">
+        <h2 class="section-heading text-uppercase">The Team</h2>
+        <div class="text-muted">
+          <p> We are a group of researchers working in computer vision
+            from the <a href="http://www.cs.bris.ac.uk/">University
+              of Bristol</a>, <a href="http://web.cs.toronto.edu/">University of
+              Toronto</a>, and <a href="http://www.unict.it/">University of
+              Catania</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-4">
+        <a href="http://www.bristol.ac.uk/">
+          <img src="{{ site.baseurl }}/static/img/universities/bristol-min.png" alt="" style="width:90%; margin-top:15px; margin-bottom:15px;">
+        </a>
+      </div>
+      <div class="col-md-4">
+        <a href="https://www.utoronto.ca/">
+          <img src="{{ site.baseurl }}/static/img/universities/toronto-min.png" alt="" style="width:90%; margin-bottom:5px;">
+        </a>
+      </div>
+      <div class="col-md-4">
+        <a href="https://www.unict.it/en/">
+          <img src="{{ site.baseurl }}/static/img/universities/catania-min.png" alt="" style="width:90%; margin-bottom:5px;">
+        </a>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-4">
+        <div class="team-member">
+          <a href="http://dimadamen.github.io">
+            <img class="mx-auto rounded-circle" src="{{site.baseurl}}/static/img/profile/dd-min.jpg"/>
+
+            <h4>Dima Damen</h4></a>
+          <h5>Principal Investigator</h5>
+          <h6 class="text-muted">University of Bristol<br/>United Kingom</h6>
+        </div>
+      </div>
+        
+      <div class="col-md-4">
+        <div class="team-member">
+          <a href="http://www.dmi.unict.it/farinella/">
+            <img class="mx-auto rounded-circle" src="{{site.baseurl}}/static/img/profile/gmf-min.jpg" />
+
+            <h4>Giovanni Maria Farinella</h4></a>
+          <h5>Co-I</h5>
+          <h6 class="text-muted">University of Catania<br/>Italy</h6>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="team-member">
+          <a href="http://www.cs.utoronto.ca/~fidler/">
+            <img class="mx-auto rounded-circle" src="{{site.baseurl}}/static/img/profile/sanja-min.jpg" />
+
+            <h4>Sanja Fidler</h4></a>
+          <h5>Co-I (2017-2019)</h5>
+          <h6 class="text-muted">University of Toronto, NVIDIA AI Research<br/>Canada</h6>
+        </div>
+      </div>
+
+
+    </div>
+
+    <div class="row">
+      <div class="col-md-3">
+        <div class="team-member">
+          <a href="http://www.davidemoltisanti.com/research">
+            <img class="mx-auto rounded-circle" src="{{site.baseurl}}/static/img/profile/dm-min.jpg" />
+
+            <h4>Davide Moltisanti</h4></a>
+          <h5>(Apr 2017 - )</h5>
+          <h6 class="text-muted">University of Bristol</h6>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="team-member">
+          <a href="https://mwray.github.io/">
+            <img class="mx-auto rounded-circle" src="{{site.baseurl}}/static/img/profile/mw-min.jpg" />
+
+            <h4>Michael Wray</h4></a>
+          <h5>(Apr 2017 - )</h5>
+          <h6 class="text-muted">University of Bristol</h6>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="team-member">
+          <a href="http://hazeldoughty.github.io">
+            <img class="mx-auto rounded-circle" src="{{site.baseurl}}/static/img/profile/hd-min.jpg" />
+
+            <h4>Hazel Doughty</h4></a>
+          <h5>(Apr 2017 - )</h5>
+          <h6 class="text-muted">University of Bristol</h6>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="team-member">
+          <a href="">
+            <img class="mx-auto rounded-circle" src="{{site.baseurl}}/static/img/profile/tp-min.jpg" />
+          </a>
+          <h4>Toby Perrett</h4>
+          <h5>(Apr 2017 - )</h5>
+          <h6 class="text-muted">University of Bristol</h6>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-3">
+        <div class="team-member">
+          <a href="http://iplab.dmi.unict.it/furnari/">
+            <img class="mx-auto rounded-circle" src="{{site.baseurl}}/static/img/profile/af-min.jpg" />
+
+            <h4>Antonino Furnari</h4></a>
+          <h5>(Jul 2017 - )</h5>
+          <h6 class="text-muted">University of Catania</h6>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="team-member">
+          <a href="https://jonmun.github.io">
+            <img class="mx-auto rounded-circle" src="{{site.baseurl}}/static/img/profile/jm-min.jpg" />
+          
+          <h4>Jonathan Munro</h4></a>
+          <h5>(Sep 2017 - )</h5>
+          <h6 class="text-muted">University of Bristol</h6>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="team-member">
+          <a href="https://ekazakos.github.io">
+            <img class="mx-auto rounded-circle" src="{{site.baseurl}}/static/img/profile/vk-min.jpg" />
+          <h4>Evangelos Kazakos</h4></a>
+          <h5>(Sep 2017 - )</h5>
+          <h6 class="text-muted">University of Bristol</h6>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="team-member">
+          <a href="http://willprice.org">
+            <img class="mx-auto rounded-circle" src="{{site.baseurl}}/static/img/profile/wp-min.jpg" />
+
+            <h4>Will Price</h4></a>
+          <h5>(Oct 2017 - )</h5>
+          <h6 class="text-muted">University of Bristol</h6>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-3">
+        <div class="team-member">
+            <a href="https://majian8.github.io/jianma/">
+            <img class="mx-auto rounded-circle" src="{{site.baseurl}}/static/img/profile/jm2-min.jpg" />
+
+            <h4>Jian Ma</h4></a>
+          <h5>(Sep 2019 - )</h5>
+          <h6 class="text-muted">University of Bristol</h6>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12">
+          <h2 class="section-heading text-uppercase">Sponsors</h2>
+          <div class="text-muted">
+            <p> The dataset is sponsored by:
+              <ul class="text-muted">
+                <li><a href="https://www.nokia.com/en_int/nokia-technologies">Nokia Technologies</a> - Charitable Donation</li>
+                <li><a href="http://www.bristol.ac.uk/golding/">Jean Golding Institute, University of Bristol</a> - Seed corn funding</li>
+              </ul>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+</section>
+
+<section class="bg-light" id="results">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12">
+        <h2 class="section-heading text-uppercase">Results - 2020 Challenges (June 2020)</h2>
+        <div class="text-muted">
+            <div class="row">
+      <div class="col-md-12">
+        <h4 class="subheading">EPIC-Kitchens Challenges @CVPR2020, Virtual CVPR</h4>
+        <div class="row">
+           <div class="col-md-3">
+                Jan 1, 2020
+            </div>
+            <div class="col-md-9">
+                EPIC-Kitchens Challenges 2020 Launched!
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3">
+                May 29, 2020
+            </div>
+            <div class="col-md-9">
+                Server Submission Deadline at 23:59:59 GMT
+            </div>
+        </div>  
+        <div class="row">
+            <div class="col-md-3">
+                Jun 5, 2020
+            </div>
+            <div class="col-md-9">
+                Deadline for Submission of Technical Reports
+            </div>
+        </div>  
+        <div class="row">
+            <div class="col-md-3">
+                June 15, 2020
+            </div>
+            <div class="col-md-9">
+                Results announced at <a href="https://eyewear-computing.org/EPIC_CVPR20/">EPIC@CVPR2020</a> Workshop (<a href="https://youtu.be/H3nepU4b4YU">watch session recording here</a>)
+            </div>
+        </div>  
+        <div class="row">
+            <div class="col-md-3">
+                June 26, 2020
+            </div>
+            <div class="col-md-9">
+                Technical report for all submissions to the 2020 challenges is now <a href="Reports/EPIC-KITCHENS-Challenges-2020-Report.pdf">available here</a>.
+            </div>
+        </div>  
+      </div>
+    </div>
+            
+        <h2 class="section-heading text-uppercase">2020 Challenge Winners</h2> 
+            
+                  <div class="col-md">
+                    <img src="{{site.baseurl}}/static/results2020/winnersList.png" width=100%/>
+                  </div>
+                   <div class="col-md">
+                    <img src="{{site.baseurl}}/static/results2020/winners.png" width=100%/>
+                  </div>
+            
+          <h2 class="section-heading text-uppercase">Action Recognition Challenge</h2> 
+            
+                  <div class="col-md">
+                    <img src="{{site.baseurl}}/static/results2020/recognition-S1.png" width=100%/>
+                  </div>
+                   <div class="col-md">
+                    <img src="{{site.baseurl}}/static/results2020/recognition-S2.png" width=100%/>
+                  </div>
+                  <div class="col-md">
+                    <img src="{{site.baseurl}}/static/results2020/recognition-Submissions.png" width=100%/>
+                  </div>
+         
+          <h2 class="section-heading text-uppercase">Action Anticipation Challenge</h2> 
+            
+                              <div class="col-md">
+                    <img src="{{site.baseurl}}/static/results2020/anticipation-S1.png" width=100%/>
+                  </div>
+                   <div class="col-md">
+                    <img src="{{site.baseurl}}/static/results2020/anticipation-S2.png" width=100%/>
+                  </div>
+                  <div class="col-md">
+                    <img src="{{site.baseurl}}/static/results2020/anticipation-Submissions.png" width=100%/>
+                  </div>
+           <h2 class="section-heading text-uppercase">Object Detection in Video Challenge</h2> 
+            
+                 <div class="col-md">
+                    <img src="{{site.baseurl}}/static/results2020/object-S1.png" width=100%/>
+                  </div>
+                   <div class="col-md">
+                    <img src="{{site.baseurl}}/static/results2020/object-S2.png" width=100%/>
+                  </div>
+                  <div class="col-md">
+                    <img src="{{site.baseurl}}/static/results2020/object-Submissions.png" width=100%/>
+                  </div>
+        </div>
+      </div>
+    </div>
+
+<script type="application/ld+json">
+{
+  "@context":"http://schema.org/",
+  "@type":"Dataset",
+  "name":"EPIC-Kitchens dataset",
+  "description":"First-person (egocentric) video dataset; multi-faceted non-scripted recordings in the wearers' homes, capturing all daily activities in the kitchen over multiple days. Annotations are collected using a novel live audio commentary approach.",
+  "url":"https://github.com/epic-kitchens/annotations",
+  "sameAs":"https://data.bris.ac.uk/data/dataset/3h91syskeag572hl6tvuovwv4d",
+  "citation":"Damen, Dima et al. 'Scaling Egocentric Vision: The EPIC-KITCHENS Dataset', European Conference on Computer Vision, 2018",
+  "identifier": "10.5523/bris.3h91syskeag572hl6tvuovwv4d",
+  "keywords":[
+     "Egocentric vision",
+     "Human actions",
+     "Object interactions",
+     "actions",
+     "video",
+     "kitchens",
+     "cooking",
+     "dataset",
+     "epic kitchens",
+     "epic",
+     "eccv",
+     "eccv 2018"
+  ],
+  "creator":{
+     "@type":"Organization",
+     "url": "https://epic-kitchens.github.io/",
+     "name":"EPIC Team",
+     "contactPoint":{
+        "@type":"ContactPoint",
+        "contactType": "technical support",
+        "email":"uob-epic-kitchens2018@bristol.ac.uk",
+        "url":"https://github.com/epic-kitchens/annotations/issues"
+     }
+  },
+  "distribution":[
+     {
+        "@type":"DataDownload",
+        "encodingFormat":"video/mp4",
+        "contentUrl":"https://data.bris.ac.uk/data/dataset/3h91syskeag572hl6tvuovwv4d"
+     },
+     {
+        "@type":"DataDownload",
+        "encodingFormat":"image/jpeg",
+        "contentUrl":"https://data.bris.ac.uk/data/dataset/3h91syskeag572hl6tvuovwv4d"
+     },
+     {
+        "@type":"DataDownload",
+        "encodingFormat":"text/csv",
+        "contentUrl":"https://github.com/epic-kitchens/annotations"
+     },
+     {
+        "@type":"DataDownload",
+        "encodingFormat":"application/octet-stream",
+        "contentUrl":"https://github.com/epic-kitchens/annotations"
+     }
+  ],
+  "license": "https://creativecommons.org/licenses/by-nc/4.0/"
+}
+</script>
+
