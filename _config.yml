@@ -19,14 +19,13 @@ email: elia.bonetto@tuebingen.mpg.de
 description: >-
   GRADE dataset
 baseurl: "" # the subpath of your site, e.g. /blog
-url: "http://eliabntt.github.io/" # the base hostname & protocol for your site, e.g. http://example.com
+url: "http://eliabntt.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: ""
 github_username: "eliabntt"
 
 # Build settings
 markdown: kramdown
 theme: minima
-plugins:
 
 # Exclude from processing.
 # The following items will not be processed, by default. Create a custom list
