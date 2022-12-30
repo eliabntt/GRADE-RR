@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="Elia Bonetto">
+
+    <title>GRADE-RR Dataset</title>
+
+    <link href="/tmp/static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700|Kaushan+Script|Droid+Serif:400,700,400italic,700italic|Roboto+Slab:400,100,300,700" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/solid.css" integrity="sha384-VGP9aw4WtGH/uPAOseYxZ+Vz/vaTb1ehm1bwx92Fm8dTrE+3boLfF1SpAtB1z7HW" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/fontawesome.css" integrity="sha384-1rquJLNOM3ijoueaaeS5m+McXPJCGdr5HcA03/VHXxcp2kX2sUrQDmFc3jR5i/C7" crossorigin="anonymous">
+
+    <!-- Custom styles for this template -->
+    <link href="/tmp/static/css/agency.css" rel="stylesheet">
+
+  </head>
+
+  <body id="page-top">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
+      <div class="container">
+        <a class="navbar-brand js-scroll-trigger" href="#page-top"> <img style="width:10em;" src="/tmp/static/img/logo/GRADE-RR.svg" alt="Logo"></a>
+        <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+          <i class="fa fa-bars fa-2x" aria-hidden="true"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+          <ul class="navbar-nav text-uppercase ml-auto">
+            <li class="nav-item">
+              <a class="nav-link js-scroll-trigger" href="#about">About</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link js-scroll-trigger" href="#generate">Generate</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link js-scroll-trigger" href="#download">Download</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link js-scroll-trigger" href="#team">Team</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Header -->
+    <header class="masthead">
+      <div class="container">
+        <div class="intro-text">
+        </div>
+      </div>
+    </header>
+
+    <!-- About -->
+<section class="bg-light" id="about">
+  <div class="container">
+    <div class="jumbotron jumbotron-fluid">
+      <div class="container" align="center">
+        <h2>
+          GRADE-RR: Generate Realistic Animated Dynamic Environments for Robotics Research.
+        </h2>
+        <h4><i>Submitted to RAL</i></h4>
+        <p>
+          <a href="https://eliabntt.github.io/">Elia Bonetto</a><sup>1,2,*</sup>,&nbsp;
+          Chenghao Xu<sup>1</sup>,&nbsp;
+          <a href="https://aamirahmad.de/">Aamir Ahmad</a><sup>2,1</sup>,&nbsp;
+          <br />
+          <sup>1</sup>Max Planck Institute for Intelligent Systems&nbsp;&nbsp;
+          <sup>2</sup>University of Stuttgart&nbsp;&nbsp;
+          <br />
+          <sup>*</sup> Corresponding Author
+        </p>
+        <h5>
+          <a href="">[Paper]</a>&nbsp;
+          <a href="">[Download Data]</a>&nbsp;
+          <a href="">[Environment Generation Code]</a>&nbsp; </br>
+          <a href="">[People Generation Code]</a>&nbsp;
+          <a href="">[Data Generation Pipeline]</a>
+          <a href="">[Data Processing Code]</a>
+        </h5>
+      </div>
+    </div>
+
+
+
+
+    <div class="row">
+      <div class="col-lg-12">
+        <video autoplay muted loop width="100%">
+          <source src="/tmp/static/videos/03x03_videoWall.webm" type="video/webm">
+          <source src="/tmp/static/videos/03x03_videoWall.mp4" type="video/mp4">
+          <source src="/tmp/static/videos/03x03_videoWall.mp4" type="video/mp4">
+          Sorry, we cannot display the GRADE-RR video as
+          your browser doesn't support HTML5 video.
+        </video>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-12">
+        <h2 class="section-heading text-uppercase">News</h2>
+        <h5 class="text-muted" style="text-align:left;">
+          <ul>
+            <li>Annoncing <a href="">GRADE-RR</a></li>
+            <li>Watch the dataset's <a href="" target="_blank">trailer</a></li>
+            <li>Watch our GTC 2023 <a href="" target="_blank">talk</a></li>
+          </ul>
+        </h5>
+      </div>
+    </div>
+
+
+    <div class="section">
+
+      <div class="container_img">
+        <p align="center">
+          <img border="0" src="static/img/teaser.png" style="width: 90%" />
+        </p>
+      </div>
+      <div class="container">
+        <div align="center">
+          <h2>Our Mission</h2>
+        </div>
+        <hr />
+        <p>
+          With GRADE-RR we seek to introduce a pipeline to easily simulate robots in dynamic environments.
+          This will simplify the robotics research by a great extent by allowing easy and precise data
+          generation with groundtruth in photorealistic environments.
+          The project is based on <a href="">IsaacSim</a>, <a href="">Omniverse</a> and the open source <a
+            href="">USD</a> format.
+          Our work focuses on three main aspects: i) environments, ii) animations, and iii) simulation setup, management
+          and data generation.
+          The pipeline is completely customizable, extendable and improvable for any use-case (indoor, outdoor,
+          manipulation ...).
+          We indeed encourage the reader to introduce open source contributions to the project.
+
+          The data generated is solely based on publicly available datasets and tools such as: <a href="">Front3D</a>,
+          <a href="">Google Scanned Objects</a>, <a href="">ShapeNet</a>, <a href="">Cloth3D</a>, <a href="">AMASS</a>,
+          <a href="">SMPL</a> and <a href="">Blenderproc</a>
+          We provide .... sequences generated by an handheld camera
+        </p>
+      </div>
+
+    </div>
+
+    <br />
+
+    <div class="row">
+      <div class="col-md-6">
+        <h4 class="service-heading">Environments</h4>
+        <p class="text-muted">
+          While perception and processing capabilities of our robot increases, there's the need to increase also the
+          quality of our simulated environments.
+          This will enable research based on simulations that are more coherent with the real world that the robot will
+          sense when deployed, closing the sim-to-real gap.
+          Using Omniverse's <a href="">connectors</a> you can convert almost any environment to the USD format. This can
+          then be imported directly in IsaacSim.
+          Our <a href="">conversion tool</a>, based on BlenderProc, focuses on the Front3D dataset, the biggest
+          available semantically-annotated indoor dataset with actual 3D meshes.
+          However, as we show <a href="">here</a> we can easily import environments from other applications such as
+          UnrealEngine.
+          Find more information about this <a href="">here</a>.
+        </p>
+      </div>
+      <div class="col-md-6">
+        <h4 class="service-heading">Animations</h4>
+        <p class="text-muted">
+          Most of the robotics research is being carried out in <b>static</b> environments. This mainly because animated
+          assets are difficult to simulate, place and manage.
+          <!--Moreover, most computer-vision-based datasets focusing on animated humans are generated without taking into account roboticists' needs or lack some degree
+          of realism.-->
+          In our work, we focused mainly on animated clothed humans by converting and placing inside our environments <a
+            href="">Cloth3D</a> animated assets.
+          To do so, we implemented a simple to use <a href="">tool</a> that allows a streamlined conversion between SMPL
+          mesh and clothes animation to the USD format.
+          The animations are then placed in the simulation with an easy to understand technique.
+          However, the dynamic in the scene is not only humans but there can be objects and animals. To showcase
+          usability, and the power of the simulation environment,
+          we also generate sequences with flying objects taken from Google Scanned Objects and ScanNet, and a Zebra open
+          source animated asset.
+          Find more information about this <a href="">here</a>.
+        </p>
+      </div>
+    </div>
+    <div class="row">
+      <!-- udated column -->
+      <div class="col-md-6">
+        <h4 class="service-heading">Simulation control and data generation</h4>
+        <p class="text-muted">
+          The core of the project is the simulation setup, control and the data generation pipeline.
+          Here, we seek to simplify the learning curve that exists once one approaches IsaacSim.
+          This includes loading the environment, placing and control the robot, placing the animations, animate static
+          flying objects,
+          ROS integration (not mandatory), data logging and saving, semantic annotation, and fine simulation control in
+          time, physics and rendering.
+          The pipeline is fully customizable, e.g. by removing ROS, control the robot/camera without external software,
+          adding noise etc.
+          Based on the complexity of the environment and the on the number of lights performances can reach realtime
+          processing (>30fps) with RTX rendering settings.
+          Data can be saved both by using <code>rosbag</code> or the common <code>npy</code> files.
+          Find more information about this <a href="">here</a>.
+        </p>
+      </div>
+
+      <div class="col-md-6">
+        <h4 class="service-heading">Data processing and evaluation</h4>
+        <p class="text-muted">
+          By default, the generated data is produced as groundtruth. This means that you can have groundtruth
+          information about RGB, depth, semantics, bounding-boxes,
+          instances, motion-vector (optical flow), and asset skeleton/vertices positions.
+          However, realistic data is noisy. That is why we implemented a set of <a href="">tools</a> to post-process the
+          data to add noise and fix some known issues of the simulation.
+          Moreover, by design, noise can be added at simulation time by including the class directly into the simulation
+          environment or by using the latest Isaac release.
+          Furthermore, to evaluate the usability of the pipeline and of the generated data we performed extensive
+          testing with various SLAM libraries, including increasing human detection capabilities of
+          both Mask-RCNN and YOLOv5 on real world datasets.
+          Finally, we developed a tool to replay any experiment in such a way one can generate data with newly
+          added/modified sensors and different environment settings.
+          Find more information about this <a href="">here</a>.
+        </p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section class="bg-light" id="known_issues">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12 text-center">
+        <h4>Known Issues</h4>
+      </div>
+      <div class="col-md-12">
+        <p class="text-muted">
+          During our generation we found some issues related to bugs in IsaacSim itself. We address all of them in
+          various sections of our code.
+          The most notable ones are: rosbag clock timing issue fixed <a href="">here</a>, 3D bounding boxes for humans
+          not correctly generated fixed <a href="">here</a>, simulation that automatically changes the aperture settings
+          of the camera fixed <a href="">here</a>.
+          LiDAR and LRF misfire with dynamic objects can be fixed by updating the code to the latest release and using a
+          rendering-based laser sensor (check our branch <a href="">here</a>).
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bg-light" id="downloads">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12 text-center">
+        <h2 class="section-heading text-uppercase">Download</h2>
+        <h3 class="section-subheading text-muted">Dataset publicly available for research purposes will be released upon
+          acceptance</h3>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <h4 class="section-subheading" id="downloadFiles">Download groundtruth files</h4>
+        <hr />
+
+        <p>
+          <code>Rosbags</code> (RGB, depth, IMU, odometry, tf tree)
+        </p>
+        <p>
+          <code>npy</code> (RGB, depth, instance segmentation, bounding boxes)
+        </p>
+        <p>
+          <code>General</code> (USD of the environment, simulation settings, rng state, logs)
+        </p>
+
+        <h4 class="section-subheading" id="downloadFiles">Download environments and animations</h4>
+        <hr />
+        <p>
+          <code>3DFront Environments</code> (only USD files, textures downloaded separately)
+        </p>
+        <p>
+          <code>Extra environments</code> (USD and textures)
+        </p>
+        <p>
+          <code>Cloth3D</code> (only USD files, textures downloaded separately)
+        </p>
+        <p>
+          <code>AMASS-CMU</code> (only USD files, textures downloaded separately)
+        </p>
+        <p>
+          <code>Zebra</code> animations (only USD files)
+        </p>
+
+
+        <h4 class="section-subheading">Pipelines</h4>
+        Code to generate the data is available at various location depending on the scope. If it involves a dataset, we
+        suppose that you accepted the related license and downloaded the data on your own.
+
+        <p>
+          <code>AMASS</code> animations
+        </p>
+
+        <p>
+          <code>Cloth3D</code> animations
+        </p>
+
+        <p>
+          <code>Front3D</code> homes
+        </p>
+
+        <p>
+          <code>Isaac sim manager</code>
+        </p>
+
+        <p>
+          <code>Robot 6DOF control</code>
+        </p>
+
+        <p>
+          <code>Data processing and testing</code>
+        </p>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12 text-center">
+        <h2 class="section-heading text-uppercase">Publications</h2>
+
+      </div>
+    </div>
+
+    <p>If you find our work useful please cite our paper:
+      <a href="">PDF</a> or <a href="">Arxiv</a>:
+    </p>
+
+    <div class="position-relative">
+      <div class="right-0 top-0 position-absolute">
+      <clipboard-copy aria-label="Copy" class="ClipboardButton btn m-2 p-0 tooltipped-no-delay"
+    data-copy-feedback="Copied!" data-tooltip-direction="w" tabindex="0" role="button" id="btn-copy-clip"
+    data-clipboard-target="#paper1">
+    <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true"
+      className="octicon octicon-paste js-clipboard-clippy-icon m-2">
+      <path fillRule="evenodd"
+        d="M5.75 1a.75.75 0 00-.75.75v3c0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75v-3a.75.75 0 00-.75-.75h-4.5zm.75 3V2.5h3V4h-3zm-2.874-.467a.75.75 0 00-.752-1.298A1.75 1.75 0 002 3.75v9.5c0 .966.784 1.75 1.75 1.75h8.5A1.75 1.75 0 0014 13.25v-9.5a1.75 1.75 0 00-.874-1.515.75.75 0 10-.752 1.298.25.25 0 01.126.217v9.5a.25.25 0 01-.25.25h-8.5a.25.25 0 01-.25-.25v-9.5a.25.25 0 01.126-.217z">
+      </path>
+    </svg>
+    <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true"
+      className="octicon octicon-check js-clipboard-check-icon color-text-success d-none m-2">
+      <path fillRule="evenodd"
+        d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z">
+      </path>
+    </svg>
+  </clipboard-copy>
+</div>
+    <pre>
+<code id="paper1">@ARTICLE{Damen2022RESCALING, 
+    title={Rescaling Egocentric Vision: Collection, Pipeline and Challenges for EPIC-KITCHENS-100}, 
+    author={Damen, Dima and Doughty, Hazel and Farinella, Giovanni Maria and Furnari, Antonino and Ma, Jian and Kazakos, Evangelos and Moltisanti, Davide and Munro, Jonathan and Perrett, Toby and Price, Will and Wray, Michael}, 
+    journal   = {International Journal of Computer Vision (IJCV)}, 
+    year      = {2022}, 
+    volume = {130}, 
+    pages = {33–55}, 
+    Url       = {https://doi.org/10.1007/s11263-021-01531-2}
+}</code>
+  </pre>
+</div>
+
+  </div>
+
+</section>
+
+<section>
+  <div class="row">
+    <div class="col-md-12 text-center">
+      <h4 class="section-subheading">Disclaimer </h4>
+      <p>GRADE-RR was collected as a tool for research in robotics. The dataset may
+        have unintended biases (including those of a societal, gender or racial nature).</p>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12 text-center">
+      <h4 class="section-subheading">Copyright <img alt=""
+          style="border-width:1px;float:left;margin-right:15px;margin-bottom:0px;" src="" /></h4>
+      <p>
+        All datasets and benchmarks on this page are copyright by us and published under the <a rel="license" href="">
+      </p>
+
+      <p>For commercial licenses of GRADE-RR and any of its annotations, email us at <a href=""></a></p>
+    </div>
+  </div>
+</section>
+
+<!-- Team -->
+<section class="bg-light" id="team">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12">
+        <h2 class="section-heading text-uppercase">The Team</h2>
+        <div class="text-muted">
+        </div>
+      </div>
+    </div>
+
+
+    <div class="row">
+      <div class="col-md-6">
+        <div class="team-member">
+          <a href="http://eliabntt.github.io">
+            <img class="mx-auto rounded-circle" src="/tmp/static/img/profile/eb.jpg" />
+
+            <h4>Elia Bonetto</h4>
+          </a>
+          <h5>Principal Investigator</h5>
+          <h6 class="text-muted">Max Planck Institute for Intelligent Systems, Germany</h6>
+        </div>
+      </div>
+
+    </div>
+
+
+</section>
+
+
+<script type="application/ld+json">
+{
+  "@context":"http://schema.org/",
+  "@type":"Dataset",
+  "name":"GRADE-RR dataset",
+  "description":"",
+  "url":"",
+  "sameAs":"",
+  "citation":"",
+  "identifier": "",
+  "keywords":[
+  ],
+  "creator":{
+     "@type":"",
+     "url": "https://grade-rr.github.io/",
+     "name":"GRADE-RR Team",
+     "contactPoint":{
+        "@type":"ContactPoint",
+        "contactType": "technical support",
+        "email":"elia.bonetto@tue.mpg.de",
+        "url":""
+     }
+  },
+  "distribution":[
+     {
+        "@type":"DataDownload",
+        "encodingFormat":"video/mp4",
+        "contentUrl":""
+     },
+     {
+        "@type":"DataDownload",
+        "encodingFormat":"image/jpeg",
+        "contentUrl":""
+     },
+     {
+        "@type":"DataDownload",
+        "encodingFormat":"text/csv",
+        "contentUrl":""
+     },
+     {
+        "@type":"DataDownload",
+        "encodingFormat":"application/octet-stream",
+        "contentUrl":""
+     }
+  ],
+  "license": ""
+}
+</script>
+
+    <!-- Footer -->
+    <footer style="background-color:#373435ff;">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4">
+            <img alt="" style="border-width:1px;float:left;margin-right:15px;margin-bottom:0px;" src=""/>
+            <span class="copyright" style="color:#eee;">Copyright &copy; GRADE-RR 2023 </span>
+          </div>
+          <div class="col-md-8">
+            <p style="color:#eee;">For general enquiries, email us at
+              <a href="mailto:elia.bonetto@tue.mpg.de"> elia.bonetto@tue.mpg.de </a></p>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <style>
+    #cookie-notice {padding: 0.5rem 1rem;  text-align: center; position: fixed; bottom: 0; width: calc(100% - 2rem); background: #222; color: rgba(255,255,255,0.8);}
+    #cookie-notice a {display: inline-block; cursor: pointer; margin-left: 0.5rem;}
+    @media (max-width: 767px) {
+        #cookie-notice span {display: block; padding-top: 3px; margin-bottom: 1rem;}
+        #cookie-notice a {position: relative; bottom: 4px;}
+    }
+</style>
+<div id="cookie-notice"><span>We would like to use third party cookies and scripts to improve the functionality of this website.</span><a id="cookie-notice-accept" class="btn btn-primary btn-sm">Approve</a><a href="/privacy" class="btn btn-primary btn-sm">More info</a><a id="cookie-refuse" class="btn btn-primary btn-sm">Dismiss</a></div>
+<script>
+    function createCookie(name,value,days) {
+        var expires = "";
+        if (days) {
+            var date = new Date();
+            date.setTime(date.getTime() + (days*24*60*60*1000));
+            expires = "; expires=" + date.toUTCString();
+        }
+        document.cookie = name + "=" + value + expires + "; path=/";
+    }
+    function readCookie(name) {
+        var nameEQ = name + "=";
+        var ca = document.cookie.split(';');
+        for(var i=0;i < ca.length;i++) {
+            var c = ca[i];
+            while (c.charAt(0)==' ') c = c.substring(1,c.length);
+            if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+        }
+        return null;
+    }
+    function eraseCookie(name) {
+        createCookie(name,"",-1);
+    }
+
+    console.log("aaaa");
+    if(readCookie('cookie-consent')==='true') {
+        var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-70348270-1']);
+_gaq.push(['_gat._forceSSL']);
+_gaq.push(['_gat._anonymizeIp']);
+_gaq.push(['_trackPageview']);
+console.log("cookie");
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+
+        document.getElementById('cookie-notice').style.display = 'none';
+    } else {
+        if (readCookie('cookie-notice-dismissed') ==="true" && readCookie("cookie-consent")==="false"){
+            document.getElementById('cookie-notice').style.display = 'block';
+            window['ga-disable-UA-203204240-1'] = true;
+        }
+    }
+
+    document.getElementById('cookie-notice-accept').addEventListener("click",function() {
+        createCookie('cookie-notice-dismissed','true',31);
+        createCookie('cookie-consent','true',31);
+        document.getElementById('cookie-notice').style.display = 'none';
+        location.reload();
+    });
+    document.getElementById('cookie-refuse').addEventListener("click",function() {
+        createCookie('cookie-notice-dismissed','true',31);
+        createCookie('cookie-consent','false',31);
+        document.getElementById('cookie-notice').style.display = 'none';
+        document.getElementById('cookie-notice').style.display = 'block';
+        window['ga-disable-UA-203204240-1'] = true;
+        eraseCookie("_ga");
+        eraseCookie("_gat");
+        eraseCookie("_gid");
+        location.reload();
+    });
+
+</script>
+
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="/tmp/static/vendor/jquery/jquery.min.js"></script>
+    <script src="/tmp/static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Plugin JavaScript -->
+    <script src="/tmp/static/vendor/jquery-easing/jquery.easing.min.js"></script>
+    <!-- Custom scripts for this template -->
+    <script src="/tmp/static/js/agency.min.js"></script>
+
+    <script src="/tmp/static/js/clipboard.min.js"></script>
+
+    <script>
+      var btn = document.getElementById('btn-copy-clip');
+      var clipboard = new ClipboardJS(btn);
+
+      clipboard.on('success', function (e) {
+        console.info('Action:', e.action);
+        console.info('Text:', e.text);
+        console.info('Trigger:', e.trigger);
+        e.clearSelection()
+        btn.classList.toggle("copied");
+      });
+
+      clipboard.on('error', function (e) {
+        console.info('Action:', e.action);
+        console.info('Text:', e.text);
+        console.info('Trigger:', e.trigger);
+      });
+    </script>  
+
+<script src="https://github.githubassets.com/assets/environment.js"></script>
+<script src="https://github.githubassets.com/assets/behaviors.js"></script>
+<script src="https://github.githubassets.com/assets/chunk-vendor.js"></script>
+<script src="https://github.githubassets.com/assets/chunk-frameworks.js"></script>
+  </body>
+</html>
