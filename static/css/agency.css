@@ -159,6 +159,7 @@ img::-moz-selection {
   #mainNav.navbar-shrink {
     /* padding-top: 60px; */
     /* padding-bottom: 0; */
+    
     background-color: #373435;
     position: fixed;
     width: 100%;
