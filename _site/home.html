@@ -17,6 +17,14 @@
     <link href="/tmp/static/css/agency.css" rel="stylesheet">
     <link href="/tmp/static/css/dark_theme.css" rel="stylesheet">
 
+
+    <link rel="apple-touch-icon" sizes="180x180" href="/tmp/static/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/tmp/static/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/tmp/static/favicon/favicon-16x16.png">
+    <link rel="manifest" href="/tmp/static/favicon/site.webmanifest">
+    <link rel="mask-icon" href="/tmp/static/favicon/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff">
   </head>
 
   <body id="page-top">
@@ -36,7 +44,7 @@
               <a class="nav-link js-scroll-trigger" href="#generate">Generate</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link js-scroll-trigger" href="#downloadFiles">Download</a>
+              <a class="nav-link js-scroll-trigger" href="#download">Download</a>
             </li>
             <li class="nav-item">
               <a class="nav-link js-scroll-trigger" href="#team">Team</a>
@@ -75,10 +83,11 @@
         </h5>
       </div>
     </div>
+</section>
 
 
 
-
+  <div class="container-fluid">
     <div class="row">
       <div class="col-md-6 img mx-auto">
         <!-- <video autoplay muted loop width="100%"> -->
@@ -107,8 +116,9 @@
       </div>
     </div>
 
+</div>
 
-    <div class="section">
+  <div class="section">
       <div class="container-fluid">
         <div align="center">
           <h2>Our Mission</h2>
@@ -139,6 +149,12 @@
     </div>
 
     <br />
+<section class="bg-light" id="pipeline">
+  <div class="container-fluid">  
+  <div class="col-md-12 mx-auto img text-center" style="max-width: 900px;">
+      <h2>GRADE pipeline</h2>
+        <img class="img-fluid" src="/tmp/static/img/pipeline.png">
+    </div>
 
     <div class="row">
       <div class="col-md-12 img">
@@ -151,8 +167,15 @@
         <!-- </video> -->
       </div>
     </div>
+  </div>
+</section>
 
-    <div class="row" id="generate">
+<section class="bg-light" id="generate">
+  <div class="text-center"> 
+    <h2>More informations</h2>
+  </div>
+  <div class="container-fluid">
+    <div class="row">
       <div class="col-md-6">
         <h4 class="service-heading">Environments</h4>
         <p class="text-muted">
@@ -223,14 +246,14 @@
           Find more information about this <a href="">here</a>.
         </p>
       </div>
-
+    </div>
     </div>
   </div>
 </section>
 
 
 <section class="bg-light" id="carousel">
-  <div id="carousel-main" class="carousel slide col-md-6 mx-auto" data-ride="carousel">
+  <div id="carousel-main" class="carousel slide col-md-6 mx-auto container-fluid" data-ride="carousel">
     <ol class="carousel-indicators">
       <li data-target="#carousel-main" data-slide-to="0" class="active"></li>
       <li data-target="#carousel-main" data-slide-to="1"></li>
@@ -302,16 +325,16 @@
   </div>
 </section>
 
-<section class="bg-light" id="downloads">
+<section class="bg-light" id="download">
   <div class="container-fluid">
     <div class="row">
       <div class="col-md-12 text-center">
         <h2 class="section-heading text-uppercase">Download</h2>
         <h3 class="section-subheading text-muted">Dataset publicly available for research purposes will be released upon
-          acceptance</h3>
+          acceptance. With all the publicly available informations you should be able to reproduce our data. If in doubt, please reach out to me.</h3>
       </div>
     </div>
-    <div class="row">
+    <!--div class="row">
       <div class="col-md-12">
         <h4 class="section-subheading" id="downloadFiles">Download groundtruth files</h4>
         <hr />
@@ -374,7 +397,7 @@
         </p>
 
       </div>
-    </div>
+    </div-->
   </div>
 </section>
 
