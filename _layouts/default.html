@@ -15,14 +15,15 @@
 
     <!-- Custom styles for this template -->
     <link href="{{site.baseurl}}/static/css/agency.css" rel="stylesheet">
+    <link href="{{site.baseurl}}/static/css/dark_theme.css" rel="stylesheet">
 
   </head>
 
   <body id="page-top">
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
-      <div class="container">
-        <a class="navbar-brand js-scroll-trigger" href="#page-top"> <img style="width:10em;" src="{{ site.baseurl }}/static/img/logo/GRADE-RR.svg" alt="Logo"></a>
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top masthead bg-light" id="mainNav">
+      <div class="container-fluid">
+        <a class="navbar-brand js-scroll-trigger" href="#page-top"> <!--<img style="width:10em;" src="{{ site.baseurl }}/static/img/logo/GRADE-RR.svg" alt="Logo">--></a>
         <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
           <i class="fa fa-bars fa-2x" aria-hidden="true"></i>
         </button>
@@ -35,7 +36,7 @@
               <a class="nav-link js-scroll-trigger" href="#generate">Generate</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link js-scroll-trigger" href="#download">Download</a>
+              <a class="nav-link js-scroll-trigger" href="#downloadFiles">Download</a>
             </li>
             <li class="nav-item">
               <a class="nav-link js-scroll-trigger" href="#team">Team</a>
@@ -45,19 +46,11 @@
       </div>
     </nav>
 
-    <!-- Header -->
-    <header class="masthead">
-      <div class="container">
-        <div class="intro-text">
-        </div>
-      </div>
-    </header>
-
     {{content}}
 
     <!-- Footer -->
     <footer style="background-color:#373435ff;">
-      <div class="container">
+      <div class="container-fluid">
         <div class="row">
           <div class="col-md-4">
             <img alt="" style="border-width:1px;float:left;margin-right:15px;margin-bottom:0px;" src=""/>

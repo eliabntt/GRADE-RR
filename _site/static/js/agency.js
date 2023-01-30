@@ -26,14 +26,17 @@
     offset: 56
   });
 
+  var sticky = navbar.offsetTop;
+
   // Collapse Navbar
   var navbarCollapse = function() {
-    if ($("#mainNav").offset().top > 100) {
+    if (window.pageYOffset >= sticky) {
       $("#mainNav").addClass("navbar-shrink");
     } else {
       $("#mainNav").removeClass("navbar-shrink");
     }
   };
+  
   // Collapse now if page is not at top
   navbarCollapse();
   // Collapse the navbar when page is scrolled

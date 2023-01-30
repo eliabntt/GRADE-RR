@@ -15,14 +15,15 @@
 
     <!-- Custom styles for this template -->
     <link href="/tmp/static/css/agency.css" rel="stylesheet">
+    <link href="/tmp/static/css/dark_theme.css" rel="stylesheet">
 
   </head>
 
   <body id="page-top">
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
-      <div class="container">
-        <a class="navbar-brand js-scroll-trigger" href="#page-top"> <img style="width:10em;" src="/tmp/static/img/logo/GRADE-RR.svg" alt="Logo"></a>
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top masthead bg-light" id="mainNav">
+      <div class="container-fluid">
+        <a class="navbar-brand js-scroll-trigger" href="#page-top"> <!--<img style="width:10em;" src="/tmp/static/img/logo/GRADE-RR.svg" alt="Logo">--></a>
         <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
           <i class="fa fa-bars fa-2x" aria-hidden="true"></i>
         </button>
@@ -35,7 +36,7 @@
               <a class="nav-link js-scroll-trigger" href="#generate">Generate</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link js-scroll-trigger" href="#download">Download</a>
+              <a class="nav-link js-scroll-trigger" href="#downloadFiles">Download</a>
             </li>
             <li class="nav-item">
               <a class="nav-link js-scroll-trigger" href="#team">Team</a>
@@ -45,26 +46,18 @@
       </div>
     </nav>
 
-    <!-- Header -->
-    <header class="masthead">
-      <div class="container">
-        <div class="intro-text">
-        </div>
-      </div>
-    </header>
-
     <!-- About -->
 <section class="bg-light" id="about">
-  <div class="container">
-    <div class="jumbotron jumbotron-fluid">
-      <div class="container" align="center">
+  <div class="container-fluid">
+    <div class="jumbotron jumbotron-fluid" id="title-box">
+      <div class="container-fluid" align="center">
         <h2>
           GRADE-RR: Generate Realistic Animated Dynamic Environments for Robotics Research.
         </h2>
         <h4><i>Submitted to RAL</i></h4>
         <p>
           <a href="https://eliabntt.github.io/">Elia Bonetto</a><sup>1,2,*</sup>,&nbsp;
-          Chenghao Xu<sup>1</sup>,&nbsp;
+          <a href="https://kyle-xu-001.github.io/">Chenghao Xu</a><sup>1</sup>,&nbsp;
           <a href="https://aamirahmad.de/">Aamir Ahmad</a><sup>2,1</sup>,&nbsp;
           <br />
           <sup>1</sup>Max Planck Institute for Intelligent Systems&nbsp;&nbsp;
@@ -74,11 +67,11 @@
         </p>
         <h5>
           <a href="">[Paper]</a>&nbsp;
-          <a href="">[Download Data]</a>&nbsp;
-          <a href="">[Environment Generation Code]</a>&nbsp; </br>
-          <a href="">[People Generation Code]</a>&nbsp;
-          <a href="">[Data Generation Pipeline]</a>
-          <a href="">[Data Processing Code]</a>
+          <!-- <a href="">[Download Data]</a>&nbsp; TODO FIXME -->
+          <a href="https://github.com/eliabntt/BlenderProc/tree/working_branch">[Environment Generation Code]</a>&nbsp; </br>
+          <a href="https://github.com/eliabntt/generate_people">[People Generation Code]</a>&nbsp;
+          <a href="https://github.com/eliabntt/isaac_sim_manager">[Data Generation Pipeline]</a>
+          <a href="https://github.com/robot-perception-group/GRADE-eval/">[Data Processing Code]</a>
         </h5>
       </div>
     </div>
@@ -87,20 +80,23 @@
 
 
     <div class="row">
-      <div class="col-lg-12">
-        <video autoplay muted loop width="100%">
-          <source src="/tmp/static/videos/03x03_videoWall.webm" type="video/webm">
-          <source src="/tmp/static/videos/03x03_videoWall.mp4" type="video/mp4">
-          <source src="/tmp/static/videos/03x03_videoWall.mp4" type="video/mp4">
-          Sorry, we cannot display the GRADE-RR video as
-          your browser doesn't support HTML5 video.
-        </video>
+      <div class="col-md-12 img">
+        <!-- <video autoplay muted loop width="100%"> -->
+          <!-- <source src="/tmp/static/videos/03x03_videoWall.webm" type="video/webm"> -->
+          <!-- <source src="/tmp/static/videos/03x03_videoWall.mp4" type="video/mp4"> -->
+          <!-- <source src="/tmp/static/videos/03x03_videoWall.mp4" type="video/mp4"> -->
+          <!-- Sorry, we cannot display the GRADE-RR video as -->
+          <!-- your browser doesn't support HTML5 video. -->
+        <!-- </video> -->
+          <img  src="/tmp/static/img/prom.png" class="img-fluid"/>
       </div>
     </div>
 
+    <br />
+
     <div class="row">
       <div class="col-lg-12">
-        <h2 class="section-heading text-uppercase">News</h2>
+        <h2 class="section-heading text-uppercase text-center">News</h2>
         <h5 class="text-muted" style="text-align:left;">
           <ul>
             <li>Annoncing <a href="">GRADE-RR</a></li>
@@ -113,33 +109,30 @@
 
 
     <div class="section">
-
-      <div class="container_img">
-        <p align="center">
-          <img border="0" src="static/img/teaser.png" style="width: 90%" />
-        </p>
-      </div>
-      <div class="container">
+      <div class="container-fluid">
         <div align="center">
           <h2>Our Mission</h2>
         </div>
         <hr />
         <p>
-          With GRADE-RR we seek to introduce a pipeline to easily simulate robots in dynamic environments.
-          This will simplify the robotics research by a great extent by allowing easy and precise data
-          generation with groundtruth in photorealistic environments.
-          The project is based on <a href="">IsaacSim</a>, <a href="">Omniverse</a> and the open source <a
-            href="">USD</a> format.
-          Our work focuses on three main aspects: i) environments, ii) animations, and iii) simulation setup, management
-          and data generation.
-          The pipeline is completely customizable, extendable and improvable for any use-case (indoor, outdoor,
-          manipulation ...).
-          We indeed encourage the reader to introduce open source contributions to the project.
+          With GRADE-RR we introduce a pipeline to easily simulate robots in photorealistic dynamic environments.
 
-          The data generated is solely based on publicly available datasets and tools such as: <a href="">Front3D</a>,
-          <a href="">Google Scanned Objects</a>, <a href="">ShapeNet</a>, <a href="">Cloth3D</a>, <a href="">AMASS</a>,
-          <a href="">SMPL</a> and <a href="">Blenderproc</a>
-          We provide .... sequences generated by an handheld camera
+          This will simplify the robotics research by a great extent by allowing easy data generation and precise custom simulations.
+          
+          The project is based on <a href="https://developer.nvidia.com/isaac-sim">IsaacSim</a>, <a href="https://www.nvidia.com/en-us/omniverse/">Omniverse</a> and the open source <a
+            href="https://github.com/PixarAnimationStudios/USD">USD</a> format.
+          
+          Our framework is easily expandable and customizable for any use case.
+
+          Our work focuses on five main aspects: i) environments, ii) dynamic assets, iii) robot/camera setup and control, iv) simulation control, data processing and extra tools.
+          Each one of our modules can be easily removed from the pipeline, or exchanged with custom implementations.
+
+          Furthermore, using our framework we generate an indoor dynamic environment dataset, and showcase various scenarios such as heterogeneous multi-robot setup and outdoor video capturing.
+          The generated data has been used to extensive test various SLAM libraries and synthetic data usability in human detection/segmentation task with both Mask-RCNN and YOLOv5.
+          
+          The data generated is solely based on publicly available datasets and tools such as: <a href="https://tianchi.aliyun.com/specials/promotion/alibaba-3d-scene-dataset">3D-Front</a>,
+          <a href="https://research.google/resources/datasets/scanned-objects-google-research/">Google Scanned Objects</a>, <a href="https://shapenet.org/">ShapeNet</a>, <a href="https://chalearnlap.cvc.uab.cat/dataset/38/description/">Cloth3D</a>, <a href="https://amass.is.tue.mpg.de/">AMASS</a>,
+          <a href="https://smpl.is.tue.mpg.de/">SMPL</a> and <a href="https://github.com/DLR-RM/BlenderProc/">BlenderProc</a>.
         </p>
       </div>
 
@@ -148,6 +141,18 @@
     <br />
 
     <div class="row">
+      <div class="col-md-12 img">
+        <!-- <video autoplay muted loop width="100%"> -->
+          <!-- <source src="/tmp/static/videos/03x03_videoWall.webm" type="video/webm"> -->
+          <!-- <source src="/tmp/static/videos/03x03_videoWall.mp4" type="video/mp4"> -->
+          <!-- <source src="/tmp/static/videos/03x03_videoWall.mp4" type="video/mp4"> -->
+          <!-- Sorry, we cannot display the GRADE-RR video as -->
+          <!-- your browser doesn't support HTML5 video. -->
+        <!-- </video> -->
+      </div>
+    </div>
+
+    <div class="row" id="generate">
       <div class="col-md-6">
         <h4 class="service-heading">Environments</h4>
         <p class="text-muted">
@@ -155,70 +160,66 @@
           quality of our simulated environments.
           This will enable research based on simulations that are more coherent with the real world that the robot will
           sense when deployed, closing the sim-to-real gap.
-          Using Omniverse's <a href="">connectors</a> you can convert almost any environment to the USD format. This can
+          Using Omniverse's <a href="https://docs.omniverse.nvidia.com/con_connect/con_connect/overview.html">connectors</a> you can convert almost any environment to the USD format. This can
           then be imported directly in IsaacSim.
-          Our <a href="">conversion tool</a>, based on BlenderProc, focuses on the Front3D dataset, the biggest
+          Our <a href="https://github.com/eliabntt/BlenderProc/tree/working_branch">conversion tool</a>, based on BlenderProc, focuses on the 3D-Front dataset, the biggest
           available semantically-annotated indoor dataset with actual 3D meshes.
-          However, as we show <a href="">here</a> we can easily import environments from other applications such as
-          UnrealEngine.
-          Find more information about this <a href="">here</a>.
+          However, as we show in our work we can easily import environments from other applications such as UnrealEngine, or download environments from popular marketplaces such as <a href="https://sketchfab.com/feed">SketchFab</a>.
+          Find more information on how you can easily convert an environment <a href="">here</a>.
         </p>
       </div>
       <div class="col-md-6">
-        <h4 class="service-heading">Animations</h4>
+        <h4 class="service-heading">Dynamic assets</h4>
         <p class="text-muted">
           Most of the robotics research is being carried out in <b>static</b> environments. This mainly because animated
           assets are difficult to simulate, place and manage.
-          <!--Moreover, most computer-vision-based datasets focusing on animated humans are generated without taking into account roboticists' needs or lack some degree
-          of realism.-->
           In our work, we focused mainly on animated clothed humans by converting and placing inside our environments <a
-            href="">Cloth3D</a> animated assets.
-          To do so, we implemented a simple to use <a href="">tool</a> that allows a streamlined conversion between SMPL
-          mesh and clothes animation to the USD format.
-          The animations are then placed in the simulation with an easy to understand technique.
-          However, the dynamic in the scene is not only humans but there can be objects and animals. To showcase
-          usability, and the power of the simulation environment,
-          we also generate sequences with flying objects taken from Google Scanned Objects and ScanNet, and a Zebra open
-          source animated asset.
-          Find more information about this <a href="">here</a>.
+            href="https://chalearnlap.cvc.uab.cat/dataset/38/description/">Cloth3D</a> and <a href="https://amass.is.tue.mpg.de/">AMASS</a> animated assets.
+          To do so, we implemented a simple to use <a href="https://github.com/eliabntt/generate_people">tool</a> that allows a streamlined conversion between SMPL
+          mesh and clothes animation to the USD format. The tool is expandable to different body models (e.g. SMPL-X) or different data sources.
+
+          The animations are then placed in the simulation with an easy to understand technique which can be easily exchanged with custom implementations.
+          
+          However, dynamic assets are not only humans but there can be also objects or animals. Luckly, you can easily simulate those tools.
+          Indeed, <a href="">here</a> we show how you can use our method to generate sequences with flying objects or <a href="">here</a> with animated Zebras.
         </p>
       </div>
     </div>
     <div class="row">
-      <!-- udated column -->
       <div class="col-md-6">
-        <h4 class="service-heading">Simulation control and data generation</h4>
+        <h4 class="service-heading">Robot/camera setup and control</h4>
         <p class="text-muted">
-          The core of the project is the simulation setup, control and the data generation pipeline.
-          Here, we seek to simplify the learning curve that exists once one approaches IsaacSim.
-          This includes loading the environment, placing and control the robot, placing the animations, animate static
-          flying objects,
-          ROS integration (not mandatory), data logging and saving, semantic annotation, and fine simulation control in
-          time, physics and rendering.
-          The pipeline is fully customizable, e.g. by removing ROS, control the robot/camera without external software,
-          adding noise etc.
-          Based on the complexity of the environment and the on the number of lights performances can reach realtime
-          processing (>30fps) with RTX rendering settings.
-          Data can be saved both by using <code>rosbag</code> or the common <code>npy</code> files.
-          Find more information about this <a href="">here</a>.
+          Any robot can be imported in the simulation. 
+          You can control the robot in various ways with or without ROS. Non-physics enabled possibilities include control through teleporting and as a flying object.
+          Physics-enabled ones include software in the loop, joint-based waypoints, pre-developed controllers (e.g. standard vehicles) and directly through joint commands.
+          Indeed, since Isaac Sim does not provide fluid-dynamic simulation and frictionless perpendicular movement, we developed a custom
+          virtual <a href="https://github.com/eliabntt/custom_6dof_joint_controller">6DOF joint controller</a> that works both with position and velocity setpoints. This allowed us to control both a drone and a 3-wheeled omnidirectional robot.
+          
+          Robot's sensors can be created at run-time, and dynamically changed, or pre-configured directly in the USD file.
+
+          Data publishing can be controlled manually, therefore each sensor can have a custom publishing and failure rate.
+
+          Since the simulator is ROS-enabled any sensor can be published manually with added noise and any custom topic can be added or listened.
+
+          Check out how you can <a href="">control</a> and <a href="">setup</a> any robot.
         </p>
       </div>
 
       <div class="col-md-6">
-        <h4 class="service-heading">Data processing and evaluation</h4>
+        <h4 class="service-heading">Simulation control, data processing and extras</h4>
         <p class="text-muted">
-          By default, the generated data is produced as groundtruth. This means that you can have groundtruth
-          information about RGB, depth, semantics, bounding-boxes,
-          instances, motion-vector (optical flow), and asset skeleton/vertices positions.
-          However, realistic data is noisy. That is why we implemented a set of <a href="">tools</a> to post-process the
-          data to add noise and fix some known issues of the simulation.
-          Moreover, by design, noise can be added at simulation time by including the class directly into the simulation
-          environment or by using the latest Isaac release.
-          Furthermore, to evaluate the usability of the pipeline and of the generated data we performed extensive
-          testing with various SLAM libraries, including increasing human detection capabilities of
-          both Mask-RCNN and YOLOv5 on real world datasets.
-          Finally, we developed a tool to replay any experiment in such a way one can generate data with newly
-          added/modified sensors and different environment settings.
+          The simulation control include loading the environment, placing and control the robot, placing the animations, animate objects,
+          integrate ROS, assets/materials/lights randomization, dynamically set simulation settings, and data saving.
+          The pipeline is fully customizable, e.g. with new placement strategies, by using or not ROS, have software in the loop,
+          add noise to data etc.
+          Based on the complexity of the environment and the on the number of lights performances can reach realtime
+          processing (>30fps) with RTX rendering settings.
+          Find more information about this <a href="">here</a>.
+          Generated information includes RGB, depth, semantics, 2D-3D bounding-boxes,
+          semantic instances, motion-vector (optical flow), and asset skeleton/vertices positions.
+          We implemented a set of <a href="">tools</a> to post-process the data to add noise and fix some known issues of the simulation.
+          <a href="">Data visualization</a> and <a href="">semantic mapping</a> tools are already available.
+          Finally, we developed a way to replay any experiment in such a way one can generate data with newly added/modified sensors and different environment settings.
           Find more information about this <a href="">here</a>.
         </p>
       </div>
@@ -228,7 +229,7 @@
 </section>
 
 <section class="bg-light" id="known_issues">
-  <div class="container">
+  <div class="container-fluid">
     <div class="row">
       <div class="col-md-12 text-center">
         <h4>Known Issues</h4>
@@ -249,7 +250,7 @@
 </section>
 
 <section class="bg-light" id="downloads">
-  <div class="container">
+  <div class="container-fluid">
     <div class="row">
       <div class="col-md-12 text-center">
         <h2 class="section-heading text-uppercase">Download</h2>
@@ -325,7 +326,7 @@
 </section>
 
 <section>
-  <div class="container">
+  <div class="container-fluid">
     <div class="row">
       <div class="col-md-12 text-center">
         <h2 class="section-heading text-uppercase">Publications</h2>
@@ -373,33 +374,41 @@
 
 </section>
 
-<section>
-  <div class="row">
-    <div class="col-md-12 text-center">
-      <h4 class="section-subheading">Disclaimer </h4>
-      <p>GRADE-RR was collected as a tool for research in robotics. The dataset may
-        have unintended biases (including those of a societal, gender or racial nature).</p>
+
+<section class="bg-light" id="known_issues">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-12 text-center">
+        <h4>Disclaimer</h4>
+      </div>
+      <div class="col-md-12">
+        <p class="text-muted">
+          GRADE-RR was collected as a tool for research in robotics. The dataset may
+        have unintended biases (including those of a societal, gender or racial nature).
+        </p>
+      </div>
     </div>
-  </div>
 
-  <div class="row">
-    <div class="col-md-12 text-center">
-      <h4 class="section-subheading">Copyright <img alt=""
-          style="border-width:1px;float:left;margin-right:15px;margin-bottom:0px;" src="" /></h4>
-      <p>
+    <div class="row">
+      <div class="col-md-12 text-center">
+        <h4>Copyright</h4>
+      </div>
+      <div class="col-md-12">
+        <p class="text-muted">
         All datasets and benchmarks on this page are copyright by us and published under the <a rel="license" href="">
-      </p>
-
-      <p>For commercial licenses of GRADE-RR and any of its annotations, email us at <a href=""></a></p>
+        </p>
+        <p>For commercial licenses of GRADE-RR and any of its annotations, email us at <a href=""></a></p>
+      </div>
     </div>
   </div>
 </section>
 
+
 <!-- Team -->
 <section class="bg-light" id="team">
-  <div class="container">
+  <div class="container-fluid">
     <div class="row">
-      <div class="col-lg-12">
+      <div class="col-lg-12 text-center">
         <h2 class="section-heading text-uppercase">The Team</h2>
         <div class="text-muted">
         </div>
@@ -408,20 +417,42 @@
 
 
     <div class="row">
-      <div class="col-md-6">
+      <div class="col-md-4">
         <div class="team-member">
-          <a href="http://eliabntt.github.io">
+          <a href="https://eliabntt.github.io">
             <img class="mx-auto rounded-circle" src="/tmp/static/img/profile/eb.jpg" />
 
             <h4>Elia Bonetto</h4>
           </a>
           <h5>Principal Investigator</h5>
           <h6 class="text-muted">Max Planck Institute for Intelligent Systems, Germany</h6>
+          <h6 class="text-muted">Institute of Flight Mechanics and Controls, University of Stuttgart, Germany</h6>
+          <h6 class="text-muted">University of Tübingen, Germany</h6>
         </div>
       </div>
 
-    </div>
+      <div class="col-md-4">
+        <div class="team-member">
+            <a href="https://kyle-xu-001.github.io/">
+            <img class="mx-auto rounded-circle" src="/tmp/static/img/profile/cx.jpg" />
+            <h4>Chenghao Xu</h4>
+            </a>
+          <h6 class="text-muted">Max Planck Institute for Intelligent Systems, Germany</h6>
+        </div>
+      </div>
 
+    <div class="col-md-4">
+      <div class="team-member">
+        <a href="https://aamirahmad.de">
+          <img class="mx-auto rounded-circle" src="/tmp/static/img/profile/aa.jpeg" />
+
+          <h4>Aamir Ahmad</h4>
+        </a>
+        <h6 class="text-muted">Institute of Flight Mechanics and Controls, University of Stuttgart, Germany</h6>
+        <h6 class="text-muted">Max Planck Institute for Intelligent Systems, Germany</h6>
+      </div>
+    </div>
+  </div>
 
 </section>
 
@@ -477,7 +508,7 @@
 
     <!-- Footer -->
     <footer style="background-color:#373435ff;">
-      <div class="container">
+      <div class="container-fluid">
         <div class="row">
           <div class="col-md-4">
             <img alt="" style="border-width:1px;float:left;margin-right:15px;margin-bottom:0px;" src=""/>

@@ -1,6 +1,7 @@
 body {
   overflow-x: hidden;
   font-family: 'Roboto Slab', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  padding-top: 5%;
 }
 
 p {
@@ -98,17 +99,17 @@ img::-moz-selection {
 }
 
 #mainNav {
-  background-color: #373435;
+  background-color: #343a40;
 }
 
 #mainNav .navbar-toggler {
-  font-size: 12px;
+  font-size: 8px;
   right: 0;
-  padding: 13px;
+  padding: 10px;
   text-transform: uppercase;
   color: white;
   border: 0;
-  background-color: rgb(55,52,53);
+  background-color: rgb(52,58,64);
   font-family: 'Montserrat', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
@@ -123,11 +124,12 @@ img::-moz-selection {
 
 #mainNav .navbar-nav .nav-item .nav-link {
   font-size: 90%;
-  font-weight: 400;
+  font-weight: 600;
   padding: 0.75em 0;
   letter-spacing: 1px;
   color: white;
   font-family: 'Montserrat', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  background-color: rgba(52, 58, 64,0.5);
 }
 
 #mainNav .navbar-nav .nav-item .nav-link.active, #mainNav .navbar-nav .nav-item .nav-link:hover {
@@ -155,27 +157,30 @@ img::-moz-selection {
     padding: 1.1em 1em !important;
   }
   #mainNav.navbar-shrink {
-    padding-top: 0;
-    padding-bottom: 0;
+    padding-top: 60px;
+    /* padding-bottom: 0; */
     background-color: #373435;
+    position: fixed;
+    width: 100%;
+    top: 0;
   }
   #mainNav.navbar-shrink .navbar-brand {
     font-size: 1.25em;
-    padding: 12px 0;
+    /* padding: 12px 0; */
   }
 }
 
-header.masthead {
+.masthead {
   text-align: center;
-  color: white;
-  background-image: url("../img/frame_00002-scaled.jpg");
+  color: black;
+  background-image: url("../img/title_bar.png");
   background-repeat: no-repeat;
   background-attachment: scroll;
-  background-position: center center;
+  background-position: top center;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
-  background-size: cover;
+  background-size: 100% auto;
 }
 
 header.masthead .intro-text {
