@@ -157,7 +157,7 @@ img::-moz-selection {
     padding: 1.1em 1em !important;
   }
   #mainNav.navbar-shrink {
-    padding-top: 60px;
+    /* padding-top: 60px; */
     /* padding-bottom: 0; */
     background-color: #373435;
     position: fixed;
@@ -166,14 +166,13 @@ img::-moz-selection {
   }
   #mainNav.navbar-shrink .navbar-brand {
     font-size: 1.25em;
-    /* padding: 12px 0; */
+    padding: 12px 0;
   }
 }
 
 .masthead {
   text-align: center;
   color: black;
-  background-image: url("../img/title_bar.png");
   background-repeat: no-repeat;
   background-attachment: scroll;
   background-position: top center;
