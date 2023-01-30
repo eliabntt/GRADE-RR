@@ -1,0 +1,36 @@
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: #343a40!important;
+        color: white;
+        background: #343a40!important;
+    }
+
+    [class*="bg-light"] {
+        color: white!important;
+        background-color: #343a40!important;
+    }
+    td {
+        color: white;
+    }
+    tr {
+        color: white;
+    }
+
+    footer {
+        background-color: black!important;
+        color: white!important;
+    }
+
+    pre {
+        color: white;
+    }
+
+    #title-box {
+        color: white;
+        background: #121212!important;
+    }
+
+    .text-muted {
+        color: #808080!important;
+    }
+}
