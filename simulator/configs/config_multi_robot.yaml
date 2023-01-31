@@ -1,0 +1,78 @@
+# GENERAL NOTE the paths need to be ABSOLUTE!
+env_path: "/media/ebonetto/WindowsData/Demo_GRADE"
+use_stl: True # this disable stl loading thus placement AND robot heading
+human_path: "/ps/project/irotate/cloth3d/exported_usd/"
+base_env_path: "/home/ebonetto/.local/share/ov/pkg/isaac_sim-2021.2.1/isaac_sim_manager/usds/empty.usd"
+clean_base_env: False
+only_placement: False
+viewport_save_ratio: 2
+robot_mesh_path: ["/home/ebonetto/.local/share/ov/pkg/isaac_sim-2021.2.1/isaac_sim_manager/meshes/robotino.dae",
+"/home/ebonetto/.local/share/ov/pkg/isaac_sim-2021.2.1/isaac_sim_manager/meshes/drone.dae","/home/ebonetto/.local/share/ov/pkg/isaac_sim-2021.2.1/isaac_sim_manager/meshes/drone.dae"]
+base_robot_path: ["/home/ebonetto/.local/share/ov/pkg/isaac_sim-2021.2.1/multi_robot/usds/robotino.usd",
+                    "/home/ebonetto/.local/share/ov/pkg/isaac_sim-2021.2.1/isaac_sim_manager/usds/drone_paper.usd",
+                   "/home/ebonetto/.local/share/ov/pkg/isaac_sim-2021.2.1/isaac_sim_manager/usds/drone_paper.usd"]
+out_folder: "/media/ebonetto/WindowsData/exp_out2"
+out_folder_npy: "/media/ebonetto/WindowsData/exp_out2"
+#out_folder: "/home/ebonetto/exp_out"
+fps: 30
+num_robots: 3
+num_humans: 40
+max_distance_human_ground: 0.1 # max distance from human to ground to be consider to force the first frame grounding of animations
+allow_collision: 200
+experiment_length: 3600 # camera frames length
+autonomous: True # true -> FUEL, false -> random goals
+obstacles: {
+  "shapenet": 0,
+  "google": 0
+}
+physics_hz: 240 # NOTE THAT THIS IS THE RATE OF CLOCK AND IMU
+render_hz: 240 # LEAVE IT EQUAL TO PHYSICS HZ
+ratio_tf: 2 # physics_hz/ratio_tf = tf publish hz
+ratio_odom: 4 # physics_hz/ratio_odom = odom publish hz
+ratio_camera: 8 # physics_hz/ratio_cam = imgs publish hz
+bootstrap_exploration: 1 # seconds to boostrap exploration (min(abs(this_value), 1/(physics_hz/ratio_camera))
+reverse_strategy: "avg" # in [min, max, avg, half, none], works only with animated sequences
+robot_sensor_size: [ 640, 480 ]
+npy_sensor_size: [ 640, 480]
+_random_light: { "intensity": True,
+                 "color": True,
+                 "intensity_interval": [ 600, 4500 ], # [min, max], for rtx
+                 "during_experiment": False,
+                 "n-frames": 24,
+                 "smooth": False }
+_random_roughness: {
+  "enabled": True,
+  "intensity_interval": [ 0.1, 0.9 ]
+}
+env_prim_path: "/World/home"
+robot_base_prim_path: "/my_robot_"
+human_base_prim_path: "/my_human_"
+max_human_anim_len: 500 # max human anim length to be considered in frames
+min_human_anim_len: 50 # min human anim length to be loaded in frames
+_recorder_settings: {
+  "rgb": { "enabled": True },
+  "depth": { "enabled": False, "colorize": False, "npy": True },
+  "depthLinear": { "enabled": True, "colorize": False, "npy": True },
+  "instance": { "enabled": True, "colorize": False, "npy": True, "mappings": True },
+  "semantic": { "enabled": False, "colorize": False, "npy": True, "mappings": True },
+  "bbox_2d_tight": { "enabled": True, "colorize": False, "npy": True },
+  "bbox_2d_loose": { "enabled": True, "colorize": False, "npy": True },
+  "normals": { "enabled": False, "colorize": False, "npy": True },
+  "motion-vector": { "enabled": False, "colorize": True, "npy": True },
+  "bbox_3d": { "enabled": True, "colorize": False, "npy": True },
+  "camera": { "enabled": True, "colorize": True, "npy": True },
+  "poses": { "enabled": True, "colorize": True, "npy": True },
+}
+google_obj_folder: "/ps/project/irotate/google_scanned_objects"
+google_obj_shortlist: ""
+shapenet_local_dir: "/ps/project/irotate/ShapeNet"
+shapenet_username: ""
+shapenet_password: ""
+synsetId: "random"
+modelId: "random"
+is_iRotate: [True, False, False]
+# the following cannot be both true at the same time
+# if so, only the robot traj will be executed
+# if both false we assume an external source is publishing something to your robot (in our case on /my_robot_0/joint_commands)
+use_robot_traj: False # this is an absolute value. Note that the main root link and the actual position of the robot may differ based on the initial shift(which remains constant)
+use_joint_traj: False # this is a relative value w.r.t. the starting location

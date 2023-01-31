@@ -1,0 +1,36 @@
+[core]
+reloadable = true
+order = 0
+
+[package]
+# Loads models from: https://shapenet.org/
+version = "1.0.0"
+title = "Isaac Shapenet"
+category = "Isaac"
+description="An extension that allows you to load shapenet models into the scene from external python commands or an internal UI."
+readme = "omni.isaac.shapenet/python/ShapeNet Python Example.ipynb"
+authors = ["NVIDIA"]
+keywords = ["kit", "shapenet", "data"]
+changelog = "docs/CHANGELOG.md"
+preview_image = "data/preview.png"
+icon = "data/icon.png"
+writeTarget.kit = true
+
+[dependencies]
+"omni.kit.uiapp" = {}
+"omni.kit.asset_converter" = {}
+"omni.kit.commands" = {}
+"omni.kit.menu.utils" = {}
+"omni.kit.widget.settings" = {}
+"omni.physx" = {}
+"omni.isaac.pip_archive" = {} # webbot, requests
+
+[[python.module]]
+name = "omni.isaac.shapenet"
+
+[python.pipapi]
+requirements = ["webbot==0.34", "requests==2.26.0, certifi==2021.5.30"]
+use_online_index = true
+
+[[test]]
+args = ["--/exts/omni.kit.renderer.core/compatibilityMode=true"]

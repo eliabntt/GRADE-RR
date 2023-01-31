@@ -1,0 +1,6 @@
+cc_path: "" # set your cc_texture path
+front3d_path: "" # set your global 3d_fron path
+cloth3d_path: ""
+surreal_path: ""
+normpath: True
+prefix: "my-computer://"

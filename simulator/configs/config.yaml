@@ -1,0 +1,92 @@
+env_path: "3DFRONT/USD-exports"
+human_path: "cloth3d/exported_usd/"
+base_env_path: "../usds/env_base.usd"
+use_stl: True
+reload_references: False
+generate_map: True
+clean_base_env: False
+only_placement: False
+robot_mesh_path: "../meshes/drone.dae"
+base_robot_path: "../usds/drone.usd"
+out_folder: "exp_out"
+out_folder_npy: "exp_out"
+fps: 30
+num_robots: 1
+num_humans: 40 # min 5, if 0 change the main code
+max_distance_human_ground: 0.1 # max distance from human to ground to be consider to force the first frame grounding of animations
+allow_collision: 200
+anim_exp_len: 450
+experiment_length: 1800 # camera frames length
+autonomous: True # true -> FUEL, false -> random goals
+obstacles: {
+  "shapenet": 0,
+  "google": 0
+}
+physics_hz: 240 # NOTE THAT THIS IS THE RATE OF CLOCK AND IMU
+render_hz: 240 # LEAVE IT EQUAL TO PHYSICS HZ
+ratio_tf: 2 # physics_hz/ratio_tf = tf publish hz
+ratio_odom: 4 # physics_hz/ratio_odom = odom publish hz
+ratio_camera: 8 # physics_hz/ratio_cam = imgs publish hz
+bootstrap_exploration: 1 # seconds to boostrap exploration (min(abs(this_value), 1/(physics_hz/ratio_camera))
+reverse_strategy: "avg" # in [min, max, avg, half, none], works only with animated sequences
+robot_sensor_size: [ 640, 480 ]
+npy_sensor_size: [ 1920, 1080]
+_random_light: { "intensity": True,
+                 "color": True,
+                 "intensity_interval": [ 600, 4500 ], # [min, max], for rtx
+                 "during_experiment": False,
+                 "n-frames": 24,
+                 "smooth": False }
+_random_roughness: {
+  "enabled": True,
+  "intensity_interval": [ 0.1, 0.9 ]
+}
+env_prim_path: "/World/home"
+robot_base_prim_path: "/my_robot_"
+human_base_prim_path: "/my_human_"
+max_human_anim_len: 500 # max human anim length to be considered in frames
+min_human_anim_len: 50 # min human anim length to be loaded in frames
+_recorder_settings: {
+  "rgb": { "enabled": True },
+  "depth": { "enabled": False, "colorize": False, "npy": True },
+  "depthLinear": { "enabled": True, "colorize": False, "npy": True },
+  "instance": { "enabled": True, "colorize": False, "npy": True, "mappings": True },
+  "semantic": { "enabled": False, "colorize": False, "npy": True, "mappings": True },
+  "bbox_2d_tight": { "enabled": True, "colorize": False, "npy": True },
+  "bbox_2d_loose": { "enabled": True, "colorize": False, "npy": True },
+  "normals": { "enabled": True, "colorize": False, "npy": True },
+  "motion-vector": { "enabled": False, "colorize": False, "npy": False },
+  "bbox_3d": { "enabled": True, "colorize": False, "npy": True },
+  "camera": { "enabled": True, "colorize": True, "npy": True },
+  "poses": { "enabled": True, "colorize": True, "npy": True },
+}
+google_obj_folder: "google_scanned_objects"
+google_obj_shortlist: ""
+shapenet_local_dir: "ShapeNet"
+shapenet_username: ""
+shapenet_password: ""
+synsetId: "random"
+modelId: "random"
+is_iRotate: False
+# the following cannot be both true at the same time
+# if so, only the robot traj will be executed
+# if both false we assume an external source is publishing something to your robot (in our case on /my_robot_0/joint_commands)
+use_robot_traj: False # this is an absolute value. Note that the main root link and the actual position of the robot may differ based on the initial shift(which remains constant)
+use_joint_traj: False # this is a relative value w.r.t. the starting location
+robot_traj: # remember that movement will be linear and instantaneous. No acceleration or anything. This implies no odom, nor IMU data. If you want those, please add the same trajectory to a joint publisher.
+  - {pose: {x: 0, y: 0, z: 0, roll: 0, pitch: 0, yaw: 0}, time: 0}
+  - {pose: {x: -16.61, y: 4.4, z: 6.55, roll: 20, pitch: -10, yaw: 15}, time: 2}
+  - {pose: {x: -58.83, y: 11.00, z: -2.67, roll: 4, pitch: -22, yaw: 60}, time: 3}
+  - {pose: {x: 56.38, y: -55.85, z: 45.23, roll: -10, pitch: 30, yaw: 120}, time: 7}
+  - {pose: {x: -20.95, y: -37.64, z: -4.46, roll: 10, pitch: 50, yaw: 240}, time: 10}
+  - {pose: {x: 0, y: 0, z: 0, roll: 0, pitch: 0, yaw: 0}, time: 0}
+
+init_loc: {
+  "use": False,
+  "x": [26.35],
+  "y": [241.43],
+  "z": [8.57],
+  "yaw": [271],
+  "roll": [0],
+  "pitch": [0]
+}
