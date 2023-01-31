@@ -7,5 +7,3 @@
 6. train repo
 7. generate env readme
 8. check all the "developed" packages for readmes
-9. Our code.md writing
-10. tip and tricks

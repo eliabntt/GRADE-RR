@@ -117,7 +117,7 @@ Finally, in these readmes we will try to stay general. Please check out each cod
 
 ### Ways to run the simulation
 
-[Here](https://github.com/eliabntt/GRADE-RR/blob/main/SAMPLES.md) you will learn what we already tried out, what we tested, what we used to run the simulations. In there, there is also a quick plug-and-play example. [Here](https://github.com/eliabntt/GRADE-RR/blob/main/OUR_CODE.md) you can learn about our developed codebase, where you can find useful resources, and how you can edit them, file by file.
+[Here](https://github.com/eliabntt/GRADE-RR/blob/main/SAMPLES.md) you will learn what we already tried out, what we tested, what we used to run the simulations. In there, there is also a quick plug-and-play example. [Here](https://github.com/eliabntt/GRADE-RR/blob/main/OUR_CODE.md) you can learn about our developed codebase, where you can find useful resources, and how you can edit them, file by file. More informations are also located in each sub-repository of this project.
 
 ### How to postprocess the data
 
