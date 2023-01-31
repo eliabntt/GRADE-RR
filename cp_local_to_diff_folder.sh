@@ -3,13 +3,19 @@ if [ "$#" -ne 2 ]; then
     exit
 fi
 
-src_folder=$1
-dest_folder=$2
+src_folder=${1%/}
+dest_folder=${2%/}
 
-cp $src_folder/omni.isaac.synthetic_recorder/omni/isaac/synthetic_recorder/extension_custom.py $dest_folder/exts/omni.isaac.synthetic_recorder/omni/isaac/synthetic_recorder/extension_custom.py
-cp $src_folder/isaac_internals/exts/omni.isaac.synthetic_utils/omni/isaac/synthetic_utils/writers/numpy.py $dest_folder/exts/omni.isaac.synthetic_utils/omni/isaac/synthetic_utils/writers/numpy.py
-cp $src_folder/isaac_internals/exts/omni.isaac.synthetic_utils/omni/isaac/synthetic_utils/syntheticdata.py  $dest_folder/exts/omni.isaac.synthetic_utils/omni/isaac/synthetic_utils/syntheticdata.py
-cp $src_folder/isaac_internals/exts/omni.isaac.shapenet/omni/isaac/shapenet/shape.py $dest_folder/exts/omni.isaac.shapenet/omni/isaac/shapenet/shape.py
-cp $src_folder/isaac_internals/apps/* $dest_folder/apps
-cp $src_folder/setup_python_env.sh $dest_folder/setup_python_env.sh
-cp $src_folder/kill.sh $dest_folder/kill.sh
+if [ -d "$src_folder/isaac_internals" ]
+then
+    src_folder="$src_folder/isaac_internals"
+elif [ -d "$dest_folder/isaac_internals" ]
+then
+    dest_folder="$dest_folder/isaac_internals"
+fi
+
+cp $src_folder/exts/omni.isaac.synthetic_recorder/omni/isaac/synthetic_recorder/extension_custom.py $dest_folder/exts/omni.isaac.synthetic_recorder/omni/isaac/synthetic_recorder/extension_custom.py
+cp $src_folder/exts/omni.isaac.synthetic_utils/omni/isaac/synthetic_utils/writers/numpy.py $dest_folder/exts/omni.isaac.synthetic_utils/omni/isaac/synthetic_utils/writers/numpy.py
+cp $src_folder/exts/omni.isaac.synthetic_utils/omni/isaac/synthetic_utils/syntheticdata.py  $dest_folder/exts/omni.isaac.synthetic_utils/omni/isaac/synthetic_utils/syntheticdata.py
+cp $src_folder/exts/omni.isaac.shapenet/omni/isaac/shapenet/shape.py $dest_folder/exts/omni.isaac.shapenet/omni/isaac/shapenet/shape.py
+cp $src_folder/apps/* $dest_folder/apps
