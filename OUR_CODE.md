@@ -49,7 +49,7 @@ The `shapenet` and `google_scanned_objects` folders are set up at runtime for ex
 
 Various ways to create messages, add sensors, differentiate between poses (`create_diff_odom_message`), create viewports and publish stuff. Moreover, you want to use this to load your robot, set its initial joint locations and manage the trajectory. In general each component is loaded with auto publishing false and need to be automatically ticked or published. Some things like the odometry do not have a specific sensor but you can publish all the data that you want.
 
-Edit if you need new sensors, publish different data, or remove sensors. You would also like to clean the code.
+Edit if you need new sensors, publish different data, or remove sensors. You would also like to clean the code or add noise to the data directly here.
 
 ## Simulation utils
 

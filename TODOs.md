@@ -1,9 +1,8 @@
-1. Occlusion sensor data in 2022 version of the code
-2. lidar do not detect collisions. A workaround can be creating colliding meshes and move them during simulation
-3. integrate code for sensor noise directly into the simulation
+1. lidar do not detect collisions. update to v2022 and check rtx lidar
+2. integrate code for sensor noise directly into the simulation
 
-4. Animation? readme
-5. generate people readme
-6. train repo
-7. generate env readme
-8. check all the "developed" packages for readmes
+3. Animation? readme
+4. generate people readme
+5. train repo
+6. generate env readme
+7. check all the "developed" packages for readmes
