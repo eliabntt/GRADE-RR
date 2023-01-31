@@ -6,6 +6,10 @@ This repository contains the code of GRADE.
 
 GRADE is a system I developed to seamlessly manage the Isaac Sim simulation software to Generate Realistic Animated Dynamic Environments for Robotics Research
 
+
+![prom](https://user-images.githubusercontent.com/19806758/215789830-c6dfd612-0b35-4640-b3fb-b5abbe877dee.png)
+
+
 This will help you in:
 1. managing the simulation
 2. load, placem, animate assets
