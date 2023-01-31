@@ -18,7 +18,7 @@ year: 2023
 email: elia.bonetto@tuebingen.mpg.de
 description: >-
   GRADE dataset
-baseurl: "/tmpp" # the subpath of your site, e.g. /blog
+baseurl: "/tmp" # the subpath of your site, e.g. /blog
 url: "http://eliabntt.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: ""
 github_username: "eliabntt"
