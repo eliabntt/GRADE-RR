@@ -140,7 +140,7 @@ Check the tutorial [here](https://github.com/eliabntt/GRADE-RR/blob/main/EDIT_US
 
 Edited files are inside `isaac_internals`. The edited ones are the one that are copied by the `cp_local..` script. However, as per Isaac requirements, we had to include all the licenses and other files.
 
-- _Shapenet_ minor edits regarding the main script since the dowload website seem down. We suggest to pre-download the dataset, unpack it, and set-up the environment folders as we show [here]() to directly use the pre-downloaded data.
+- _Shapenet_ minor edits regarding the main script since the dowload website seem down. We suggest to pre-download the dataset, unpack it, and set-up the environment folders as we show [here](https://github.com/eliabntt/GRADE-RR/blob/main/OUR_CODE.md) to directly use the pre-downloaded data.
 - _synthetic\_recorder_ created a custom extension to save our data, and offset the number of cameras. In that way we can save high-resolution images to the disk, while providing ROS smaller images. We found this faster than resizing images afterwards and caused less "issues".
 - _synthetic\_utils_ we edited the `numpy.py` and the `syntheticdata.py` to save more data and have more flexibility. What is still missing (our bad) is the vertical fov of the camera, which is not directly exposed by Isaac Sim.
 - In `setup_python_env.sh` we had to prevent the loading of `$SCRIPT_DIR/exts/omni.isaac.motion_planning/bin` (you can find it commented at the very end of line 8), to be able to run the system version of `move_base`. That module could be necessary for some of the Isaac extensions or configurations. Please be aware of this.
@@ -186,7 +186,7 @@ _____
 ______
 ## Download data
 
-The generated data will be available upon acceptance of the paper. Some USDs are already available [here](), or you can download the benchbot environments using `scripts/download_benchbot.sh`.
+The generated data will be available upon acceptance of the paper. Some USDs are already available [here](https://keeper.mpdl.mpg.de/d/893ecd2a9a6b4c1587dc/), or you can download the benchbot environments using `scripts/download_benchbot.sh`.
 
 ______
 ## Thanks
