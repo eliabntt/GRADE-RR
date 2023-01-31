@@ -4,34 +4,31 @@
 
 This repository contains the code of GRADE.
 
-GRADE is a system I developed to seamlessly manage the Isaac Sim simulation software.
+GRADE is a system I developed to seamlessly manage the Isaac Sim simulation software to Generate Realistic Animated Dynamic Environments for Robotics Research
 
 This will help you in:
 1. managing the simulation
-2. load assets
-3. place assets
-4. animate assets
-5. load any robot
-6. control any robot/camera however you want
-7. get sensor readings from such robots, saving ground truth data
-8. customize your workflow
-9. postprocess the data
-10. repeat any experiment --- # this implies recording new sensor, getting new data, changing the conditions and repair the data
-while working in realistically looking environments and in a physics enabled simulator.
+2. load, placem, animate assets
+3. load and control any robot
+4. get sensor readings from such robots, saving ground truth data
+5. customize your workflow
+6. postprocess the data
+7. repeat any experiment --- *this includes recording new sensor, getting new data, changing the conditions and repair the data while working in realistically looking environments and in a physics enabled simulator.*
 
 Each step of the pipeline can be easily customized, expanded or removed from your workflow.
 
-If you want more information check out my [GTC talk](), the [paper]() or our [website](https://eliabntt.github.io/grade).
+If you want more information check out my [GTC talk](), the [paper]() or our [website](https://eliabntt.github.io/grade-rr).
 
 With this framework in conjuction with our [people generator](https://github.com/eliabntt/generate_people), [environment exporter](https://github.com/eliabntt/BlenderProc/tree/working_branch) and [control framework](https://github.com/eliabntt/ros_isaac_drone) (which can control any thanks to our [custom 6DOF joint controller](https://github.com/eliabntt/custom_6dof_joint_controller)), we generated a dataset.
 
-The dataset has been then postprocessed with our set of [tools](https://github.com/robot-perception-group/GRADE-eval) and evaluated against popular SLAM libraries and used to test the realism of our synthetic data.
+The dataset has been then postprocessed with our set of [tools](https://github.com/robot-perception-group/GRADE-eval), [evaluated](https://github.com/robot-perception-group/GRADE-eval) against popular SLAM libraries and used to test the realism of our synthetic data by [training Yolo and MaskRCNN](https://github.com/eliabntt/GRADE-train).
 
 In this readme I'll give the main installation instructions, and links to other resources that you should read to work with this software.
 
 The main branch (for now) contains code compatible with the 2021.2.1 version of the code. Some modifications are necessary for upgrading to the 2022 version and we are working on that.
+___________________
 
-### Requirements and basic software installation
+## Requirements and basic software installation
 
 Please check the [requirements](https://docs.omniverse.nvidia.com/app_isaacsim/app_isaacsim/requirements.html) on the official page.
 
@@ -68,11 +65,10 @@ We have some dependencies which are not installed by default. To install them ru
 
 ```bash
 ├── EDIT_USDS.md # how to convert USDs to text files and edit them
-├── HOW_IT_WORKS.md # main "HOWTO" file
+├── SAMPLES.md # how to run the samples
 ├── MOVEMENT.md # how can you control the camera/robot?
 ├── PARAMS.md # available (and expandable) parameters description
 ├── README.md # main readme
-├── STRIP_ROS.md # how can you run this without ros
 ├── cp_local_to_diff_folder.sh # update code from/to isaac folder
 ├── irotate_specific # specific files used for simulate irotate in isaac sim and instructions
 │   └── ...
@@ -106,20 +102,18 @@ Independently on where you cloned the repository you need to run
 
 This will copy the edited files from $1 (source) to the $2 (destination). You can use it in reverse (from Isaac to repo), or with any couple of folders.
 
+______________
+## Misc
+
+A general note: every script has been commented and almost each piece of code should be self-explanatory. If you don't find it like that please open an issue.
+
+Also, we welcome any contribution that you might have. Include coding style (I'm no SE), comments, additions, or better strategies that you want to propose (of course after you have published your paper).
+
+Finally, in these readmes we will try to stay general. Please check out each code piece for parameters and understand how it works. 
+
 ### Ways to run the simulation
 
-We have several showcase examples (all located in the simulator folder).
-To run the code the general process is `./python.sh python_script args`. Each one of the python files has its own configuration yaml file. We will give example launch commands for each one of these.
-
-0. `simple` this is a simple piece of code with which you can load the environment, the robot and start simulating. Find more info [here]().
-1. `paper_simulation` this is the code that we used to generate the dataset. You can find more informations [here](). This requires ROS, some other package to manage the autonomous exploration. This will show you how to control your ROS modules from Isaac, how you can tick components, how you can trigger other modules, how you can save data, how you can load objects and humans. Note that this is a quite complex file (which should be probably re-written).
-2. `simulator_ros` a simpler version of 1. Check it [here](). This is practically the same thing, without the tie to FUEL and other software. Some other option is included.  
-3. `irotate_simulation` this is the code that we used to simulate [iRotate](https://github.com/eliabntt/irotate_active_slam), our active SLAM method, with Isaac Sim. You can find more informations [here](). This is very similar to 1 and 2, despite using an initial location but shwos how you can manage different robot with practically the same code. 
-3. `multi_robot_sim` simulate multi robots, a bit hardcoded but generalizable. You can find more info [here](). This simulate two drones and a ground robot. The two drones will be controlled independently with two FUEL sessions, while the ground robot is controlled with iRotate.
-4. `savana_simulation` to show how we created the Savana with the Zebras. You can find more info [here](). Animated animals are pre-positioned within the environment. The robot is controlled through joint waypoints.
-5. `replay_experiment` how one can exactly replay the experiment to expand it. Get more info [here](). You can see how teleport works, how internal joint commands can work and how you can reload a USD file of an experiment, its configuration, and while modifying the robot or the environment, replay it.
-
-Each simulation file will power up the environment, load the assets and manage the saving based on the loaded configuration file.
+[Here](https://github.com/eliabntt/GRADE-RR/blob/main/SAMPLES.md) you will learn what we already tried out, what we tested, what we used to run the simulations. In there, there is also a quick plug-and-play example. [Here](https://github.com/eliabntt/GRADE-RR/blob/main/OUR_CODE.md) you can learn about our developed codebase, where you can find useful resources, and how you can edit them, file by file.
 
 ### How to postprocess the data
 
@@ -132,9 +126,13 @@ Check our code [here](https://github.com/eliabntt/GRADE-RR/blob/main/scripts/col
 
 ### How to get skeletal, vertices, and SMPL information while correcting bounding boxes
 
-Look [here](https://github.com/eliabntt/GRADE-RR/blob/main/scripts/smpl_and_bbox.py). This is mainly tuned for our data. However, it can be easily expanded to your own dataset.
+Look [here](https://github.com/eliabntt/GRADE-RR/blob/main/simulator/smpl_and_bbox.py). This is mainly tuned for our data. However, it can be easily expanded to your own dataset.
 
-### What did we edit
+### How to edit directly USD files
+
+Check the tutorial [here](https://github.com/eliabntt/GRADE-RR/blob/main/EDIT_USDS.md). This will help you convert USD to txt files for easy file processing.
+
+### Isaac's edited files
 
 Edited files are inside `isaac_internals`. The edited ones are the one that are copied by the `cp_local..` script. However, as per Isaac requirements, we had to include all the licenses and other files.
 
@@ -143,82 +141,29 @@ Edited files are inside `isaac_internals`. The edited ones are the one that are 
 - _synthetic\_utils_ we edited the `numpy.py` and the `syntheticdata.py` to save more data and have more flexibility. What is still missing (our bad) is the vertical fov of the camera, which is not directly exposed by Isaac Sim.
 - In `setup_python_env.sh` we had to prevent the loading of `$SCRIPT_DIR/exts/omni.isaac.motion_planning/bin` (you can find it commented at the very end of line 8), to be able to run the system version of `move_base`. That module could be necessary for some of the Isaac extensions or configurations. Please be aware of this.
 
-#### ROS-packages \[if desired\]
+### How to move/control the camera/robot
 
-Install ROS and create a `catkin_ws` and install [this](https://github.com/eliabntt/ros_isaac_drone).
+You have several possibilities with and without ROS, with and without physics. Check them out [here](https://github.com/eliabntt/GRADE-RR/blob/main/MOVEMENT.md)
 
-The default location for this installation is `$HOME` (`/home/user/catkin_ws`).
+### Additionally developed-edited packages related to the project
 
-The repo above will install 
-1. `FUEL`, our chosen exploration manager
+1. `FUEL`, our chosen autonomous exploration manager to control the drone within the environment
 2. `mav_comm` and `mav_control_rw` which are used to control the robot and get velocity commands to follow the path generated by `FUEL`
-3. `custom_6dof_joint_controller` which is the bridge between the position/velocity commands and the joint velocities expected by IsaacSim
-4. `moveit_based_collision_checker_and_placement` which is needed to do the placement of the "objects"
+3. `custom_6dof_joint_controller` which is the bridge between the position/velocity commands and the joint velocities expected by IsaacSim. This will allow you to control any robot within the simulation environment
+4. `moveit_based_collision_checker_and_placement` our Move-it based placement strategy.
+5. `generate_people` used to convert SMPL animated sequences in USD files
+6. `FRONT_3D_exporter` used to convert FRONT-3D to USD files. Based on BlenderProc.
+7. A comprehensive `catkin_ws` with 1,2,3,4 together [here](https://github.com/eliabntt/ros_isaac_drone/)
+8. Instructions on how to train YOLOv5 and MaskRCNN to reproduce papers results [here]()
 
-The [README](https://github.com/eliabntt/ros_isaac_drone/blob/main/README.md) already explicate the dependencies.
-
-If you install it in a different location _update `setup_python_env.sh:2`_ with your new location.
-
-Remember that you can also `source ... --extend` to source different environments in cascade.
-
-### ROS-independence
-
-The main things dependent on ROS are:
-1. The placement procedure (look for `position_object`, you can override/edit it how you like)
-2. The ROS components attached to the robot/camera. Depending on which level of independence you want you might disable everything or keep the joint and tf publishers. Note that every viewport is a burden on the system. Also, every time you publish camera data through ROS there is some overhead.
-
-### Movement strategies
-
-You have several possibilities. 
-
-With ROS:
-1. Use a 6 joints mechanism as we do. Implement your own and loop it back through ROS as we have done with `FUEL`. You can edit the `custom_joint_6dof_controller` or directly publish `joint_commands`. This is doable even directly within the main simulation loop as it is setted up to already be a node. You can manage this from the main simulation loop (as in `paper_simulation`) or from another program as we do with `iRotate`
-2. Use an embedded controller provided by IssacSim and publish `cmd_vel` or `moveit` commands dependending on your use case.
-3. Launch a python script through the Isaac `python.sh` and use ROS and `joint_commands` to read the robot location (listen to the `joint_states` or odom topics) and follow your path.
-
-Without ROS:
-1. Move the robot by sending joint position/velocity commands directly from IsaacSim. An example of this has been implemented on the `Savana` branch. This will output physics and will abide the settings that you use for your joints (mass, force...). 
-2. Use a strategy like the one we use for the [flying objects](https://github.com/eliabntt/isaac_sim_manager/blob/main/simulator/objects_utils.py#L166). However, this does NOT include physics, collision or anything similar whatsoever. In this case the trajectory is followed blindly and interpolated based on your settings.
-3. Use the IsaacSim KeyFrame extension visually to manually set up 2. beforehand.
-
-## How to run
-
-At this point, from the ISAAC folder you can run 
-```
-./python.sh simulator/simulator_ros.py [--/renderer/enabled='rtx,iray'] --neverending=True --rtx_mode=True --record=False  --config="/GLOBAL/simulator/config.yaml" 
-```
-
-`python.sh` will load all the necessary packages
-`simulator/simulator_ros.py` is the path of the main python.
-`--/renderer/enabled='rtx,iray'` makes sure that `iray` is enabled. You can safely remove this.
-
-All the parameters are optional with the exception of the config file.
-If you remove something from the config file please be sure that is not used in the code. Otherwise, it will crash. 
-
-You can see a detailed explanation of the parameters and of the config file [here](https://github.com/eliabntt/isaac_sim_manager/blob/main/PARAMS.md).
-
-*BASH PROCESSING*
-If you want to run everything (including the exploration visualization and the rosbag recorder) the `bash_process.zsh` file is what you are looking for.
-That file is what we used to streamline the generation and process in batches. In the config file you can easily chose which sensor to use.
-Be aware that `motion-vector` is NOT working (IsaacSim bug) and that enabling everything will save a _lot_ of data.
-
-
-## How to anonymize? How to convert USD binary to TEXT? How to change paths _before_ loading the `usd` file?
-
-Install `USD` package from [here](https://github.com/PixarAnimationStudios/USD/).
-Then take the saved usd and do:
-`mv original.usd original.usdc`
-`usdcat -o original_text.usda original.usdc`
-Then you can process `original_text.usda` with a text editor/python script/whatever you like.
-
-## Possible missing textures/wrong paths
+### Possible missing textures/wrong paths
 
 When loading humans or environments (or anything else) it might happen that you need to edit the paths of the shaders, especially when moving between Windows and Linux.
-To do that you can use the `change_shader_path` (line: 56, `utils.py`) or the `correct_paths` (line: 111, `utils.py`). <!---### TODO put links--->
+To do that you can use the `change_shader_path` (line: 59, `misc_utils.py`) or the `correct_paths` (line: 123, `misc_utils.py`).
 Please note that you need to tailor this to your own use case.
 The `correct_paths` function is already commented in `human_utils` when loading the human and in `environment_utils` when loading the env. 
 
-Otherwise, you can simply process the text files as explained above and load the new ones.
+Otherwise, you can simply process the text files as explained [here](https://github.com/eliabntt/GRADE-RR/blob/main/EDIT_USDS.md).
 
 ### Code explanation
 Most of the functions in the utils libraries are commented and explained. If something is unclear feel free to open an issue.
@@ -226,3 +171,21 @@ Most of the functions in the utils libraries are commented and explained. If som
 ### Segmentation <-> instance
 
 Instance segmentation files will save also the mappings between classes. An example on how to do the mapping and process those file is [here](https://github.com/robot-perception-group/GRADE-eval/blob/main/mapping_and_visualization/convert_classes.py).
+
+_____
+## Known issues
+1. ros clock might have some delay in publishing. This implies that you need to sleep the simulation every time that component gets triggered. Other component behave consistently based on our tests. Alternatively, you can post-process the data as shown in [here](https://github.com/robot-perception-group/GRADE-eval)
+2. BBOX3D are wrong for moving objects. The script in `scripts/smpl_and_bbox.py` will solve this.
+3. Collisions for dynamic objects are wrong most of the times. This implies that LiDAR (and LRF) will get wrong data when running. This should be addressed by the new LiDAR-RTX of the new Isaac Sim version.
+4. The rendering is not blocking. Multiple calls (especially for path tracing) are necessary. However, this usually disrupt the motion-vector data and motion-blur. A possible workaround is [here](https://github.com/eliabntt/GRADE-RR/blob/main/simulator/replay_experiment.py) on our replay-experiment script.
+
+______
+## Download data
+
+The generated data will be available upon acceptance of the paper. Some USDs are already available [here](), or you can download the benchbot environments using `scripts/download_benchbot.sh`.
+
+______
+## Thanks
+
+I would like to thank the amazing [NVIDIA support](http://forums.developer.nvidia.com) for their quick response times and precise answers.
+[Chenghao Xu](http://kyle-xu-001.github.io/) for helping in testing and refining the evaluation scripts. [Aamir Ahmad](aamirahmad.de) for his supervision.

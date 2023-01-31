@@ -1,1 +1,0 @@
-# HOW TO CONFIG IT

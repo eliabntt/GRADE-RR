@@ -5,7 +5,6 @@ human_path: "/ps/project/irotate/cloth3d/exported_usd/"
 base_env_path: "/home/ebonetto/.local/share/ov/pkg/isaac_sim-2021.2.1/isaac_sim_manager/usds/empty.usd"
 clean_base_env: False
 only_placement: False
-viewport_save_ratio: 2
 robot_mesh_path: ["/home/ebonetto/.local/share/ov/pkg/isaac_sim-2021.2.1/isaac_sim_manager/meshes/robotino.dae",
 "/home/ebonetto/.local/share/ov/pkg/isaac_sim-2021.2.1/isaac_sim_manager/meshes/drone.dae","/home/ebonetto/.local/share/ov/pkg/isaac_sim-2021.2.1/isaac_sim_manager/meshes/drone.dae"]
 base_robot_path: ["/home/ebonetto/.local/share/ov/pkg/isaac_sim-2021.2.1/multi_robot/usds/robotino.usd",
@@ -71,8 +70,3 @@ shapenet_password: ""
 synsetId: "random"
 modelId: "random"
 is_iRotate: [True, False, False]
-# the following cannot be both true at the same time
-# if so, only the robot traj will be executed
-# if both false we assume an external source is publishing something to your robot (in our case on /my_robot_0/joint_commands)
-use_robot_traj: False # this is an absolute value. Note that the main root link and the actual position of the robot may differ based on the initial shift(which remains constant)
-use_joint_traj: False # this is a relative value w.r.t. the starting location

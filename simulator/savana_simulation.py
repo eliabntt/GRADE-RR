@@ -43,7 +43,6 @@ try:
     from utils.misc_utils import *
     from utils.robot_utils import *
     from utils.simulation_utils import *
-    from utils.objects_utils import *
     from utils.environment_utils import *
 
 
