@@ -1,4 +1,4 @@
-# GRADE-RR or how to Generate Real Life Animated Dynamic Environments for Robotics Research
+# GRADE-RR or how to Generate Realistic Animated Dynamic Environments for Robotics Research
 ## Project developed with Isaac Sim 2021.2.1
 #### Isaac 2022 branch is being updated
 
