@@ -3,10 +3,9 @@
 3. integrate code for sensor noise directly into the simulation
 
 4. Animation? readme
-6. params readme
-7. generate people readme
-8. train repo
-9. generate env readme
-10. check all the "developed" packages for readmes
-11. Our code.md writing
-12. tip and tricks
+5. generate people readme
+6. train repo
+7. generate env readme
+8. check all the "developed" packages for readmes
+9. Our code.md writing
+10. tip and tricks

@@ -77,7 +77,7 @@ class MyRecorder():
         self._num_threads = 10
         self._max_queue_size = 500
         self.verify = {}
-        self.ros_cameras = 2
+        self.ros_cameras = 0
 
     def get_default_settings(self):
         return self.sensor_settings_default
