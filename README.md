@@ -23,7 +23,7 @@ Each step of the pipeline can be easily customized, expanded or removed from you
 
 If you want more information check out my [GTC talk](), the [paper]() or our [website](https://eliabntt.github.io/grade-rr).
 
-With this framework in conjuction with our [people generator](https://github.com/eliabntt/generate_people), [environment exporter](https://github.com/eliabntt/BlenderProc/tree/working_branch) and [control framework](https://github.com/eliabntt/ros_isaac_drone) (which can control any thanks to our [custom 6DOF joint controller](https://github.com/eliabntt/custom_6dof_joint_controller)), we generated a dataset.
+With this framework in conjuction with our [people generator](https://github.com/eliabntt/human_SMPL_to_USD), [environment exporter](https://github.com/eliabntt/BlenderProc/tree/working_branch) and [control framework](https://github.com/eliabntt/ros_isaac_drone) (which can control any thanks to our [custom 6DOF joint controller](https://github.com/eliabntt/custom_6dof_joint_controller)), we generated a dataset.
 
 The dataset has been then postprocessed with our set of [tools](https://github.com/robot-perception-group/GRADE-eval), [evaluated](https://github.com/robot-perception-group/GRADE-eval) against popular SLAM libraries and used to test the realism of our synthetic data by [training Yolo and MaskRCNN](https://github.com/eliabntt/GRADE-train).
 
