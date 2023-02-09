@@ -131,7 +131,12 @@ class environment:
 		if res:
 			clear_properties(prim_path)
 			print("Correcting paths...")
-			# correct_paths(prim_path)
+			try:
+				correct_paths(prim_path)
+			except:
+				print("Failed to correct paths for {}".format(prim_path))
+				time.sleep(10)
+
 			# center the home in the middle of the environment
 			set_translate(stage.GetPrimAtPath(prim_path), list(- np.array(self.shifts) / self.meters_per_unit))
 			for child in stage.GetPrimAtPath(prim_path).GetAllChildren():

@@ -19,3 +19,4 @@ cp $src_folder/exts/omni.isaac.synthetic_utils/omni/isaac/synthetic_utils/writer
 cp $src_folder/exts/omni.isaac.synthetic_utils/omni/isaac/synthetic_utils/syntheticdata.py  $dest_folder/exts/omni.isaac.synthetic_utils/omni/isaac/synthetic_utils/syntheticdata.py
 cp $src_folder/exts/omni.isaac.shapenet/omni/isaac/shapenet/shape.py $dest_folder/exts/omni.isaac.shapenet/omni/isaac/shapenet/shape.py
 cp $src_folder/apps/* $dest_folder/apps
+cp $src_folder/setup_python_env.sh $dest_folder
