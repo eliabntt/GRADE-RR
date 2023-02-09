@@ -6,8 +6,8 @@ from utils.misc_utils import *
 
 def set_common_stage_properties(rate):
   """
-	Note: some properties as of now can only be set with the general environment USD file.
-	"""
+  Note: some properties as of now can only be set with the general environment USD file.
+  """
   _desired_render_settings: Dict[str, Union[bool, int]] = {
     "/app/asyncRendering": False,
     "/app/renderer/skipWhileMinimized": False,
@@ -36,8 +36,8 @@ def set_common_stage_properties(rate):
 
 def environment_setup():
   """
-	Enable the necessary extensions that will be used within the simulation
-	"""
+  Enable the necessary extensions that will be used within the simulation
+  """
   enable_extension("omni.isaac.ros_bridge")
   enable_extension("omni.isaac.physics_inspector")
   enable_extension("omni.isaac.physics_utilities")
@@ -108,9 +108,9 @@ def set_pathtracing_settings(physics_hz):
 
 def compute_timeline_ratio(human_anim_len, reverse_strategy, experiment_length):
   """
-	based on the reverse strategy compute how the system should roll back animations
-	This might be counter-productive in some instances
-	"""
+  based on the reverse strategy compute how the system should roll back animations
+  This might be counter-productive in some instances
+  """
   if len(human_anim_len) == 0:
     return 1
   if reverse_strategy == "avg":
@@ -129,30 +129,30 @@ def compute_timeline_ratio(human_anim_len, reverse_strategy, experiment_length):
 
 def pub_and_write_images(my_recorder, simulation_context, viewport_window_list, second_start,
                          ros_camera_list, raytracing):
-	sleeping(simulation_context, viewport_window_list, raytracing)
+  sleeping(simulation_context, viewport_window_list, raytracing)
 
-	for i, cam in enumerate(ros_camera_list):
-		omni.kit.commands.execute("RosBridgeTickComponent", path=str(cam.GetPath()))
-		print(f"Publishing camera {cam.GetPath()}...")
+  for i, cam in enumerate(ros_camera_list):
+    omni.kit.commands.execute("RosBridgeTickComponent", path=str(cam.GetPath()))
+    print(f"Publishing camera {cam.GetPath()}...")
 
-	if my_recorder._enable_record and second_start:
-		my_recorder._update()
-		print("Writing")
-	# this causes memory leak, with one viewport
-	# cam.GetRosNodePrefixAttr().Set(cam.GetRosNodePrefixAttr().Get()[:-1] + '1')
+  if my_recorder._enable_record and second_start:
+    my_recorder._update()
+    print("Writing")
+  # this causes memory leak, with one viewport
+  # cam.GetRosNodePrefixAttr().Set(cam.GetRosNodePrefixAttr().Get()[:-1] + '1')
 
 
 def sleeping(simulation_context, viewport_window_list, raytracing, totalSpp=64, spp=1):
   """
-	Sleeps the simulation to be sure that the whole frame has been rendered and updated.
-	First we render a couple of frames.
-	In rtx mode we need to wait the fps of the viewport to be reached.
-	In pathtracing mode we need to do "/rtx/pathtracing/spp" rendering steps.
+  Sleeps the simulation to be sure that the whole frame has been rendered and updated.
+  First we render a couple of frames.
+  In rtx mode we need to wait the fps of the viewport to be reached.
+  In pathtracing mode we need to do "/rtx/pathtracing/spp" rendering steps.
 
-	e.g.
-	carb.settings.get_settings().get("/rtx/pathtracing/totalSpp")
-	carb.settings.get_settings().get("/rtx/pathtracing/spp")
-	"""
+  e.g.
+  carb.settings.get_settings().get("/rtx/pathtracing/totalSpp")
+  carb.settings.get_settings().get("/rtx/pathtracing/spp")
+  """
   # todo is there a better way? I don"t think so, this is variable
   if raytracing:
     sleep_time = 0
@@ -175,25 +175,24 @@ def sleeping(simulation_context, viewport_window_list, raytracing, totalSpp=64, 
   time.sleep(0.5)
 
 
-def recorder_setup(_recorder_settings, status, out_path, enabled, ros_cameras=1):
+def recorder_setup(_recorder_settings, out_path, enabled, ros_cameras=1):
   my_recorder = extension_custom.MyRecorder()
   my_recorder.on_startup()
   my_recorder.set_single_settings(_recorder_settings)
   my_recorder._dir_name = os.path.join(out_path)
   my_recorder._enable_record = enabled
-  my_recorder._occluded = status
   my_recorder.ros_cameras = ros_cameras
   return my_recorder
 
 
 def setup_timeline(config):
   """
-	It sets up the timeline to have a start time of 0.0, an end time of the experiment length * 2, and a time code per
-	second of the fps
+  It sets up the timeline to have a start time of 0.0, an end time of the experiment length * 2, and a time code per
+  second of the fps
 
-	:param config: a dictionary of parameters that are used to configure the experiment
-	:return: timeline
-	"""
+  :param config: a dictionary of parameters that are used to configure the experiment
+  :return: timeline
+  """
   timeline = omni.timeline.get_timeline_interface()
   timeline.set_start_time(0.0)
   if "experiment_length" in config:
