@@ -57,29 +57,29 @@ def add_semantics(prim: Prim, semantic_label: str):
 
 
 def change_shader_path(shader_path: str):
-	"""
-	Changes the shader path of the material.
-	material_path: the prim path to the material collection (e.g. "/World/my_robot_0/materials, /World/home/materials")
-	"""
-	stage = omni.usd.get_context().get_stage()
-	shader = stage.GetPrimAtPath(shader_path)
-	if 'inputs:diffuse_texture' in shader.GetPropertyNames():
-		old_path = str(shader.GetAttribute('inputs:diffuse_texture').Get())
-		new_path = old_path.replace("@", "")
-		# print(f"Changing path {old_path}")
-		if "something" in old_path or "P:" in old_path:
-			new_path = old_path.replace(ntpath.sep, os.sep).replace(OLD, NEW).replace("@", "")
-		elif "somethingelse" in old_path.lower():
-			splitted = old_path.split(ntpath.sep)
-			tmp_path = ""
-			for i in splitted:
-				tmp_path += i + ntpath.sep
-				if "something" in i:
-					break
-			tmp_path = tmp_path.replace(ntpath.sep, os.sep)
-			new_path = old_path.replace(ntpath.sep, os.sep).replace(tmp_path, NEW).replace(
-				"@", "")
-		shader.GetAttribute('inputs:diffuse_texture').Set(new_path)
+    """
+    Changes the shader path of the material.
+    material_path: the prim path to the material collection (e.g. "/World/my_robot_0/materials, /World/home/materials")
+    """
+    stage = omni.usd.get_context().get_stage()
+    shader = stage.GetPrimAtPath(shader_path)
+    if 'inputs:diffuse_texture' in shader.GetPropertyNames():
+        old_path = str(shader.GetAttribute('inputs:diffuse_texture').Get())
+        new_path = old_path.replace("@", "")
+        # print(f"Changing path {old_path}")
+        if "something" in old_path or "P:" in old_path:
+            new_path = old_path.replace(ntpath.sep, os.sep).replace('P:/', '').replace("@", "")
+        elif "somethingelse" in old_path.lower():
+            splitted = old_path.split(ntpath.sep)
+            tmp_path = ""
+            for i in splitted:
+                tmp_path += i + ntpath.sep
+                if "something" in i:
+                    break
+            tmp_path = tmp_path.replace(ntpath.sep, os.sep)
+            new_path = old_path.replace(ntpath.sep, os.sep).replace(tmp_path, '').replace(
+                "@", "")
+        shader.GetAttribute('inputs:diffuse_texture').Set(new_path)
 
 
 def set_colliders(path_main_asset: str, value: bool):
