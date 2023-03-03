@@ -59,6 +59,7 @@ Mainly used for configuration settings (enalbe/disable extensions, change raytra
 You can setup the recorder as we will see shortly, give a `ros_cameras` offset (to write only a subset of viewports), and you can manually trigger it with `_update`.
 
 ## Main code tutorial (following roughly simulator_ros)
+
 First step is to start the `kit`, load the base envirornment, and setup the simulation settings.
 
 ```python
@@ -125,3 +126,5 @@ c_pose, c_angle = pub_odom(robot_odom_frames, odom_pubs, _dc, meters_per_unit)
 # rendering
 pub_and_write_images(my_recorder, simulation_context, viewport_window_list, True, ros_camera_list, config["rtx_mode"].get())
 ```
+
+`my_recorder` will take care of saving the data to npy files. You can initialize that with `my_recorder = recorder_setup(config['_recorder_settings'].get(), out_dir_npy, config['record'].get())`. You can modify the behavior of the recorder by modifying [this](https://github.com/eliabntt/GRADE-RR/blob/main/isaac_internals/exts/omni.isaac.synthetic_recorder/omni/isaac/synthetic_recorder/extension_custom.py) code. For example, we already added the possibility to skip viewports and to save additional data. 
