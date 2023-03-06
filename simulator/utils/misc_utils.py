@@ -468,7 +468,7 @@ def teleport(path, loc, rot):
   )
 
 
-def toggle_dynamic_objects(dynamic_prims: list):
+def toggle_dynamic_objects(dynamic_prims: list, status: bool):
   """
   It toggles the visibility of the dynamic objects in the scene
 

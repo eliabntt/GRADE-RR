@@ -172,7 +172,7 @@ def sleeping(simulation_context, viewport_window_list, raytracing, totalSpp=64, 
       cnt -= increase
     simulation_context.render()
     simulation_context.render()
-  time.sleep(0.5)
+  time.sleep(0.2)
 
 
 def recorder_setup(_recorder_settings, out_path, enabled, ros_cameras=1):

@@ -178,7 +178,9 @@ try:
 		id_bag += 1
 		bag_path = os.path.join(config["experiment_folder"].get(), config['bag_subpath'].get(),
 		                        f"{config['bag_basename'].get()}_{id_bag}.bag")
-
+	if len(joint_position) == 0:
+		print("No bag found")
+		sys.exit(-1)
 	ratio_tf = exp_info['config']['ratio_tf'].get()
 	init_x, init_y, init_z, init_roll, init_pitch, init_yaw = get_robot_joint_init_loc('/my_robot_0')
 	init_pos = np.array([init_x, init_y, init_z])
@@ -224,8 +226,23 @@ try:
 		my_recorder_normals._enable_record = False
 
 	if write:
-		my_recorder = recorder_setup(exp_info['config']['_recorder_settings'].get(), True, out_dir_npy, True, 0)
+		_tmp = exp_info['config']['_recorder_settings'].get()
+		_tmp["depth"]["enabled"] = False
+		_tmp["depthLinear"]["enabled"] = False
+		_tmp["semantic"]["enabled"] = False
+		_tmp["normals"]["enabled"] = False
+		_tmp["bbox_2d_loose"]["enabled"] = False
+		_tmp["bbox_2d_tight"]["enabled"] = False
+		_tmp["bbox_3d"]["enabled"] = False
+
+		my_recorder = recorder_setup(_tmp, out_dir_npy, True, 0)
 		my_recorder._enable_record = False
+
+	# how to hide dynamic content
+	dynamicprims = [stage.GetPrimAtPath(f"/my_human_{i}") for i in range(12)]
+	for prim in stage.GetPrimAtPath("/World").GetChildren()[6:]:
+		dynamicprims.append(prim)
+	toggle_dynamic_objects(dynamicprims, False)
 
 	forward = True
 	while kit.is_running():
