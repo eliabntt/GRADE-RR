@@ -311,23 +311,7 @@ try:
 
 				_dc.set_rigid_body_linear_velocity(body, vel[:3] / meters_per_unit)
 				_dc.set_rigid_body_angular_velocity(body, vel[3:])
-			# _dc.set_dof_velocity(joints[0], vel[0] / meters_per_unit)  # evaluate if this or _target
-			# _dc.set_dof_velocity_target(joints[0], vel[0] / meters_per_unit)
 
-			# _dc.set_dof_velocity_target(joints[1], vel[1] / meters_per_unit)
-			# _dc.set_dof_velocity(joints[1], vel[1])  # evaluate if this or _target
-
-			# _dc.set_dof_velocity(joints[2], vel[2] / meters_per_unit)  # evaluate if this or _target
-			# _dc.set_dof_velocity_target(joints[2], vel[2] / meters_per_unit)
-
-			# _dc.set_dof_velocity(joints[3], vel[3])  # evaluate if this or _target
-			# _dc.set_dof_velocity_target(joints[3], vel[3])
-
-			# _dc.set_dof_velocity(joints[4], vel[4])  # evaluate if this or _target
-			# _dc.set_dof_velocity_target(joints[4], vel[4])
-
-			# _dc.set_dof_velocity(joints[5], vel[5])  # evaluate if this or _target
-			# _dc.set_dof_velocity_target(joints[5], vel[5])
 				if (simulation_step % (ratio_tf * 2) == 0):
 					myp = _dc.get_rigid_body_pose(handle)
 					print(
@@ -370,9 +354,14 @@ try:
 					my_recorder_flow._counter += 1
 					time.sleep(1.5)  # this seems necessary
 					my_recorder_flow._update()
-			# pub_and_write_images(my_recorder, simulation_context, viewport_window_list, True, ros_camera_list, is_rtx)
 
+			# you have two ways to proceed here. the sleeping performs just the rendering and then you manually toggle the recorder below
+			# otherwise use pub_and_write_images which automatically calls it if necessary. In the latter case, remember to increase the counter
 			sleeping(simulation_context, viewport_window_list, is_rtx)
+			# if write:
+			# 	if my_recorder._enable_record:
+			# 		my_recorder._counter += 1
+			# pub_and_write_images(my_recorder, simulation_context, viewport_window_list, True, ros_camera_list, is_rtx)
 
 			if write:
 				if my_recorder._enable_record:
