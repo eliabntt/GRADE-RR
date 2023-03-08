@@ -200,9 +200,19 @@ If you find this work useful please cite our work as
 ```
 
 ```
+____________
 
+## LICENSE
+By downloading and/or using the Data & Software (including downloading, cloning, installing, and any other use of the corresponding github repository), you acknowledge that you have read these terms and conditions, understand them, and agree to be bound by them. If you do not agree with these terms and conditions, you must not download and/or use the Data & Software. Any infringement of the terms of this agreement will automatically terminate your rights under this License
+
+Accompanying software, such as, but not limited to, the one from Isaac Sim, is licensed according to their specific term of use.
+
+If you use data/software from other projects such as, but not limited to, TUM RGB-D, 3D-Front, 3D-Future, ... it is your responsibility to follow their licensing terms.
+
+If you have questions regarding the license, please contact the [ps-licensing@tue.mpg.de](mailto:ps-licensing@tue.mpg.de).
 ______
 ## Thanks
 
 I would like to thank the amazing [NVIDIA support](http://forums.developer.nvidia.com) for their quick response times and precise answers.
 [Chenghao Xu](http://kyle-xu-001.github.io/) for helping in testing and refining the evaluation scripts. [Aamir Ahmad](aamirahmad.de) for his supervision.
+
