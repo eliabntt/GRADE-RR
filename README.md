@@ -21,7 +21,7 @@ This will help you in:
 
 Each step of the pipeline can be easily customized, expanded or removed from your workflow.
 
-If you want more information check out my [GTC talk](), the [paper]() or our [website](https://eliabntt.github.io/grade-rr).
+If you want more information check out my [GTC talk](https://www.nvidia.com/gtc/session-catalog/?search=bonetto&tab.catalogallsessionstab=16566177511100015Kus&search=bonetto#/session/1666623015127001DShI), the [paper](https://arxiv.org/abs/2303.04466) or our [website](https://eliabntt.github.io/grade-rr).
 
 With this framework in conjuction with our [people generator](https://github.com/eliabntt/animated_human_SMPL_to_USD), [environment exporter](https://github.com/eliabntt/Front3D_to_USD) and [control framework](https://github.com/eliabntt/ros_isaac_drone) (which can control any thanks to our [custom 6DOF joint controller](https://github.com/eliabntt/custom_6dof_joint_controller)), we generated a dataset.
 
@@ -198,7 +198,16 @@ __________
 If you find this work useful please cite our work as
 
 ```
-
+@misc{https://doi.org/10.48550/arxiv.2303.04466,
+  doi = {10.48550/ARXIV.2303.04466},
+  url = {https://arxiv.org/abs/2303.04466},
+  author = {Bonetto, Elia and Xu, Chenghao and Ahmad, Aamir},
+  keywords = {Robotics (cs.RO), FOS: Computer and information sciences, FOS: Computer and information sciences},
+  title = {GRADE: Generating Realistic Animated Dynamic Environments for Robotics Research},
+  publisher = {arXiv},
+  year = {2023},
+  copyright = {arXiv.org perpetual, non-exclusive license}
+}
 ```
 ____________
 
