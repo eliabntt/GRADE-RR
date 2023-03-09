@@ -144,7 +144,7 @@ layout: default
 
           The animations are then placed in the simulation with an easy to understand technique which can be easily exchanged with custom implementations.
           Our strategy use the STL trace of the animation and the STL of the environment to check for collisions. With that, we can interatively place multiple meshes. To do so, we use MoveIt's FCL interface and a custom service that we make available <a href="https://github.com/eliabntt/moveit_based_collision_checker_and_placement">here</a>.
-          We plan to do the same with the `trimesh` library thus ditching the ROS requirement.
+          We plan to do the same with the <code>trimesh</code> library thus ditching the ROS requirement.
           
           However, dynamic assets are not only humans but there can be also objects or animals. Luckly, you can easily simulate those too.
           For example, <a href="https://github.com/eliabntt/GRADE-RR/blob/beaeddde94bccf9fcabea04db9fe68e67109828c/simulator/utils/objects_utils.py#L195">here</a> we show how you can add flying properties to objects. 
@@ -369,10 +369,10 @@ layout: default
             <li>The code to convert SMPL-based animations to USD files is <a href="https://github.com/eliabntt/animated_human_SMPL_to_USD">here</a></li>
             <li>To convert any environment from Blender to USD and generate some accompanying data use <a href="https://github.com/eliabntt/Front3D_to_USD">here</a>. This has a special focus in indoor environmets and Front3D. Based on BlenderProc.</li>
             <li>The catkin workspace repository which we use to autonomously explore the environments during the data generation is <a href="https://github.com/eliabntt/ros_isaac_drone">here</a>. Based on ROS.</li>
-            <li>The modified version of DynaSLAM working with Python3 and using `detectron2` is <a href="https://github.com/eliabntt/DynaSLAM">here</a></li>
-            <li><a href="https://github.com/eliabntt/FUEL/tree/main">Our fork of `FUEL`</a>, the chosen autonomous exploration manager to control the drone within the environment.</li>
-            <li>Our <a href="https://github.com/eliabntt/custom_6dof_joint_controller/tree/main">`custom_6dof_joint_controller`</a> which is the bridge between the position/velocity commands and the joint velocities expected by IsaacSim. This will allow you to control any robot within the simulation environment.</li>
-            <li>Our <a href="https://github.com/eliabntt/moveit_based_collision_checker_and_placement/tree/main">`moveit_based_collision_checker_and_placement`</a> our Move-it based placement strategy.</li>
+            <li>The modified version of DynaSLAM working with Python3 and using <code>detectron2</code> is <a href="https://github.com/eliabntt/DynaSLAM">here</a></li>
+            <li><a href="https://github.com/eliabntt/FUEL/tree/main">Our fork of <code>FUEL</code></a>, the chosen autonomous exploration manager to control the drone within the environment.</li>
+            <li>Our <a href="https://github.com/eliabntt/custom_6dof_joint_controller/tree/main"><code>custom_6dof_joint_controller</code></a> which is the bridge between the position/velocity commands and the joint velocities expected by IsaacSim. This will allow you to control any robot within the simulation environment.</li>
+            <li>Our <a href="https://github.com/eliabntt/moveit_based_collision_checker_and_placement/tree/main"><code>moveit_based_collision_checker_and_placement</code></a> our Move-it based placement strategy.</li>
         </h5>
       </div>
     </div>
