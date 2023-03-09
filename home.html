@@ -189,10 +189,10 @@ layout: default
 
           We implemented a set of <a href="https://github.com/robot-perception-group/GRADE_tools">tools</a> to post-process the data, extract it, add noise and fix some known issues of the simulation.
           Instructions to evaluate various SLAM framework with our or your own data can be found <a href="https://github.com/robot-perception-group/GRADE_tools/tree/main/SLAM_evaluation">here</a>.
-          We also provide scripts and procedures to <a href="https://github.com/robot-perception-group/GRADE_tools/blob/main/mapping_and_visualization/convert_classes.py">prepare</a> the data and <a href="https://github.dev/eliabntt/GRADE-nets">train</a> both YOLO and Mask R-CNN.
+          We also provide scripts and procedures to <a href="https://github.com/robot-perception-group/GRADE_tools/blob/main/training_dataset_generation/">prepare</a> the data and <a href="https://github.com/eliabntt/GRADE-nets">train</a> both YOLO and Mask R-CNN.
           However, you can directly download the images, masks and boxes we used in the paper from our <a href="https://github.com/eliabntt/GRADE_data/tree/main">data</a> repository.
 
-          <a href="https://github.com/eliabntt/GRADE-RR/blob/main/scripts/colorize.py">Data visualization</a>, <a href="https://github.com/robot-perception-group/GRADE_tools/blob/main/training_data_prep/convert_classes.py">instance-to-semantic mapping</a> tool, get <a href="https://github.com/eliabntt/GRADE-RR/blob/main/simulator/smpl_and_bbox.py">SMPL and corrected 3D bounding boxes</a>, and automatically convert and process the USD as a <a href="https://github.com/eliabntt/GRADE-RR/blob/main/EDIT_USDS.md">text file</a> are already available.
+          <a href="https://github.com/eliabntt/GRADE-RR/blob/main/scripts/colorize.py">Data visualization</a>, <a href="https://github.com/robot-perception-group/GRADE_tools/blob/main/training_dataset_generation/convert_classes.py">instance-to-semantic mapping</a> tool, get <a href="https://github.com/eliabntt/GRADE-RR/blob/main/simulator/smpl_and_bbox.py">SMPL and corrected 3D bounding boxes</a>, and automatically convert and process the USD as a <a href="https://github.com/eliabntt/GRADE-RR/blob/main/EDIT_USDS.md">text file</a> are already available.
 
           Finally, we developed a way to replay any experiment in such a way one can generate data with newly added/modified sensors and different environment settings, check the code <a href="https://github.com/eliabntt/GRADE-RR/blob/main/simulator/replay_experiment.py">here</a>.
         </p>
