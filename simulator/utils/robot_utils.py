@@ -589,8 +589,8 @@ def move_robot(name: str, pos: [], orientation: [], zlim: float, irotate=False):
 
 		pitch = np.rad2deg(pitch)
 		quat = (
-				Gf.Rotation(Gf.Vec3d.XAxis(), 0)
-				* Gf.Rotation(Gf.Vec3d.YAxis(), pitch)
+				Gf.Rotation(Gf.Vec3d.XAxis(), pitch)
+				* Gf.Rotation(Gf.Vec3d.YAxis(), 0)
 				* Gf.Rotation(Gf.Vec3d.ZAxis(), 90)
 		)
 		UsdPhysics.RevoluteJoint.Get(stage, name + '/roll_link/pitch_joint').GetLocalRot0Attr().Set(
@@ -802,3 +802,9 @@ def add_npy_viewport(viewport_window_list, robot_base_prim_path, n, old_h_ape, o
 	viewport_npy = create_viewport(f"{robot_base_prim_path}{n}/camera_link/Camera_npy", config["headless"].get(),
 	                               tot_num_ros_cam + 1 * n, config["npy_sensor_size"].get(), old_h_ape, old_v_ape)
 	viewport_window_list.append(viewport_npy)
+
+def change_joint_limit(joint: str, limit):
+	omni.kit.commands.execute('ChangeProperty',
+	                          prop_path=Sdf.Path(f'{joint}'),
+	                          value=(limit),
+	                          prev=0.0)
