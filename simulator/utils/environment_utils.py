@@ -33,9 +33,12 @@ class environment:
 		else:
 			self.env_stl_path = None
 			self.env_mesh = None
-		self.env_info = np.load(os.path.join(self.env_usd_export_folder, self.env_name, self.env_name + ".npy"),
-		                        allow_pickle=True)
-		self.env_info = self.env_info.tolist()
+		if config["use_npy"].get():
+			self.env_info = np.load(os.path.join(self.env_usd_export_folder, self.env_name, self.env_name + ".npy"),
+			                        allow_pickle=True)
+			self.env_info = self.env_info.tolist()
+		else:
+			self.env_info = [0, 0, 0, 0, 0, 0, np.array([[-1000, -1000], [-1000, 1000], [1000, 1000], [1000, -1000]])]
 		self.env_limits = self.env_info[0:6]
 
 		self.shifts = [(self.env_limits[0] + self.env_limits[3]) / 2, (self.env_limits[1] + self.env_limits[4]) / 2,
@@ -108,7 +111,7 @@ class environment:
 
 	# disable_extension('omni.isaac.occupancy_map')
 
-	def load_and_center(self, prim_path: str = "/World/home"):
+	def load_and_center(self, prim_path: str = "/World/home", correct_paths_req: bool = True):
 		"""
 		Load the environment from the usd path env_path
 		Center it wrt the world coordinate frames
@@ -131,11 +134,12 @@ class environment:
 		if res:
 			clear_properties(prim_path)
 			print("Correcting paths...")
-			try:
-				correct_paths(prim_path)
-			except:
-				print("Failed to correct paths for {}".format(prim_path))
-				time.sleep(10)
+			if correct_paths_req:
+				try:
+					correct_paths(prim_path)
+				except:
+					print("Failed to correct paths for {}".format(prim_path))
+					time.sleep(10)
 
 			# center the home in the middle of the environment
 			set_translate(stage.GetPrimAtPath(prim_path), list(- np.array(self.shifts) / self.meters_per_unit))

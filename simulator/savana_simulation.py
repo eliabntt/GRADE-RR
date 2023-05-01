@@ -54,7 +54,7 @@ try:
     rng = np.random.default_rng()
     rng_state = np.random.get_state()
 
-    local_file_prefix = "my-computer://"
+    local_file_prefix = ""
 
     # setup environment variables
     environment = environment(config, rng, local_file_prefix)
@@ -119,7 +119,7 @@ try:
 
     # use rtx while setting up!
     set_raytracing_settings(config["physics_hz"].get())
-    env_prim_path = environment.load_and_center(config["env_prim_path"].get())
+    env_prim_path = environment.load_and_center(config["env_prim_path"].get(), correct_paths_req=False)
 
     # set timeline of the experiment
     timeline = setup_timeline(config)

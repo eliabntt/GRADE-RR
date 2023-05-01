@@ -34,7 +34,7 @@ def set_common_stage_properties(rate):
     set_carb_setting(carb.settings.get_settings(), setting_key, desired_value)
 
 
-def environment_setup():
+def environment_setup(need_ros = True):
   """
   Enable the necessary extensions that will be used within the simulation
   """
@@ -63,11 +63,11 @@ def environment_setup():
   if result is False:
     carb.log_error("Could not find nucleus server with /Isaac folder, exiting")
     exit()
-
-  result, check = omni.kit.commands.execute("RosBridgeRosMasterCheck")
-  if not check:
-    carb.log_error("Please run roscore before executing this script")
-    exit()
+  if need_ros:
+    result, check = omni.kit.commands.execute("RosBridgeRosMasterCheck")
+    if not check:
+      carb.log_error("Please run roscore before executing this script")
+      exit()
 
 
 def set_raytracing_settings(physics_hz):
@@ -75,7 +75,7 @@ def set_raytracing_settings(physics_hz):
   settings = carb.settings.get_settings()
   settings.set("/app/hydraEngine/waitIdle", True)
   settings.set_string("/rtx/rendermode", "RayTracing")
-  settings.set_int('/rtx/post/aa/op', 1)
+  settings.set_int('/rtx/post/aa/op', 2)
 
 
 def set_pathtracing_settings(physics_hz):
