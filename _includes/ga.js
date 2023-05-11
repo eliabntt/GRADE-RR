@@ -1,5 +1,5 @@
 var _gaq = _gaq || [];
-_gaq.push(['_setAccount', 'UA-70348270-1']);
+_gaq.push(['_setAccount', 'G-RYLD885H00']);
 _gaq.push(['_gat._forceSSL']);
 _gaq.push(['_gat._anonymizeIp']);
 _gaq.push(['_trackPageview']);
