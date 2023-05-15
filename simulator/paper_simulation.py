@@ -228,14 +228,14 @@ try:
 	                                       stage_units_in_meters=0.01)
 	simulation_context.start_simulation()
 
-    _clock_graph = add_clock()  # add ROS clock
+	_clock_graph = add_clock()  # add ROS clock
 
-    simulation_context.play()
-    for _ in range(10):
-        simulation_context.step()
-        og.Controller.evaluate_sync(_clock_graph)
-        last_pub_time = rospy.Time.now()
-    simulation_context.stop()
+	simulation_context.play()
+	for _ in range(10):
+		simulation_context.step()
+		og.Controller.evaluate_sync(_clock_graph)
+		last_pub_time = rospy.Time.now()
+	simulation_context.stop()
 
 	# fixme IDK why this is necessary sometimes
 	try:
@@ -276,12 +276,12 @@ try:
 
 	first = True
 
-    simulation_context.play()
-    for _ in range(100):
-        og.Controller.evaluate_sync(_clock_graph)
-        simulation_context.step()
-        last_pub_time = rospy.Time.now()
-    simulation_context.stop()
+	simulation_context.play()
+	for _ in range(100):
+		og.Controller.evaluate_sync(_clock_graph)
+		simulation_context.step()
+		last_pub_time = rospy.Time.now()
+	simulation_context.stop()
 
 	print("Generating map...")
 	if add_colliders(env_prim_path):
@@ -299,60 +299,60 @@ try:
 	simulation_context.play()
 	_dc = dynamic_control_interface()
 
-    print("Loading robots..")
+	print("Loading robots..")
 
-    from omni.isaac.isaac_sensor import _isaac_sensor
-    _is = _isaac_sensor.acquire_imu_sensor_interface()
+	from omni.isaac.isaac_sensor import _isaac_sensor
+	_is = _isaac_sensor.acquire_imu_sensor_interface()
 
-    robot_base_prim_path = config["robot_base_prim_path"].get()
-    base_robot_path = str(config["base_robot_path"].get())
-    c_pose = []
-    old_pose = []
-    old_h_ap = []
-    old_v_ap = []
-    for n in range(config["num_robots"].get()):
-        simulation_context.stop()
-        import_robot(robot_base_prim_path, n, local_file_prefix, base_robot_path)
-        x, y, z, yaw = get_valid_robot_location(environment, first)
-
+	robot_base_prim_path = config["robot_base_prim_path"].get()
+	base_robot_path = str(config["base_robot_path"].get())
+	c_pose = []
+	old_pose = []
+	old_h_ap = []
+	old_v_ap = []
+	for n in range(config["num_robots"].get()):
 		simulation_context.stop()
-		move_robot(f"{robot_base_prim_path}{n}", [x / meters_per_unit, y / meters_per_unit, z / meters_per_unit], [0,0,yaw],
-		           (environment.env_limits[5]) / meters_per_unit, config["is_iRotate"].get())
+		import_robot(robot_base_prim_path, n, local_file_prefix, base_robot_path)
+		x, y, z, yaw = get_valid_robot_location(environment, first)
 
-        c_pose.append([x, y, z])
-        old_pose.append([x, y, z])
-        kit.update()
-        simulation_context.reset()
-        simulation_context.play()
-        kit.update()
-        simulation_context.stop()
-        simulation_context.reset()
+	simulation_context.stop()
+	move_robot(f"{robot_base_prim_path}{n}", [x / meters_per_unit, y / meters_per_unit, z / meters_per_unit], [0,0,yaw],
+	           (environment.env_limits[5]) / meters_per_unit, config["is_iRotate"].get())
 
-        add_ros_components(robot_base_prim_path, n, ros_transform_components, ros_camera_list, viewport_window_list,
-                           camera_pose_frames, cam_pose_pubs, imu_pubs, robot_imu_frames,
-                           robot_odom_frames, odom_pubs,
-                           dynamic_prims, config, old_h_ap, old_v_ap, _is, simulation_context, _clock_graph)
-        kit.update()
-        simulation_context.reset()
-        simulation_context.play()
-        first = False
+	c_pose.append([x, y, z])
+	old_pose.append([x, y, z])
+	kit.update()
+	simulation_context.reset()
+	simulation_context.play()
+	kit.update()
+	simulation_context.stop()
+	simulation_context.reset()
 
-    for n in range(config["num_robots"].get()):
-        add_npy_viewport(viewport_window_list, robot_base_prim_path, n, old_h_ap, old_v_ap, config,
-                         config["num_robots"].get() * 1)
-    kit.update()
+	add_ros_components(robot_base_prim_path, n, ros_transform_components, ros_camera_list, viewport_window_list,
+	                   camera_pose_frames, cam_pose_pubs, imu_pubs, robot_imu_frames,
+	                   robot_odom_frames, odom_pubs,
+	                   dynamic_prims, config, old_h_ap, old_v_ap, _is, simulation_context, _clock_graph)
+	kit.update()
+	simulation_context.reset()
+	simulation_context.play()
+	first = False
 
-    for _ in range(50):
-        simulation_context.render()
-    print("Loading robot complete")
-    # legacy code
-    for index, cam in enumerate(viewport_window_list):
-        camera = stage.GetPrimAtPath(cam.get_active_camera())
-        camera.GetAttribute("horizontalAperture").Set(old_h_ap[index])
-        camera.GetAttribute("verticalAperture").Set(old_v_ap[index])
-    set_carb_setting(carb.settings.get_settings(), "/app/hydra/aperture/conform", 5) # this is still necessary!
+	for n in range(config["num_robots"].get()):
+		add_npy_viewport(viewport_window_list, robot_base_prim_path, n, old_h_ap, old_v_ap, config,
+		                 config["num_robots"].get() * 1)
+		kit.update()
 
-    reset_physics(timeline, kit, simulation_context)
+		for _ in range(50):
+			simulation_context.render()
+		print("Loading robot complete")
+		# legacy code
+		for index, cam in enumerate(viewport_window_list):
+			camera = stage.GetPrimAtPath(cam.get_active_camera())
+			camera.GetAttribute("horizontalAperture").Set(old_h_ap[index])
+			camera.GetAttribute("verticalAperture").Set(old_v_ap[index])
+		set_carb_setting(carb.settings.get_settings(), "/app/hydra/aperture/conform", 5) # this is still necessary!
+
+	reset_physics(timeline, kit, simulation_context)
 
 	print("Starting FSM - setting up topics...")
 	start_explorer_pubs = []
@@ -386,163 +386,160 @@ try:
 	initial_dynamics = len(dynamic_prims)
 	used_ob_stl_paths = []
 
-    ## todo cycle to complete area, need to update the service probably
-    n = 0
-    human_anim_len = []
-    added_prims = []
-    human_base_prim_path = config["human_base_prim_path"].get()
-    while n < rng.integers(7, 1 + max(7, config["num_humans"].get())):
-        anim_len = 0
-        # the animation needs to be shorter than config["max_anim_len"].get() and longer than 0/min_len
-        while anim_len < max(config["min_human_anim_len"].get(), 0) or anim_len > config["max_human_anim_len"].get():
-            folder = rng.choice(human_folders)
-            random_name = rng.choice(os.listdir(os.path.join(human_export_folder, folder)))
-            asset_path = local_file_prefix + os.path.join(human_export_folder, folder, random_name,
-                                                          random_name + ".usd")
-            tmp_pkl = pkl.load(open(os.path.join(human_export_folder, folder, random_name, random_name + ".pkl"), 'rb'))
-            anim_len = tmp_pkl['ef']
-        print("Loading human {} from {}".format(random_name, folder))
-        used_ob_stl_paths.append(os.path.join(human_export_folder, folder, random_name, random_name + ".stl"))
-        human_anim_len.append(tmp_pkl['ef'])
-        if "verts" in tmp_pkl.keys():
-            my_humans_heights.append(tmp_pkl['verts'][:, :, 2])
-        else:
-            my_humans_heights.append(None)
-        my_humans.append(random_name)
-        load_human(human_base_prim_path, n, asset_path, dynamic_prims, added_prims)
-        stl_path = os.path.join(human_export_folder, folder, random_name, random_name + ".stl")
-        this_mesh = mesh.Mesh.from_file(stl_path)
-        areas.append((this_mesh.x.max() - this_mesh.x.min()) * (this_mesh.y.max() - this_mesh.y.min()))
-        tot_area += areas[-1]
-        # if not config["use_area"].get():
-        n += 1
-    # if env_area / area_polygon * 100 > config["area_percentage"].get():
-    #   break
-    x, y, z, yaw = position_object(environment, type=1, objects=my_humans, ob_stl_paths=used_ob_stl_paths, max_collisions=int(config["allow_collision"].get()))
-    to_be_removed = []
-    human_prim_list = []
-    body_origins = []
-    for n, human in enumerate(my_humans):
-        if z[n] < 0:
-            to_be_removed.append(n)
-            tot_area -= areas[n]
-        else:
-            set_translate(stage.GetPrimAtPath(f"{human_base_prim_path}{n}"),
-                          [x[n] / meters_per_unit, y[n] / meters_per_unit, z[n] / meters_per_unit])
-            set_rotate(stage.GetPrimAtPath(f"{human_base_prim_path}{n}"), [0, 0, yaw[n]])
-            human_prim_list.append(f"{human_base_prim_path}{n}")
-            body_origins.append([x[n], y[n], z[n], yaw[n]])
-    if len(to_be_removed) > 0:
-        print("Removing humans that are out of the environment")
-        to_be_removed.reverse()
-        cumsum = np.cumsum(added_prims)
-        for n in to_be_removed:
-            my_humans.pop(n)
-            used_ob_stl_paths.pop(n)
-            my_humans_heights.pop(n)
-            for _ in range(added_prims[n]):
-                if n > 0:
-                    dynamic_prims.pop(cumsum[n - 1] + initial_dynamics)
-                else:
-                    dynamic_prims.pop(initial_dynamics)
-            human_anim_len.pop(n)
-        omni.kit.commands.execute("DeletePrimsCommand", paths=[f"{human_base_prim_path}{n}" for n in to_be_removed])
-    print("Loading human complete")
+	## todo cycle to complete area, need to update the service probably
+	n = 0
+	human_anim_len = []
+	added_prims = []
+	human_base_prim_path = config["human_base_prim_path"].get()
+	while n < rng.integers(7, 1 + max(7, config["num_humans"].get())):
+		anim_len = 0
+		# the animation needs to be shorter than config["max_anim_len"].get() and longer than 0/min_len
+		while anim_len < max(config["min_human_anim_len"].get(), 0) or anim_len > config["max_human_anim_len"].get():
+			folder = rng.choice(human_folders)
+			random_name = rng.choice(os.listdir(os.path.join(human_export_folder, folder)))
+			asset_path = local_file_prefix + os.path.join(human_export_folder, folder, random_name,
+			                                              random_name + ".usd")
+			tmp_pkl = pkl.load(open(os.path.join(human_export_folder, folder, random_name, random_name + ".pkl"), 'rb'))
+			anim_len = tmp_pkl['ef']
+		print("Loading human {} from {}".format(random_name, folder))
+		used_ob_stl_paths.append(os.path.join(human_export_folder, folder, random_name, random_name + ".stl"))
+		human_anim_len.append(tmp_pkl['ef'])
+		if "verts" in tmp_pkl.keys():
+			my_humans_heights.append(tmp_pkl['verts'][:, :, 2])
+		else:
+			my_humans_heights.append(None)
+		my_humans.append(random_name)
+		load_human(human_base_prim_path, n, asset_path, dynamic_prims, added_prims)
+		stl_path = os.path.join(human_export_folder, folder, random_name, random_name + ".stl")
+		this_mesh = mesh.Mesh.from_file(stl_path)
+		areas.append((this_mesh.x.max() - this_mesh.x.min()) * (this_mesh.y.max() - this_mesh.y.min()))
+		tot_area += areas[-1]
+		n += 1
 
-    google_ob_used, shapenet_ob_used = load_objects(config, environment, rng, dynamic_prims, 1/meters_per_unit)
+	x, y, z, yaw = position_object(environment, type=1, objects=my_humans, ob_stl_paths=used_ob_stl_paths, max_collisions=int(config["allow_collision"].get()))
+	to_be_removed = []
+	human_prim_list = []
+	body_origins = []
+	for n, human in enumerate(my_humans):
+		if z[n] < 0:
+			to_be_removed.append(n)
+			tot_area -= areas[n]
+		else:
+			set_translate(stage.GetPrimAtPath(f"{human_base_prim_path}{n}"),
+			              [x[n] / meters_per_unit, y[n] / meters_per_unit, z[n] / meters_per_unit])
+			set_rotate(stage.GetPrimAtPath(f"{human_base_prim_path}{n}"), [0, 0, yaw[n]])
+			human_prim_list.append(f"{human_base_prim_path}{n}")
+			body_origins.append([x[n], y[n], z[n], yaw[n]])
+	if len(to_be_removed) > 0:
+		print("Removing humans that are out of the environment")
+		to_be_removed.reverse()
+		cumsum = np.cumsum(added_prims)
+		for n in to_be_removed:
+			my_humans.pop(n)
+			used_ob_stl_paths.pop(n)
+			my_humans_heights.pop(n)
+			for _ in range(added_prims[n]):
+				if n > 0:
+					dynamic_prims.pop(cumsum[n - 1] + initial_dynamics)
+				else:
+					dynamic_prims.pop(initial_dynamics)
+			human_anim_len.pop(n)
+		omni.kit.commands.execute("DeletePrimsCommand", paths=[f"{human_base_prim_path}{n}" for n in to_be_removed])
+	print("Loading human complete")
 
-    # IT IS OF CRUCIAL IMPORTANCE THAT AFTER THIS POINT THE RENDER GETS DONE WITH THE SLEEPING CALL! OTHERWISE PATH TRACING SPP WILL GET RUINED
-    if (config["rtx_mode"].get()):
-        set_raytracing_settings(config["physics_hz"].get())
-    else:
-        set_pathtracing_settings(config["physics_hz"].get())
+	google_ob_used, shapenet_ob_used = load_objects(config, environment, rng, dynamic_prims, 1/meters_per_unit)
 
-    omni.usd.get_context().get_selection().set_selected_prim_paths([], False)
+	# IT IS OF CRUCIAL IMPORTANCE THAT AFTER THIS POINT THE RENDER GETS DONE WITH THE SLEEPING CALL! OTHERWISE PATH TRACING SPP WILL GET RUINED
+	if (config["rtx_mode"].get()):
+		set_raytracing_settings(config["physics_hz"].get())
+	else:
+		set_pathtracing_settings(config["physics_hz"].get())
 
-    simulation_context.stop()
-    simulation_context.play()
-    for _ in range(5):
-        simulation_context.step(render=False)
-        sleeping(simulation_context, viewport_window_list, raytracing=config["rtx_mode"].get())
-    timeline.set_current_time(0)
-    simulation_step = 0  # this is NOT the frame, this is the "step" (related to physics_hz)
+	omni.usd.get_context().get_selection().set_selected_prim_paths([], False)
 
-    my_recorder = recorder_setup(config['_recorder_settings'].get(), out_dir_npy, config['record'].get())
+	simulation_context.stop()
+	simulation_context.play()
+	for _ in range(5):
+		simulation_context.step(render=False)
+		sleeping(simulation_context, viewport_window_list, raytracing=config["rtx_mode"].get())
+	timeline.set_current_time(0)
+	simulation_step = 0  # this is NOT the frame, this is the "step" (related to physics_hz)
 
-    timeline.set_current_time(0)  # set to 0 to be sure that the first frame is recorded
-    timeline.set_auto_update(False)
+	my_recorder = recorder_setup(config['_recorder_settings'].get(), out_dir_npy, config['record'].get())
 
-    first_start = False
-    second_start = False
-    can_change_second_start = False
+	timeline.set_current_time(0)  # set to 0 to be sure that the first frame is recorded
+	timeline.set_auto_update(False)
 
-    # two times, this will ensure that totalSpp is reached
-    sleeping(simulation_context, viewport_window_list, raytracing=config["rtx_mode"].get())
-    sleeping(simulation_context, viewport_window_list, raytracing=config["rtx_mode"].get())
+	first_start = False
+	second_start = False
+	can_change_second_start = False
 
-    last_pub_time = rospy.Time.now()
-    last_check_time = rospy.Time.now()
+	# two times, this will ensure that totalSpp is reached
+	sleeping(simulation_context, viewport_window_list, raytracing=config["rtx_mode"].get())
+	sleeping(simulation_context, viewport_window_list, raytracing=config["rtx_mode"].get())
 
-    if config['debug_vis'].get():
-        cnt = 0
-        while 1:
-            cnt += 1
-            if cnt % 10000 == 0:
-                import ipdb
+	last_pub_time = rospy.Time.now()
+	last_check_time = rospy.Time.now()
 
-                ipdb.set_trace()
-            print("Debug vis")
-            sleeping(simulation_context, viewport_window_list, ros_camera_list, raytracing=config["rtx_mode"].get())
-    reversing_timeline_ratio = compute_timeline_ratio(human_anim_len, config["reverse_strategy"].get(),
-                                                      experiment_length)
+	if config['debug_vis'].get():
+		cnt = 0
+		while 1:
+			cnt += 1
+			if cnt % 10000 == 0:
+				import ipdb
+				ipdb.set_trace()
+			print("Debug vis")
+			sleeping(simulation_context, viewport_window_list, ros_camera_list, raytracing=config["rtx_mode"].get())
 
-    print(
-        f"The reversing ratio is {reversing_timeline_ratio}.\n"
-        f"This implies that that every {experiment_length / reversing_timeline_ratio} frames we reverse the animations")
-    cnt_reversal = 1
-    # example
-    # exp length: 600, ratio: 4
-    # forward 0-150, 151-300 backward, 300-450 forward, 450-600 backward (so 4 slots)
-    # exp length: 1200, ratio: 4
-    # forward 0-300, 301-600 backward, 601-900 forward, 901-1200 backward (so 4 slots)
-    ratio_camera = config["ratio_camera"].get()
-    ratio_odom = config["ratio_odom"].get()
-    ratio_tf = config["ratio_tf"].get()
-    starting_to_pub = False
-    my_recorder._enable_record = False
-    status = True
-    reset_physics(timeline, kit, simulation_context)
+	reversing_timeline_ratio = compute_timeline_ratio(human_anim_len, config["reverse_strategy"].get(),
+                                                  experiment_length)
 
-    while kit.is_running():
-        if can_start:
-            last_check_time = rospy.Time.now()
-            if second_start:
-                if config['record'].get():
-                    reset_physics(timeline, kit, simulation_context)
-                    sleeping(simulation_context, viewport_window_list, raytracing=config["rtx_mode"].get())
-                    my_recorder._update()
-                    sleeping(simulation_context, viewport_window_list, raytracing=config["rtx_mode"].get())
-                starting_to_pub = True
-                timeline.set_current_time(min(- 1 / (config["physics_hz"].get() / ratio_camera),
-                                              -abs(config["bootstrap_exploration"].get())))
-                simulation_step = int(timeline.get_current_time() * config["physics_hz"].get()) - 1
-                reset_physics(timeline, kit, simulation_context)
-                print("Bootstrap started")
-                can_start = False
-        simulation_step += 1
-        if starting_to_pub and simulation_step == 0:
-            timeline.set_current_time(0)
-            reset_physics(timeline, kit, simulation_context)
-            move_humans_to_ground(my_humans_heights, human_prim_list, simulation_step / ratio_camera, meters_per_unit,
-                                  config["max_distance_human_ground"].get())
-            print("Starting recording NOW!")
-            msg = String("starting")
-            starting_pub.publish(msg)
-            starting_to_pub = False
-            time.sleep(0.5)
-            if config['record'].get():
-                my_recorder._enable_record = True
-                last_check_time = rospy.Time.now()
+	print(f"The reversing ratio is {reversing_timeline_ratio}.\n"
+      f"This implies that that every {experiment_length / reversing_timeline_ratio} frames we reverse the animations")
+	cnt_reversal = 1
+	# example
+	# exp length: 600, ratio: 4
+	# forward 0-150, 151-300 backward, 300-450 forward, 450-600 backward (so 4 slots)
+	# exp length: 1200, ratio: 4
+	# forward 0-300, 301-600 backward, 601-900 forward, 901-1200 backward (so 4 slots)
+	ratio_camera = config["ratio_camera"].get()
+	ratio_odom = config["ratio_odom"].get()
+	ratio_tf = config["ratio_tf"].get()
+	starting_to_pub = False
+	my_recorder._enable_record = False
+	status = True
+	reset_physics(timeline, kit, simulation_context)
+
+	while kit.is_running():
+		if can_start:
+			last_check_time = rospy.Time.now()
+			if second_start:
+				if config['record'].get():
+					reset_physics(timeline, kit, simulation_context)
+					sleeping(simulation_context, viewport_window_list, raytracing=config["rtx_mode"].get())
+					my_recorder._update()
+					sleeping(simulation_context, viewport_window_list, raytracing=config["rtx_mode"].get())
+				starting_to_pub = True
+				timeline.set_current_time(min(- 1 / (config["physics_hz"].get() / ratio_camera),
+        -abs(config["bootstrap_exploration"].get())))
+				simulation_step = int(timeline.get_current_time() * config["physics_hz"].get()) - 1
+				reset_physics(timeline, kit, simulation_context)
+				print("Bootstrap started")
+				can_start = False
+		simulation_step += 1
+		if starting_to_pub and simulation_step == 0:
+			timeline.set_current_time(0)
+			reset_physics(timeline, kit, simulation_context)
+			move_humans_to_ground(my_humans_heights, human_prim_list, simulation_step / ratio_camera, meters_per_unit,
+                              config["max_distance_human_ground"].get())
+			print("Starting recording NOW!")
+			msg = String("starting")
+			starting_pub.publish(msg)
+			starting_to_pub = False
+			time.sleep(0.5)
+			if config['record'].get():
+				my_recorder._enable_record = True
+				last_check_time = rospy.Time.now()
 
 		if (config["_random_light"].get()["during_experiment"]):
 			if (simulation_step % config["_random_light"].get()["n-frames"] == 0):
@@ -553,19 +550,19 @@ try:
 		# step the physics
 		simulation_context.step(render=False)
 
-        # get the current time in ROS
-        print("Clocking...")
-        og.Controller.evaluate_sync(_clock_graph)
+		# get the current time in ROS
+		print("Clocking...")
+		og.Controller.evaluate_sync(_clock_graph)
 
-        # publish IMU
-        print("Publishing IMU...")
-        pub_imu(_is, imu_pubs, robot_imu_frames, meters_per_unit)
+		# publish IMU
+		print("Publishing IMU...")
+		pub_imu(_is, imu_pubs, robot_imu_frames, meters_per_unit)
 
-        # publish joint status (ca 120 Hz)
-        if simulation_step % ratio_tf == 0:
-            print("Publishing joint/tf status...")
-            for component in ros_transform_components:
-                og.Controller.set(og.Controller.attribute(f"{component}/OnImpulseEvent.state:enableImpulse"), True)
+		# publish joint status (ca 120 Hz)
+		if simulation_step % ratio_tf == 0:
+			print("Publishing joint/tf status...")
+			for component in ros_transform_components:
+				og.Controller.set(og.Controller.attribute(f"{component}/OnImpulseEvent.state:enableImpulse"), True)
 
 		# publish odometry (60 hz)
 		if simulation_step % ratio_odom == 0:
@@ -630,7 +627,7 @@ try:
 except:
 	extype, value, tb = sys.exc_info()
 	traceback.print_exc()
-# ipdb.post_mortem(tb)
+	ipdb.post_mortem(tb)
 finally:
 	for pub in odom_pubs:
 		pub.unregister()
