@@ -7,4 +7,4 @@
 # license agreement from NVIDIA CORPORATION is strictly prohibited.
 #
 
-from .extension_custom import *
+from .synthetic_recorder_extension import *
