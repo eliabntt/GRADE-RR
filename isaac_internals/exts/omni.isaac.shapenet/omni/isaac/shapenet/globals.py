@@ -1,4 +1,4 @@
-# Copyright (c) 2018-2021, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2018-2022, NVIDIA CORPORATION.  All rights reserved.
 #
 # NVIDIA CORPORATION and its licensors retain all intellectual property
 # and proprietary rights in and to this software, related documentation
@@ -24,27 +24,26 @@ g_local_shape_loc = None
 
 g_shapenet_db = None
 
+g_pickle_file_full_name = None
+
 
 def pickle_file_exists():
-    pickle_path = get_local_shape_loc() + g_pickle_file_name
-    return os.path.exists(pickle_path)
+    global g_pickle_file_full_name
+    if g_pickle_file_full_name == None:
+        g_pickle_file_full_name = os.path.realpath(__file__)[:-11] + g_pickle_file_name
+    return os.path.exists(g_pickle_file_full_name)
 
 
 def get_database():
     global g_shapenet_db
     if g_shapenet_db == None:
         if pickle_file_exists():
-            f = bz2.BZ2File(get_local_shape_loc() + g_pickle_file_name, "rb")
+            f = bz2.BZ2File(g_pickle_file_full_name, "rb")
             g_shapenet_db = pickle.load(f)
             f.close()
-            # Shapenet v1, where the db comes from, has a few extra models that v2 has not converted.
-            # TODO make it download shapenet 1 models, normalize them, and put them in.
-            # For now we will just remove those.
-            del g_shapenet_db["02834778"]
-            del g_shapenet_db["02858304"]
         else:
             g_shapenet_db = None
-            omni.kit.app.get_app().print_and_log("Please use the menu to build that shapenet ID database.")
+            omni.kit.app.get_app().print_and_log(f"Missing shapenet database of names at {g_pickle_file_full_name}.")
     return g_shapenet_db
 
 

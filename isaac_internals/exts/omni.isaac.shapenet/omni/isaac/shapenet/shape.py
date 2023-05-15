@@ -1,4 +1,4 @@
-# Copyright (c) 2018-2021, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2018-2022, NVIDIA CORPORATION.  All rights reserved.
 #
 # NVIDIA CORPORATION and its licensors retain all intellectual property
 # and proprietary rights in and to this software, related documentation
@@ -15,48 +15,10 @@ import asyncio
 import os
 from pxr import UsdGeom, Gf, Tf
 
-import requests
-import urllib.request
-import shutil
+import random
 import sys
 
 from .globals import *
-
-# parse the text of a web pate and get the <a href="LINKS">Links</a>
-def get_links(html):
-    # Find the reference to <a href="
-    found = html.find('<a href="')
-    links = []
-    while found > -1:
-        q_loc = html.find('"', found + 9)
-        links.append(html[found + 9 : q_loc])
-        found = html.find('<a href="', found + 1)
-    return links
-
-
-def download_file(local_filename, url):
-    with urllib.request.urlopen(url) as response:
-        with open(local_filename, "wb") as f:
-            f.write(response.read())
-
-
-# download all the files at url, which should be a director
-# to the local folder
-def download_folder(local_folder, url):
-
-    if not os.path.exists(local_folder):
-        os.makedirs(local_folder)
-    for href in get_links(requests.get(url).text):
-        if not href[0] == "?":
-            # not a reference to Name, Last Modified, Size, or Description
-            if not href[0] == "/":
-                # not the parent directory
-                if href[-1] == "/":
-                    # sub directory, add all files in it.
-                    download_folder(local_folder + href, url + href)
-                else:
-                    print(f"--Downloading {url+href} to {local_folder + href}.")
-                    download_file(local_folder + href, url + href)
 
 
 def file_exists_on_omni(file_path):
@@ -91,13 +53,16 @@ async def convert(in_file, out_file):
     # setup converter and flags
     converter_context.as_shapenet = True
     converter_context.single_mesh = True
-    converter_context.merge_all_meshes = True
-    converter_context.keep_all_materials = True
-    converter_context.embed_textures = True
     instance = omni.kit.asset_converter.get_instance()
     task = instance.create_converter_task(in_file, out_file, progress_callback, converter_context)
 
-    success = await task.wait_until_finished()
+    success = True
+    while True:
+        success = await task.wait_until_finished()
+        if not success:
+            await asyncio.sleep(0.1)
+        else:
+            break
     return success
 
 
@@ -107,8 +72,15 @@ async def convert(in_file, out_file):
 def addShapePrim(
     omniverseServer, synsetId, modelId, pos, rot, scale, auto_add_physics, use_convex_decomp, do_not_place=False
 ):
+    # allow for random ids
+    shapenet_db = get_database()
+    if synsetId == None or synsetId == "random":
+        synsetId = random.choice(list(shapenet_db))
+
+    if modelId == None or modelId == "random":
+        modelId = random.choice(list(shapenet_db[synsetId]))
+
     # use shapenet v2 for models
-    shape_url = g_shapenet_url + "2/" + synsetId + "/" + modelId + "/"
     # Get the local file system path and the omni server path
     local_folder = get_local_shape_loc() + "/" + synsetId + "/" + modelId + "/"
     local_path = local_folder + "models/model_normalized.obj"
@@ -180,8 +152,9 @@ def addShapePrim(
                 omni_path = omni_modified_path
             if not os.path.exists(local_path):
                 # Pull the shapenet files to the local drive for conversion to omni:usd
-                print(f"--Downloading {local_folder} from {shape_url}.")
-                download_folder(local_folder, shape_url)
+                no_model_message = f"The file does not exist at {local_path}, are you sure you have the env var SHAPENET_LOCAL_DIR set and the shapnet database downloaded to it?"
+                print(no_model_message)
+                return f"ERROR {no_model_message}"
             # Add The file to omniverse here, if you add them asyncronously, then you have to do the
             # rest of the scene adding later.
             print(f"---Converting {shape_name}...")
@@ -201,8 +174,10 @@ def addShapePrim(
         prim = stage.DefinePrim(prim_path, "Xform")
         prim.GetReferences().AddInternalReference(over_path)
 
+        # shapenet v2 models are normalized to 1 meter, and rotated -90deg on the x axis.
         metersPerUnit = UsdGeom.GetStageMetersPerUnit(stage)
         scaled_scale = scale / metersPerUnit
+        rot = Gf.Rotation(Gf.Vec3d(1, 0, 0), 90) * rot
         addobject_fn(prim.GetPath(), pos, rot, scaled_scale)
 
         # add physics

@@ -111,6 +111,7 @@ def shapenet_convert(categories=None, max_models=50, load_materials=False):
             load_materials (bool): If true, materials will be loaded from shapenet meshes.
     """
     import asyncio
+    import pprint
 
     if categories is None:
         print("The following categories and id's are supported:")

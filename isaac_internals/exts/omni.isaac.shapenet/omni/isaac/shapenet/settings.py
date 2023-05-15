@@ -1,4 +1,4 @@
-# Copyright (c) 2018-2021, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2018-2022, NVIDIA CORPORATION.  All rights reserved.
 #
 # NVIDIA CORPORATION and its licensors retain all intellectual property
 # and proprietary rights in and to this software, related documentation
@@ -8,12 +8,11 @@
 #
 
 import carb
-from omni.kit.widget.settings import create_setting_widget, create_setting_widget_combo, SettingType
+from omni.kit.widget.settings import create_setting_widget, SettingType
 import omni.ui as ui
 from pxr import Gf
 from .globals import *
 from .shape import addShapePrim
-import random
 from .globals import g_default_omni_server
 
 
@@ -77,12 +76,8 @@ class ShapenetSettings:
             return
 
         synsetId = self.getSynsetId()
-        if synsetId == None or synsetId == "random":
-            synsetId = random.choice(list(g_shapenet_db))
 
         modelId = self.getModelId()
-        if modelId == None or modelId == "random":
-            modelId = random.choice(list(g_shapenet_db[synsetId]))
 
         return addShapePrim(
             self._settings.get("/isaac/shapenet/omniverseServer"),
