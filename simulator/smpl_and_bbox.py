@@ -16,6 +16,19 @@ import yaml
 from omni.isaac.kit import SimulationApp
 from time import sleep
 
+from omni.syntheticdata import sensors, helpers as sensors, generic_helper_lib
+def get_obj_pose(time):
+	"""Get pose of all objects with a semantic label.
+	"""
+	stage = omni.usd.get_context().get_stage()
+	mappings = generic_helper_lib.get_instance_mappings()
+	pose = []
+	for m in mappings:
+		prim_path = m[1]
+		prim = stage.GetPrimAtPath(prim_path)
+		prim_tf = omni.usd.get_world_transform_matrix(prim, time)
+		pose.append((str(prim_path), m[2], str(m[3]), np.array(prim_tf)))
+	return pose
 
 def boolean_string(s):
 	if s.lower() not in {'false', 'true'}:
@@ -68,6 +81,7 @@ try:
 	parser.add_argument("--skel_root", type=str, default="avg_root",
 	                    help="This is a recognizable last part of the root of the skeleton prim, in our case _avg_root "
 	                         + "It will process ONLY the path of which the last part is this root")
+	parser.add_argument("--correct_poses", type=boolean_string, default=False)
 
 	args, unknown = parser.parse_known_args()
 	config = confuse.Configuration("BoundingBoxes", __name__)
@@ -215,6 +229,7 @@ try:
 						bounds[i] = temp_bounds
 					if write:
 						results.append([str(prim.GetPath()), bounds])
+
 	results = np.array(results, dtype=object)
 	print(f"etime {time.time() - stime}")
 	if write:

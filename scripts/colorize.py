@@ -1,3 +1,4 @@
+import math
 import argparse
 import colorsys
 import confuse
@@ -277,6 +278,8 @@ parser.add_argument("--save_imgs", type=boolean_string, default=True)
 parser.add_argument("--save_video", type=boolean_string, default=False)
 parser.add_argument("--always_update_map", type=boolean_string, default=False)
 parser.add_argument("--semantics", type=boolean_string, default=True)
+parser.add_argument("--corrected_bbox_folder", type=str, default="")
+parser.add_argument("--vertical_aperture", type=float, default=2.32)
 parser.add_argument("--output_dir", type=str)
 args, unknown = parser.parse_known_args()
 
@@ -291,6 +294,8 @@ else:
   minid = config["img_id"].get()
   maxid = config["img_id"].get() + 1
 
+
+vertical_aperture = config["vertical_aperture"].get()
 viewport = config["viewport_folder"].get()
 subfolders = os.listdir(config["viewport_folder"].get())
 depth_enabled = "depthLinear" in subfolders
@@ -308,6 +313,11 @@ if save_video or save_img:
   outdir = config["output_dir"].get()
   if not os.path.exists(config["output_dir"].get()):
     os.makedirs(outdir)
+
+if config["corrected_bbox_folder"].get() != "":
+  corrected_bbox_folder = config["corrected_bbox_folder"].get()
+else:
+  corrected_bbox_folder = None
 
 old_instance_map = None
 vrgb, vdepth, vnormals, vbbox2d, vbbox3d, vinstance, vmotion, vsem = [], [], [], [], [], [], [], []
@@ -348,13 +358,36 @@ for i in range(minid, maxid):
   if bbox3d_enabled:
     bbox3d = np.load(os.path.join(viewport, "bbox_3d", f"{i}.npy"), allow_pickle=True)
     viewport_mat = np.load(os.path.join(viewport, "camera", f"{i}.npy"), allow_pickle=True)
-    viewport_mat = viewport_mat.item()[
-      "view_projection_matrix"]  # TODO this needs to be computed, it might be wrong due to wrongful vertical FOV assumption
-    corners = project_pinhole(bbox3d["corners"].reshape(-1, 3), viewport_mat)
-    corners = corners.reshape(-1, 8, 3)
+    view_mat = viewport_mat.item()["view_projection_matrix"]
 
+    pose_mat = viewport_mat.item()["pose"]
+    viewproj_mat = np.dot(pose_mat, view_mat)
+    # 2 * math.atan(view_params["horizontal_aperture"] / (2 * view_params["focal_length"]))
+    vertical_aperture = vertical_aperture
+    vfov = 2 * math.atan(vertical_aperture / (2 * viewport_mat.item()["focal_length"]))
+    viewproj_mat[1,1] = 1 / math.tan(vfov / 2)
+    viewproj_mat = np.dot(np.linalg.inv(pose_mat), viewproj_mat)
+    corners = project_pinhole(bbox3d["corners"].reshape(-1, 3), viewproj_mat)
+    corners = corners.reshape(-1, 8, 3)
     rgb_data = copy.deepcopy(rgb)
-    bbox3d = colorize_bboxes_3d(corners, rgb_data)
+    e = []
+    for idx,bb in enumerate(bbox3d):
+      if bb['semanticLabel'] in ['human','google','shapenet']:
+        e.append(corners[idx])
+
+    if corrected_bbox_folder is not None:
+      corrected_bbox = np.load(os.path.join(corrected_bbox_folder, f"{i}.npy"), allow_pickle=True)
+      corrected_bbox = corrected_bbox.item()
+      for idx, bb in enumerate(bbox3d):
+        if bb[1] in corrected_bbox['bbox3d']:
+          print(f"Correcting bbox3d for {bb[1]}")
+          # if corrected_bbox['bbox3d'] is dictionary
+          if isinstance(corrected_bbox['bbox3d'][bb[1]], dict):
+            bbox3d[idx]["corners"] = corrected_bbox['bbox3d'][bb[1]]["oriented"] / 0.01
+          else:
+            bbox3d[idx]["corners"] = corrected_bbox['bbox3d'][bb[1]] / 0.01
+
+    bbox3d = colorize_bboxes_3d(np.array(e), rgb_data)
 
     if save_img:
       cv2.imwrite(os.path.join(outdir, f"bbox3d_{i}.png"), bbox3d)
