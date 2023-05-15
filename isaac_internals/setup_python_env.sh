@@ -1,5 +1,6 @@
 #!/bin/bash
-#source catkin_ws/devel/setup.bash
+source ~/catkin_ws/devel/setup.bash
+#source ~/catkin_ws/devel/setup.bash --extend
 SCRIPT_DIR="$(dirname "${BASH_SOURCE}")"
 export ISAAC_PATH=$SCRIPT_DIR/.
 export CARB_APP_PATH=$SCRIPT_DIR/kit
