@@ -3,7 +3,7 @@ reloadable = true
 order = 0
 
 [package]
-version = "0.1.5"
+version = "0.3.5"
 category = "Simulation"
 title = "Isaac Sim Synthetic Data Utilities"
 description = "Utility functions for generating synthetic data"
@@ -22,6 +22,7 @@ writeTarget.kit = true
 "omni.kit.asset_converter" = {}
 "omni.kit.pip_archive" = {} # pulls in pillow
 "omni.isaac.core" = {}
+"omni.isaac.core_archive" = {}
 
 [[python.module]]
 name = "omni.isaac.synthetic_utils"

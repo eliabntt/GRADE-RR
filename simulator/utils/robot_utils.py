@@ -120,24 +120,40 @@ def create_imu_message(frame, last_reading, meters_per_unit):
 
 
 def add_pose_tree(path: str, irotate: bool):
-	"""
-	Add the tf publisher to the desired path.
-	This path should be the robot itself.
-	Each robot has a pose tree.
-	"""
-	stage = omni.usd.get_context().get_stage()
-	result, prim_path = omni.kit.commands.execute("ROSBridgeCreatePoseTree", path="/ROS_PoseTree",
-	                                              target_prims_rel=[path], parent=path, enabled=False)
-	if irotate:
-		omni.kit.commands.execute('ChangeProperty',
-		                          prop_path=Sdf.Path('/my_robot_0/ROS_PoseTree.poseTreePubTopic'),
-		                          value='/tf2',
-		                          prev='/tf')
-	if result:
-		stage.GetPrimAtPath(path + "/ROS_PoseTree").GetAttribute('rosNodePrefix').Set(path)
-		return prim_path
-	else:
-		raise Exception("Pose tree could not be added")
+    """
+    Add the tf publisher to the desired path.
+    This path should be the robot itself.
+    Each robot has a pose tree.
+    """
+    if path.startswith("/"):
+        path = path[1:]
+    og.Controller.edit(
+        {"graph_path": f"/{path}/TFActionGraph", "evaluator_name": "execution"},
+        {
+            og.Controller.Keys.CREATE_NODES: [
+                ("ReadSimTime", "omni.isaac.core_nodes.IsaacReadSimulationTime"),
+                ("OnImpulseEvent", "omni.graph.action.OnImpulseEvent"),
+                ("PublishTF", "omni.isaac.ros_bridge.ROS1PublishTransformTree"),
+            ],
+            og.Controller.Keys.CONNECT: [
+                ("OnImpulseEvent.outputs:execOut", "PublishTF.inputs:execIn"),
+                ("ReadSimTime.outputs:simulationTime", "PublishTF.inputs:timeStamp"),
+            ],
+            og.Controller.Keys.SET_VALUES: [
+                ("PublishTF.inputs:nodeNamespace", f"/{path}"),
+
+            ]
+        },
+    )
+    # fixme
+    if irotate:
+        omni.kit.commands.execute('ChangeProperty',
+                                  prop_path=Sdf.Path('/my_robot_0/ROS_PoseTree.poseTreePubTopic'),
+                                  value='/tf2',
+                                  prev='/tf')
+    set_target_prims(primPath=f"/{path}/TFActionGraph/PublishTF", inputName="inputs:targetPrims",
+                     targetPrimPaths=[f"/{path}"])
+    return f"/{path}/TFActionGraph"
 
 
 def add_lidar(path: str):
@@ -156,7 +172,7 @@ def add_lidar(path: str):
 	else:
 		raise Exception("Lidar not added")
 
-
+# todo fixme
 def add_3d_lidar(path: str, create_sensor=True):
 	"""
 	Add the lidar sensor to the desired path.
@@ -191,7 +207,6 @@ def add_3d_lidar(path: str, create_sensor=True):
 	else:
 		raise Exception("Lidar not added")
 
-
 def add_camera_and_viewport(path: str, resolution: list, old_h_ape, old_v_ape, is_headless=False, index=0,
                             robot_index=0, camera_path="Camera"):
 	"""
@@ -200,43 +215,121 @@ def add_camera_and_viewport(path: str, resolution: list, old_h_ape, old_v_ape, i
 	headless is a boolean that indicates if the simulation is headless or not (i.e. create a visual viewport or not).
 	robot_index correspond to the n-th robot in the scene.
 	"""
-	resolution = tuple(resolution)
-	result, camera_prim = omni.kit.commands.execute(
-		"ROSBridgeCreateCamera", path=f"/ROSCamera_{index}", resolution=Gf.Vec2i(resolution), parent=path,
-		enabled=False,
-		frame_id=path[1:], camera_info_topic=path + f"/{index}/camera_info", rgb_topic=path + f"/{index}/rgb/image_raw",
-		depth_topic=path + f"/{index}/depth/image_raw", depth_enabled=True, point_cloud_enabled=False,
-		point_cloud_topic=path + f"/{index}/point_cloud",
-		segmentation_enabled=False, semantic_topic=path + f"/{index}/segmentation/image_raw",
-		camera_prim_rel=[path + "/Camera"]
-	)
-	context = omni.usd.get_context()
-	stage = context.get_stage()
-	# stage.GetPrimAtPath(path + f"/ROSCamera_{index}").GetAttribute('rosNodePrefix').Set(path + f"/{index}")
-	camera_path = path + f"/{camera_path}"
-	# here we are counting the number of cameras again but you can control this with the index easily
-	# in general we have n-ros-cameras for a robot
-	# the viewport number will then be robot_index * n  + index (the n-th ros camera in our loop)
-	viewport = create_viewport(camera_path, is_headless, robot_index * 1 + index, resolution,
-	                           old_h_ape, old_v_ape)
-	return camera_prim, viewport
+    resolution = tuple(resolution)
 
+    camera_path = path + f"/{camera_path}"
+    viewport, viewport_name = create_viewport(camera_path, is_headless, robot_index * 1 + index, resolution,
+	                           old_h_ape, old_v_ape)
+    (camera_graph, _, _, _) = og.Controller.edit(
+        {
+            "graph_path": f"{path}/ROSCamera_{index}_Graph",
+            "evaluator_name": "execution",
+        },
+        {
+            og.Controller.Keys.CREATE_NODES: [
+                ("OnImpulseEvent", "omni.graph.action.OnImpulseEvent"),
+                ("createViewport", "omni.isaac.core_nodes.IsaacCreateViewport"),
+                ("cameraHelperRgb", "omni.isaac.ros_bridge.ROS1CameraHelper"),
+                ("cameraHelperDepth", "omni.isaac.ros_bridge.ROS1CameraHelper"),
+                ("cameraHelperInfo", "omni.isaac.ros_bridge.ROS1CameraHelper"),
+            ],
+            og.Controller.Keys.CONNECT: [
+                ("OnImpulseEvent.outputs:execOut", "createViewport.inputs:execIn"),
+
+                ("createViewport.outputs:execOut", "cameraHelperRgb.inputs:execIn"),
+                ("createViewport.outputs:execOut", "cameraHelperDepth.inputs:execIn"),
+                ("createViewport.outputs:execOut", "cameraHelperInfo.inputs:execIn"),
+
+                ("createViewport.outputs:viewport", "cameraHelperRgb.inputs:viewport"),
+                ("createViewport.outputs:viewport", "cameraHelperDepth.inputs:viewport"),
+                ("createViewport.outputs:viewport", "cameraHelperInfo.inputs:viewport"),
+            ],
+            og.Controller.Keys.SET_VALUES: [
+                ("cameraHelperRgb.inputs:viewport", viewport_name),
+                ("cameraHelperDepth.inputs:viewport", viewport_name),
+                ("cameraHelperInfo.inputs:viewport", viewport_name),
+
+                ("createViewport.inputs:viewportId", robot_index * 1 + index),
+
+                ("cameraHelperRgb.inputs:frameId", path[1:]),
+                ("cameraHelperRgb.inputs:topicName", path + f"/{index}/rgb/image_raw"),
+                ("cameraHelperRgb.inputs:type", "rgb"),
+
+                ("cameraHelperDepth.inputs:frameId", path[1:]),
+                ("cameraHelperDepth.inputs:topicName", path + f"/{index}/depth/image_raw"),
+                ("cameraHelperDepth.inputs:type", "depth"),
+
+                ("cameraHelperInfo.inputs:frameId", path[1:]),
+                ("cameraHelperInfo.inputs:topicName", path + f"/{index}/camera_info"),
+                ("cameraHelperInfo.inputs:type", "camera_info"),
+            ],
+        },
+    )
+    return camera_graph.get_path_to_graph(), viewport
 
 def add_joint_state(path: str):
-	result, prim_path = omni.kit.commands.execute("ROSBridgeCreateJointState", path="/ROS_JointState",
-	                                              articulation_prim_rel=[path], state_topic=path + "/joint_states",
-	                                              command_topic=path + "/joint_commands", enabled=False, parent=path)
-	return prim_path
+    if path.startswith("/"):
+        path = path[1:]
+    og.Controller.edit(
+        {"graph_path": f"/{path}/JointActionGraph", "evaluator_name": "execution"},
+        {
+            og.Controller.Keys.CREATE_NODES: [
+                ("ReadSimTime", "omni.isaac.core_nodes.IsaacReadSimulationTime"),
+                ("OnImpulseEvent", "omni.graph.action.OnImpulseEvent"),
+                ("PublishJointState", "omni.isaac.ros_bridge.ROS1PublishJointState"),
+                ("SubscribeJointState", "omni.isaac.ros_bridge.ROS1SubscribeJointState"),
+                ("ArticulationController", "omni.isaac.core_nodes.IsaacArticulationController"),
+            ],
+            og.Controller.Keys.CONNECT: [
+                ("OnImpulseEvent.outputs:execOut", "PublishJointState.inputs:execIn"),
+                ("OnImpulseEvent.outputs:execOut", "SubscribeJointState.inputs:execIn"),
+                ("OnImpulseEvent.outputs:execOut", "ArticulationController.inputs:execIn"),
+
+                ("ReadSimTime.outputs:simulationTime", "PublishJointState.inputs:timeStamp"),
+
+                ("SubscribeJointState.outputs:jointNames", "ArticulationController.inputs:jointNames"),
+                ("SubscribeJointState.outputs:positionCommand", "ArticulationController.inputs:positionCommand"),
+                ("SubscribeJointState.outputs:velocityCommand", "ArticulationController.inputs:velocityCommand"),
+                ("SubscribeJointState.outputs:effortCommand", "ArticulationController.inputs:effortCommand"),
+            ],
+            og.Controller.Keys.SET_VALUES: [
+                # Providing path to Articulation Controller node
+                # Providing the robot path is equivalent to setting the targetPrim in Articulation Controller node
+                ("ArticulationController.inputs:usePath", True),
+                ("ArticulationController.inputs:robotPath", "/"+path),
+                # Assigning topic names to clock publishers
+                ("PublishJointState.inputs:topicName", "/" + path + "/joint_states"),
+                ("SubscribeJointState.inputs:topicName", "/" + path + "/joint_commands"),
+            ],
+        },
+    )
+    # set_target_prims(primPath=f"/{path}/JointActionGraph/SubscribeJointState", targetPrimPaths=[f"/{path}"])
+    set_target_prims(primPath=f"/{path}/JointActionGraph/PublishJointState", targetPrimPaths=[f"/{path}"])
+    return f"/{path}/JointActionGraph"
 
 
 def add_clock():
-	result, prim_path = omni.kit.commands.execute("ROSBridgeCreateClock", path="/ROS_Clock", parent="/", enabled=False,
-	                                              queue_size=1, sim_time=True)
-	if result:
-		return prim_path
-	else:
-		raise Exception("Clock could not be added")
-
+    (_clock_graph, _, _, _) = og.Controller.edit(
+        {"graph_path": "/ClockActionGraph", "evaluator_name": "push", "pipeline_stage": og.GraphPipelineStage.GRAPH_PIPELINE_STAGE_ONDEMAND,},
+        {
+            og.Controller.Keys.CREATE_NODES: [
+                ("ReadSimTime", "omni.isaac.core_nodes.IsaacReadSimulationTime"),
+                ("OnTick", "omni.graph.action.OnTick"),
+                ("PublishManualClock", "omni.isaac.ros_bridge.ROS1PublishClock"),
+            ],
+            og.Controller.Keys.CONNECT: [
+                # Connecting execution of OnImpulseEvent node to PublishManualClock so it will only publish when an impulse event is triggered
+                ("OnTick.outputs:tick", "PublishManualClock.inputs:execIn"),
+                # Connecting simulationTime data of ReadSimTime to the clock publisher nodes
+                ("ReadSimTime.outputs:simulationTime", "PublishManualClock.inputs:timeStamp"),
+            ],
+            og.Controller.Keys.SET_VALUES: [
+                # Assigning topic names to clock publishers
+                ("PublishManualClock.inputs:topicName", "/clock"),
+            ],
+        },
+    )
+    return _clock_graph
 
 def get_robot_yaw(x, y, z, env_mesh, shifts):
 	"""
@@ -263,107 +356,109 @@ def get_robot_yaw(x, y, z, env_mesh, shifts):
 	return (np.argmax(checking_rays) + rolling_rays / 2) * 2 * np.pi / checking_steps
 
 
-def create_viewport(camera_path, is_headless, index, resolution, old_h_ape, old_v_ape):
-	"""
-	The function create the viewport for the given camera.
-	Creates an handle, a viewport and the window position/size if the system is not headless.
-	"""
-	stage = omni.usd.get_context().get_stage()
-	camera = stage.GetPrimAtPath(camera_path)
-	old_h_ape.append(camera.GetAttribute("horizontalAperture").Get())
-	old_v_ape.append(camera.GetAttribute("verticalAperture").Get())
-	index += 1 # omniverse starts from 1
-	viewport_name = "Viewport" + (f" {index}" if str(index) != "1" else "")
-	viewport_handle = omni.kit.viewport.get_viewport_interface().get_instance(viewport_name)
-	if not viewport_handle:
-		viewport_handle = omni.kit.viewport.get_viewport_interface().create_instance()
-		new_viewport_name = omni.kit.viewport.get_viewport_interface().get_viewport_window_name(viewport_handle)
+def create_viewport(camera_path, is_headless, index, resolution, old_h_ape, old_v_ape, npy=False):
+    """
+    The function create the viewport for the given camera.
+    Creates an handle, a viewport and the window position/size if the system is not headless.
+    """
+    stage = omni.usd.get_context().get_stage()
+    camera = stage.GetPrimAtPath(camera_path)
+    old_h_ape.append(camera.GetAttribute("horizontalAperture").Get())
+    old_v_ape.append(camera.GetAttribute("verticalAperture").Get())
+	  index += 1 # omniverse starts from 1
+    viewport_name = "Viewport" + (f" {index}" if str(index) != "0" and str(index) != "1" else "")
+    viewport_handle = omni.kit.viewport_legacy.get_viewport_interface().get_instance(viewport_name)
+    if not viewport_handle:
+        viewport_handle = omni.kit.viewport_legacy.get_viewport_interface().create_instance()
+        viewport_name = omni.kit.viewport_legacy.get_viewport_interface().get_viewport_window_name(viewport_handle)
 
-	viewport_window = omni.kit.viewport.get_viewport_interface().get_viewport_window(viewport_handle)
-	viewport_window.set_active_camera(camera_path)
-	viewport_window.set_texture_resolution(resolution[0], resolution[1])
-	if not is_headless:
-		viewport_window.set_window_pos(1000, 400)
-		viewport_window.set_window_size(300, 300)
-	return viewport_window
-
-
-def ros_launchers_setup(roslaunch, env_limits_shifted, config):
-	"""
-	Setup the ros launchers for the simulation.
-	We need an exploration manager for every robot, and a collision checking service to place the objects.
-	"""
-	roslaunch_files = []
-	roslaunch_args = []
-	launch_files = []
-	print("launching ros nodes...")
-	if not config["only_placement"].get():
-		for i in range(config["num_robots"].get()):
-			# TODO hack to be compatible with the old version
-			if type(config["is_iRotate"].get()) == list:
-				is_irotate = config["is_iRotate"].get()[i]
-			else:
-				is_irotate = config["is_iRotate"].get()
-			if not is_irotate:
-				cli_args1 = [#"exploration_manager", "my_exploration.launch",
-				             "/home/ebonetto/catkin_ws/src/ros_isaac_drone/FUEL/fuel_planner/exploration_manager/launch/my_exploration.launch",
-				             "box_min_x:={:.4f}".format(env_limits_shifted[0] - 0.2),
-				             "box_min_y:={:.4f}".format(env_limits_shifted[1] - 0.2),
-				             "box_min_z:={:.4f}".format(env_limits_shifted[2]),
-				             "box_max_x:={:.4f}".format(env_limits_shifted[3] + 0.2),
-				             "box_max_y:={:.4f}".format(env_limits_shifted[4] + 0.2),
-				             "box_max_z:={:.4f}".format(min(3, env_limits_shifted[5] - 0.1)),
-				             f"mav_name:={config['robot_base_prim_path'].get()}{i}"]
-				roslaunch_files.append(roslaunch.rlutil.resolve_launch_arguments(cli_args1)[0])
-				roslaunch_args.append(cli_args1[2:])
-				launch_files.append((roslaunch_files[-1], roslaunch_args[-1]))
-			else:
-				cli_args1 = ["custom_joint_controller_ros_irotate", "publish_joint_commands_node.launch",
-				             "position_limit_x:={:.4f}".format(env_limits_shifted[3] + 0.2),
-				             "position_limit_y:={:.4f}".format(env_limits_shifted[4] + 0.2),
-				             "position_limit_z:={:.4f}".format(3),
-				             "robot_id:=1", "frame_id:='base'"]
-				roslaunch_files.append(roslaunch.rlutil.resolve_launch_arguments(cli_args1)[0])
-				roslaunch_args.append(cli_args1[2:])
-				launch_files.append((roslaunch_files[-1], roslaunch_args[-1]))
-	# TODO hack because we pre-cache the robot mesh
-	if type(config["robot_mesh_path"].get()) == list:
-		mesh_path = config["robot_mesh_path"].get()[0]
-	else:
-		mesh_path = config["robot_mesh_path"].get()
-	cli_args2 = ["collision_check", "collision_check.launch",
-	             "robot_mesh_path:={}".format(mesh_path)]
-	roslaunch_file2 = roslaunch.rlutil.resolve_launch_arguments(cli_args2)[0]
-	roslaunch_args2 = cli_args2[2:]
-	launch_files.append((roslaunch_file2, roslaunch_args2))
-	return launch_files
+    viewport_window = omni.kit.viewport_legacy.get_viewport_interface().get_viewport_window(viewport_handle)
+    viewport_window.set_texture_resolution(resolution[0], resolution[1])
+    if not is_headless:
+        viewport_window.set_window_pos(1000, 400)
+        viewport_window.set_window_size(300, 300)
+    viewport_window = omni.kit.viewport_legacy.get_viewport_interface().get_viewport_window(viewport_handle)
+    viewport_window.set_active_camera(camera_path)
+    return viewport_window, viewport_name
 
 
-def setup_imu_sensor(config):
-	"""
-	Setup the IMU sensor config.
-	Keep in mind that this is relative to the parent body, so any transform the parent has is already reflected.
-	"""
-	from omni.isaac.imu_sensor import _imu_sensor
-	_is = _imu_sensor.acquire_imu_sensor_interface()
-	imu_props = _imu_sensor.SensorProperties()
-	# Position RELATIVE to the parent body where the sensor is placed
-	imu_props.position = carb.Float3(0, 0, 0)
-	# Quaternion orientation (x,y,z,w) RELATIVE to the parent body where the sensor is placed
-	imu_props.orientation = carb.Float4(0, 0, 0, 1)
-	imu_props.sensorPeriod = 1 / config["physics_hz"].get()
-	return _is, imu_props
+def ros_launchers_setup(roslaunch, env_limits_shifted, config, only_placement=False):
+    """
+    Setup the ros launchers for the simulation.
+    We need an exploration manager for every robot, and a collision checking service to place the objects.
+    """
+    roslaunch_files = []
+    roslaunch_args = []
+    launch_files = []
+    print("launching ros nodes...")
+    if not config["only_placement"].get():
+        for i in range(config["num_robots"].get()):
+            # TODO hack to be compatible with the old version
+            if type(config["is_iRotate"].get()) == list:
+                is_irotate = config["is_iRotate"].get()[i]
+            else:
+                is_irotate = config["is_iRotate"].get()
+            if not is_irotate:
+                cli_args1 = ["exploration_manager", "my_exploration.launch",
+              # cli_args1 = ["/home/ebonetto/catkin_ws/src/FUEL/fuel_planner/exploration_manager/launch/my_exploration.launch",
+                             "box_min_x:={:.4f}".format(env_limits_shifted[0] - 0.2),
+                             "box_min_y:={:.4f}".format(env_limits_shifted[1] - 0.2),
+                             "box_min_z:={:.4f}".format(env_limits_shifted[2]),
+                             "box_max_x:={:.4f}".format(env_limits_shifted[3] + 0.2),
+                             "box_max_y:={:.4f}".format(env_limits_shifted[4] + 0.2),
+                             "box_max_z:={:.4f}".format(min(3, env_limits_shifted[5] - 0.1)),
+                             f"mav_name:={config['robot_base_prim_path'].get()}{i}"]
+                roslaunch_files.append(roslaunch.rlutil.resolve_launch_arguments(cli_args1)[0])
+                roslaunch_args.append(cli_args1[2:])
+                launch_files.append((roslaunch_files[-1], roslaunch_args[-1]))
+            else:
+                cli_args1 = ["custom_joint_controller_ros_irotate", "publish_joint_commands_node.launch",
+                             "position_limit_x:={:.4f}".format(env_limits_shifted[3] + 0.2),
+                             "position_limit_y:={:.4f}".format(env_limits_shifted[4] + 0.2),
+                             "position_limit_z:={:.4f}".format(3),
+                             "robot_id:=1", "frame_id:='base'"]
+                roslaunch_files.append(roslaunch.rlutil.resolve_launch_arguments(cli_args1)[0])
+                roslaunch_args.append(cli_args1[2:])
+                launch_files.append((roslaunch_files[-1], roslaunch_args[-1]))
+    # TODO hack because we pre-cache the robot mesh
+    if type(config["robot_mesh_path"].get()) == list:
+        mesh_path = config["robot_mesh_path"].get()[0]
+    else:
+        mesh_path = config["robot_mesh_path"].get()
+    cli_args2 = ["collision_check", "collision_check.launch",
+                 "robot_mesh_path:={}".format(mesh_path)]
+    roslaunch_file2 = roslaunch.rlutil.resolve_launch_arguments(cli_args2)[0]
+    roslaunch_args2 = cli_args2[2:]
+    launch_files.append((roslaunch_file2,roslaunch_args2))
+    return launch_files
 
 
-def pub_imu(imus_handle_list, imu_sensor, imu_pubs, robot_imu_frames, meters_per_unit):
-	"""
-	Simple message publisher
-	"""
-	for index, handle in enumerate(imus_handle_list):
-		readings = imu_sensor.get_sensor_readings(handle)
-		if len(readings) != 0:
-			last_reading = readings[-1]
-			imu_pubs[index].publish(create_imu_message(robot_imu_frames[index], last_reading, meters_per_unit))
+def setup_imu_sensor(_is, config, imu_sensor_path):
+    """
+    Setup the IMU sensor config.
+    Keep in mind that this is relative to the parent body, so any transform the parent has is already reflected.
+    """
+    add_imu_sensor, sensor = omni.kit.commands.execute(
+        "IsaacSensorCreateImuSensor",
+        path="/imu_sensor",
+        parent=imu_sensor_path,
+        sensor_period=1 / config["physics_hz"].get(),
+        orientation=Gf.Quatd(1, 0, 0, 0),
+        visualize=False,
+    )
+    if not add_imu_sensor:
+        raise Exception("Failed to add IMU sensor")
+    return sensor
+
+def pub_imu(_is, imu_pubs, robot_imu_frames, meters_per_unit):
+    """
+    Simple message publisher
+    """
+    for index, handle in enumerate(robot_imu_frames):
+        readings = _is.get_sensor_readings(handle + "/imu_sensor")
+        if len(readings) != 0:
+            last_reading = readings[-1]
+            imu_pubs[index].publish(create_imu_message(handle, last_reading, meters_per_unit))
 
 
 def pub_cam_pose(camera_pose_frames, cam_pose_pubs, _dc, meters_per_unit):
@@ -435,11 +530,95 @@ def get_valid_robot_location(environment, first):
 	print(f"Initial yaw: {yaw}")
 	return x[0], y[0], z[0], yaw
 
+def control_camera(index, viewport, component, sc):
+    sc.step()
+    og.Controller.set(og.Controller.attribute(f"{component}/OnImpulseEvent.state:enableImpulse"), True)
+    sc.step()
+
+    GRAPH_PATH = "/Render/PostProcess/SDGPipeline"
+
+    if viewport is not None:
+        import omni.syntheticdata._syntheticdata as sd
+
+        stage = omni.usd.get_context().get_stage()
+
+        # Required for editing the SDGPipeline graph which exists in the Session Layer
+        with Usd.EditContext(stage, stage.GetSessionLayer()):
+
+            # Get name of rendervar for RGB sensor type
+            rv_rgb = omni.syntheticdata.SyntheticData.convert_sensor_type_to_rendervar(sd.SensorType.Rgb.name)
+
+            # Get path to IsaacSimulationGate node in RGB pipeline
+            rgb_camera_gate_path = omni.syntheticdata.SyntheticData._get_node_path(
+                rv_rgb + "IsaacSimulationGate", viewport.get_render_product_path()
+            )
+
+            # Get path to IsaacConvertRGBAToRGB node in RGB pipeline
+            rgb_conversion_path = omni.syntheticdata.SyntheticData._get_node_path(
+                rv_rgb + "IsaacConvertRGBAToRGB", viewport.get_render_product_path()
+            )
+
+
+            # Get name of rendervar for DistanceToImagePlane sensor type
+            rv_depth = omni.syntheticdata.SyntheticData.convert_sensor_type_to_rendervar(sd.SensorType.DistanceToImagePlane.name)
+
+            # Get path to IsaacSimulationGate node in Depth pipeline
+            depth_camera_gate_path = omni.syntheticdata.SyntheticData._get_node_path(
+                rv_depth + "IsaacSimulationGate", viewport.get_render_product_path()
+            )
+
+            # Get path to ROS1PublishImage node in Depth pipeline
+            depth_publisher_path = omni.syntheticdata.SyntheticData._get_node_path(
+                rv_depth + "ROS1PublishImage", viewport.get_render_product_path()
+            )
+
+
+            # Get path to IsaacSimulationGate node in CameraInfo pipeline
+            camera_info_gate_path = omni.syntheticdata.SyntheticData._get_node_path(
+                "PostProcessDispatch" + "IsaacSimulationGate", viewport.get_render_product_path()
+            )
+
+            # Get path to ROS1PublishCameraInfo node in CameraInfo pipeline
+            camera_info_publisher_path = omni.syntheticdata.SyntheticData._get_node_path(
+                "ROS1PublishCameraInfo", viewport.get_render_product_path()
+            )
+
+            # In SDGPipeline graph, we will re-route execution connections to manually publish ROS images
+            keys = og.Controller.Keys
+            og.Controller.edit(
+                GRAPH_PATH,
+                {
+                    keys.CREATE_NODES: [
+                        # Creating Branch nodes that will allow manual publishing of ROS images
+                        (f"RgbPublisherBranch{index}", "omni.graph.action.Branch"),
+                        (f"DepthPublisherBranch{index}", "omni.graph.action.Branch"),
+                        (f"InfoPublisherBranch{index}", "omni.graph.action.Branch"),
+                    ],
+                    keys.DISCONNECT: [
+                        # Disconnecting the exec connections between each IsaacSimulationGate node and their downstream node
+                        (rgb_camera_gate_path + ".outputs:execOut", rgb_conversion_path + ".inputs:execIn"),
+                        (depth_camera_gate_path + ".outputs:execOut", depth_publisher_path + ".inputs:execIn"),
+                        (camera_info_gate_path + ".outputs:execOut", camera_info_publisher_path + ".inputs:execIn"),
+                    ],
+                    keys.CONNECT: [
+                        # Connecting the execution output of each IsaacSimulationGate node to the execution input of their respective branch node
+                        (rgb_camera_gate_path + ".outputs:execOut", GRAPH_PATH + f"/RgbPublisherBranch{index}.inputs:execIn"),
+                        (depth_camera_gate_path + ".outputs:execOut", GRAPH_PATH + f"/DepthPublisherBranch{index}.inputs:execIn"),
+                        (camera_info_gate_path + ".outputs:execOut", GRAPH_PATH + f"/InfoPublisherBranch{index}.inputs:execIn"),
+
+                        # Connecting the execution True output of each Branch node to the execution input of the respective downstream nodes
+                        (GRAPH_PATH + f"/RgbPublisherBranch{index}.outputs:execTrue", rgb_conversion_path + ".inputs:execIn"),
+                        (GRAPH_PATH + f"/DepthPublisherBranch{index}.outputs:execTrue", depth_publisher_path + ".inputs:execIn"),
+                        (GRAPH_PATH + f"/InfoPublisherBranch{index}.outputs:execTrue", camera_info_publisher_path + ".inputs:execIn"),
+                    ],
+                },
+            )
+
 
 def add_ros_components(robot_base_prim_path, n, ros_transform_components, ros_camera_list, viewport_window_list,
-                       camera_pose_frames, cam_pose_pubs, imus_handle_list, imu_pubs, robot_imu_frames,
+                       camera_pose_frames, cam_pose_pubs, imu_pubs, robot_imu_frames,
                        robot_odom_frames, odom_pubs,
-                       dynamic_prims, config, imu_sensor, imu_props, old_h_ape, old_v_ape, irotate=False):
+                       dynamic_prims, config, old_h_ape, old_v_ape, _is, simulation_context, _clock, irotate=False):
 	"""
 	Add the ROS components to the robot.
 	This is done because we need different topics for each robot.
@@ -459,40 +638,49 @@ def add_ros_components(robot_base_prim_path, n, ros_transform_components, ros_ca
 	ros_transform_components.append(add_joint_state(f"{robot_base_prim_path}{n}"))
 	ros_transform_components.append(add_pose_tree(f"{robot_base_prim_path}{n}", irotate))
 
-	# create camera
-	component, viewport = add_camera_and_viewport(f"{robot_base_prim_path}{n}/camera_link",
-	                                              config["robot_sensor_size"].get(),
-	                                              old_h_ape, old_v_ape,
-	                                              config["headless"].get(), 0, n)
-	ros_camera_list.append(component)
-	viewport_window_list.append(viewport)
+    # create camera
+    component, viewport = add_camera_and_viewport(f"{robot_base_prim_path}{n}/camera_link",
+                                                  config["robot_sensor_size"].get(),
+                                                  old_h_ape, old_v_ape,
+                                                  config["headless"].get(), 0, n) # cam index is useful if you want multiple cameras
+    control_camera(n+n+0, viewport, component, simulation_context)
+    ros_camera_list.append([n+n+0,component])
+    viewport_window_list.append(viewport)
 
 	# append camera pose frame (we need only one) and pubs
 	camera_pose_frames.append(f"{robot_base_prim_path}{n}/camera_link")
 	cam_pose_pubs.append(rospy.Publisher(f"{robot_base_prim_path}{n}/camera/pose", PoseStamped, queue_size=10))
 
-	# attach IMU sensor to the robot
+    for _ in range(10):
+        og.Controller.set(og.Controller.attribute(f"{ros_transform_components[-1]}/OnImpulseEvent.state:enableImpulse"),
+                          True)
+        og.Controller.set(og.Controller.attribute(f"{ros_transform_components[-2]}/OnImpulseEvent.state:enableImpulse"),
+                          True)
+        og.Controller.evaluate_sync(_clock)
+        simulation_context.step()
 
-	if irotate:
-		imus_handle_list.append(imu_sensor.add_sensor_on_body(f"{robot_base_prim_path}{n}/imu_link", imu_props))
-		imu_pubs.append(rospy.Publisher(f"{robot_base_prim_path}{n}/imu_cam", Imu, queue_size=10))
-		robot_imu_frames.append(f"{robot_base_prim_path}{n}/imu_link")
+# attach IMU sensor to the robot
 
-		imus_handle_list.append(imu_sensor.add_sensor_on_body(f"{robot_base_prim_path}{n}/base_link", imu_props))
-		imu_pubs.append(rospy.Publisher(f"{robot_base_prim_path}{n}/imu_body", Imu, queue_size=10))
-		robot_imu_frames.append(f"{robot_base_prim_path}{n}/base_link")
-		robot_odom_frames.append(f"{robot_base_prim_path}{n}/base_link")
-	else:
-		imus_handle_list.append(imu_sensor.add_sensor_on_body(f"{robot_base_prim_path}{n}/camera_link", imu_props))
-		imu_pubs.append(rospy.Publisher(f"{robot_base_prim_path}{n}/imu_camera", Imu, queue_size=10))
-		robot_imu_frames.append(f"{robot_base_prim_path}{n}/camera_link")
+if irotate:
+    setup_imu_sensor(_is, config, f"{robot_base_prim_path}{n}/imu_link")
+    imu_pubs.append(rospy.Publisher(f"{robot_base_prim_path}{n}/imu_cam", Imu, queue_size=10))
+    robot_imu_frames.append(f"{robot_base_prim_path}{n}/imu_link")
 
-		imus_handle_list.append(imu_sensor.add_sensor_on_body(f"{robot_base_prim_path}{n}/imu_link", imu_props))
-		imu_pubs.append(rospy.Publisher(f"{robot_base_prim_path}{n}/imu_body", Imu, queue_size=10))
-		robot_imu_frames.append(f"{robot_base_prim_path}{n}/imu_link")
-		robot_odom_frames.append(f"{robot_base_prim_path}{n}/yaw_link")
+    setup_imu_sensor(_is, config, f"{robot_base_prim_path}{n}/base_link")
+    imu_pubs.append(rospy.Publisher(f"{robot_base_prim_path}{n}/imu_body", Imu, queue_size=10))
+    robot_imu_frames.append(f"{robot_base_prim_path}{n}/base_link")
+    robot_odom_frames.append(f"{robot_base_prim_path}{n}/base_link")
+else:
+    setup_imu_sensor(_is, config, f"{robot_base_prim_path}{n}/imu_link")
+    imu_pubs.append(rospy.Publisher(f"{robot_base_prim_path}{n}/imu_body", Imu, queue_size=10))
+    robot_imu_frames.append(f"{robot_base_prim_path}{n}/imu_link")
 
-	odom_pubs.append(rospy.Publisher(f"{robot_base_prim_path}{n}/odom", Odometry, queue_size=10))
+    setup_imu_sensor(_is, config, f"{robot_base_prim_path}{n}/camera_link")
+    imu_pubs.append(rospy.Publisher(f"{robot_base_prim_path}{n}/imu_camera", Imu, queue_size=10))
+    robot_imu_frames.append(f"{robot_base_prim_path}{n}/camera_link")
+
+    robot_odom_frames.append(f"{robot_base_prim_path}{n}/yaw_link")
+  odom_pubs.append(rospy.Publisher(f"{robot_base_prim_path}{n}/odom", Odometry, queue_size=10))
 
 	# add robot to the list of dynamic prims
 	stage = omni.usd.get_context().get_stage()
@@ -538,10 +726,9 @@ def robot_collisions(enable):
 	                          value=enable,
 	                          prev=None)
 
-
-def move_robot(name: str, pos: [], orientation: [], zlim: float, irotate=False):
-	"""
-	Move the robot to the specified location by acting on the JOINTS.
+def move_robot(name: str, pos: [], orientation: [], zlim: float, irotate=False, meters_per_unit=1):
+    """
+    Move the robot to the specified location by acting on the JOINTS.
 
 	PLEASE NOTE: the intial joint position published by joint_states will be 0,0,0 strangely. #IsaacBug
 	The joints should be named as follows:
@@ -573,11 +760,11 @@ def move_robot(name: str, pos: [], orientation: [], zlim: float, irotate=False):
 		)
 		UsdPhysics.RevoluteJoint.Get(stage, name + '/yaw_link/yaw_joint').GetLocalRot1Attr().Set(Gf.Quatf(quat.GetQuat()))
 	else:
-		UsdPhysics.Joint.Get(stage, name + '/base_link/x_joint').GetLocalPos0Attr().Set(Gf.Vec3f(x, 0, 0))
-		UsdPhysics.Joint.Get(stage, name + '/x_link/y_joint').GetLocalPos0Attr().Set(Gf.Vec3f(0, y, 0))
-		UsdPhysics.Joint.Get(stage, name + '/y_link/z_joint').GetLocalPos0Attr().Set(Gf.Vec3f(0, 0, z))
-		stage.GetPrimAtPath(name + '/y_link/z_joint').GetAttribute('physics:lowerLimit').Set(-z + 30)
-		stage.GetPrimAtPath(name + '/y_link/z_joint').GetAttribute('physics:upperLimit').Set(zlim - z)
+    UsdPhysics.Joint.Get(stage, name + '/base_link/x_joint').GetLocalPos0Attr().Set(Gf.Vec3f(x, 0, 0))
+    UsdPhysics.Joint.Get(stage, name + '/x_link/y_joint').GetLocalPos0Attr().Set(Gf.Vec3f(0, y, 0))
+    UsdPhysics.Joint.Get(stage, name + '/y_link/z_joint').GetLocalPos0Attr().Set(Gf.Vec3f(0, 0, z))
+    stage.GetPrimAtPath(name + '/y_link/z_joint').GetAttribute('physics:lowerLimit').Set(-z + 0.3/meters_per_unit)
+    stage.GetPrimAtPath(name + '/y_link/z_joint').GetAttribute('physics:upperLimit').Set(zlim - z)
 
 		roll = np.rad2deg(roll)
 		quat = (

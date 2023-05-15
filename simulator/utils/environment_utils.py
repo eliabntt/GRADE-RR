@@ -47,7 +47,7 @@ class environment:
 		self.area_polygon = get_area(self.env_info[6])
 		self.env_polygon = [Point(i[0], i[1], 0) for i in self.env_info[-1]]
 
-	def generate_map(self, out_path: str, zlim=[0, 100], cell_size: int = 5, origin=[0, 0, 0]):
+	def generate_map(self, out_path: str, zlim=[0, 1], cell_size = 0.05, origin=[0, 0, 0]):
 		"""
 		WARNING: HACK! ALL UNKNWON ARE WHITE!
 		Generates a map for the environment and save it to the out_path location in the disk.
@@ -63,19 +63,19 @@ class environment:
 
 		bound = int(
 			max(abs(self.env_limits_shifted[0]) + abs(self.env_limits_shifted[3]),
-			    abs(self.env_limits_shifted[1]) + abs(self.env_limits_shifted[4])) / self.meters_per_unit * 1.5)
+				abs(self.env_limits_shifted[1]) + abs(self.env_limits_shifted[4])) / self.meters_per_unit * 1.5)
 
 		_om = _occupancy_map.acquire_occupancy_map_interface()
 
-		lower_bound = [-bound, -bound, zlim[0]]
+		lower_bound = [-bound, -bound, zlim[0]/ self.meters_per_unit]
 		lower_bound = np.array(lower_bound) - np.array(origin) / self.meters_per_unit
-		upper_bound = [bound, bound, zlim[1] * .8]
+		upper_bound = [bound, bound, zlim[1]/ self.meters_per_unit *.8]
 		upper_bound = np.array(upper_bound) - np.array(origin) / self.meters_per_unit
 
 		center = np.array(origin) / self.meters_per_unit
 		center[2] += 0.1 / self.meters_per_unit  # 10 cm above the floor
 		update_location(_om, center, lower_bound, upper_bound)
-		_om.set_cell_size(cell_size)
+		_om.set_cell_size(cell_size/self.meters_per_unit)
 		_om.generate()
 		image_buffer = generate_image(_om, [0, 0, 0, 255], [255, 255, 255, 255], [255, 255, 255, 255])
 		dims = _om.get_dimensions()
@@ -143,6 +143,7 @@ class environment:
 
 			# center the home in the middle of the environment
 			set_translate(stage.GetPrimAtPath(prim_path), list(- np.array(self.shifts) / self.meters_per_unit))
+			set_scale(stage.GetPrimAtPath(prim_path), 1/self.meters_per_unit)
 			for child in stage.GetPrimAtPath(prim_path).GetAllChildren():
 				if "xform" == child.GetTypeName().lower():
 					clear_properties(str(child.GetPath()))

@@ -50,7 +50,7 @@ class MyRecorder():
         self._current_fps = ""
 
         self._settings = get_settings()
-        self._viewport = omni.kit.viewport.get_viewport_interface()
+        self._viewport = omni.kit.viewport_legacy.get_viewport_interface()
         self._viewport_names = []
         self._num_viewports = 0
         self.data_writer = None
@@ -77,7 +77,6 @@ class MyRecorder():
         self._num_threads = 10
         self._max_queue_size = 500
         self.verify = {}
-        self.ros_cameras = 0
 
     def get_default_settings(self):
         return self.sensor_settings_default
@@ -87,8 +86,8 @@ class MyRecorder():
 
     def set_settings(self, settings):
         for index, viewport_name in enumerate(self._viewport_names):
-            if index >= self.ros_cameras:
-                viewport_name = viewport_name.split(" ")[0] + str(int(index - self.ros_cameras))
+            if (index + 1) % 2 == 0:
+                viewport_name = viewport_name.split(" ")[0] + str(int((index + 1) / 2))
                 self._sensor_settings[viewport_name] = copy.deepcopy(settings)
             else:
                 continue
@@ -123,10 +122,10 @@ class MyRecorder():
             self.data_writer.start_threads()
         self._render_mode = str(self._settings.get("/rtx/rendermode"))
         for index, viewport_name in enumerate(self._viewport_names):
-            if index < self.ros_cameras:
+            if (index + 1) % 2 != 0:
                 continue
             real_viewport_name = viewport_name
-            viewport_name = viewport_name.split(" ")[0] + str(int(index - self.ros_cameras))
+            viewport_name = viewport_name.split(" ")[0] + str(int((index + 1) / 2))
 
             groundtruth = {
                 "METADATA": {
@@ -277,7 +276,7 @@ class MyRecorder():
                     "npy"]
 
             # Poses
-            if self._sensor_settings[viewport_name]["poses"]["enabled"] and gt["state"]["pose"]:
+            if self._sensor_settings[viewport_name]["poses"]["enabled"] and gt["pose"]:
                 groundtruth["DATA"]["POSES"] = gt["pose"]
                 groundtruth["METADATA"]["POSES"]["NPY"] = self._sensor_settings[viewport_name]["poses"]["npy"]
 

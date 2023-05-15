@@ -3,8 +3,8 @@ reloadable = true
 order = 0
 
 [package]
-version = "0.1.0"
-title = "Isaac Sim Synthetic Data Recorder 2"
+version = "0.1.1"
+title = "Isaac Sim Synthetic Data Recorder"
 description = "Tool to record synthetic data"
 authors = ["NVIDIA"]
 repository = ""

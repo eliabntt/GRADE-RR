@@ -2,6 +2,7 @@ import time
 
 import utils.misc_utils
 from utils.misc_utils import *
+GRAPH_PATH = "/Render/PostProcess/SDGPipeline"
 
 
 def set_common_stage_properties(rate):
@@ -34,40 +35,40 @@ def set_common_stage_properties(rate):
     set_carb_setting(carb.settings.get_settings(), setting_key, desired_value)
 
 
-def environment_setup(need_ros = True):
-  """
-  Enable the necessary extensions that will be used within the simulation
-  """
-  enable_extension("omni.isaac.ros_bridge")
-  enable_extension("omni.isaac.physics_inspector")
-  enable_extension("omni.isaac.physics_utilities")
-  enable_extension("omni.anim.skelJoint")
-  enable_extension("omni.anim.timesample_editor")
-  enable_extension("omni.anim.keyFramer")
-  enable_extension("omni.kit.window.sequencer")
-  enable_extension("omni.isaac.dynamic_control")
-  enable_extension("omni.isaac.imu_sensor")
-  enable_extension("omni.isaac.shapenet")
-  enable_extension("semantics.schema.editor")
-  enable_extension("omni.hydra.iray")
-  enable_extension("omni.iray.settings.core")
-  enable_extension('omni.isaac.occupancy_map')
-  enable_extension('omni.isaac.shapenet')
-  enable_extension('omni.isaac.range_sensor')
-  disable_extension('omni.isaac.sun_study')
-  # Necessary ONLY if using NUCLEUS
-  # Locate /Isaac folder on nucleus server to load sample
-  from omni.isaac.core.utils.nucleus import find_nucleus_server
+def environment_setup():
+	"""
+    Enable the necessary extensions that will be used within the simulation
+    """
+	enable_extension("omni.isaac.ros_bridge")
+	enable_extension("omni.isaac.physics_inspector")
+	enable_extension("omni.isaac.physics_utilities")
+	enable_extension("omni.anim.skelJoint")
+	# enable_extension("omni.anim.timesample_editor")
+	# enable_extension("omni.anim.keyFramer")
+	enable_extension("omni.kit.window.sequencer")
+	enable_extension("omni.isaac.dynamic_control")
+	# enable_extension("omni.isaac.imu_sensor")
+	enable_extension("omni.isaac.shapenet")
+	enable_extension("semantics.schema.editor")
+	enable_extension("omni.hydra.iray")
+	enable_extension("omni.iray.settings.core")
+	enable_extension('omni.isaac.occupancy_map')
+	enable_extension('omni.isaac.shapenet')
+	enable_extension('omni.isaac.range_sensor')
+	disable_extension('omni.isaac.sun_study')
+	enable_extension('omni.isaac.core_nodes')
+	# Necessary ONLY if using NUCLEUS
+	# Locate /Isaac folder on nucleus server to load sample
+	from omni.isaac.core.utils.nucleus import get_assets_root_path
 
-  result, nucleus_server = find_nucleus_server()
-  if result is False:
-    carb.log_error("Could not find nucleus server with /Isaac folder, exiting")
-    exit()
-  if need_ros:
-    result, check = omni.kit.commands.execute("RosBridgeRosMasterCheck")
-    if not check:
-      carb.log_error("Please run roscore before executing this script")
-      exit()
+	nucleus_server = get_assets_root_path()
+	if nucleus_server is None:
+		carb.log_error("Could not find nucleus server with /Isaac folder, exiting")
+		exit()
+
+	if not rosgraph.is_master_online():
+		carb.log_error("Please run roscore before executing this script")
+		exit()
 
 
 def set_raytracing_settings(physics_hz):
@@ -128,18 +129,24 @@ def compute_timeline_ratio(human_anim_len, reverse_strategy, experiment_length):
 
 
 def pub_and_write_images(my_recorder, simulation_context, viewport_window_list, second_start,
-                         ros_camera_list, raytracing):
-  sleeping(simulation_context, viewport_window_list, raytracing)
+						 ros_camera_list, raytracing):
+	sleeping(simulation_context, viewport_window_list, raytracing)
 
-  for i, cam in enumerate(ros_camera_list):
-    omni.kit.commands.execute("RosBridgeTickComponent", path=str(cam.GetPath()))
-    print(f"Publishing camera {cam.GetPath()}...")
+	for i, cam in ros_camera_list:
+		print(f"Publishing camera {cam}...")
+		og.Controller.set(og.Controller.attribute(GRAPH_PATH + f"/RgbPublisherBranch{i}.inputs:condition"), True)
+		og.Controller.set(og.Controller.attribute(GRAPH_PATH + f"/DepthPublisherBranch{i}.inputs:condition"), True)
+		og.Controller.set(og.Controller.attribute(GRAPH_PATH + f"/InfoPublisherBranch{i}.inputs:condition"), True)
+	simulation_context.render()
+	for i, cam in ros_camera_list:
+		og.Controller.set(og.Controller.attribute(GRAPH_PATH + f"/RgbPublisherBranch{i}.inputs:condition"), False)
+		og.Controller.set(og.Controller.attribute(GRAPH_PATH + f"/DepthPublisherBranch{i}.inputs:condition"), False)
+		og.Controller.set(og.Controller.attribute(GRAPH_PATH + f"/InfoPublisherBranch{i}.inputs:condition"), False)
 
-  if my_recorder._enable_record and second_start:
-    my_recorder._update()
-    print("Writing")
-  # this causes memory leak, with one viewport
-  # cam.GetRosNodePrefixAttr().Set(cam.GetRosNodePrefixAttr().Get()[:-1] + '1')
+	if my_recorder._enable_record and second_start:
+		my_recorder._update()
+		print("Writing")
+
 
 
 def sleeping(simulation_context, viewport_window_list, raytracing, totalSpp=64, spp=1):
@@ -176,13 +183,13 @@ def sleeping(simulation_context, viewport_window_list, raytracing, totalSpp=64, 
 
 
 def recorder_setup(_recorder_settings, out_path, enabled, ros_cameras=1):
-  my_recorder = extension_custom.MyRecorder()
-  my_recorder.on_startup()
-  my_recorder.set_single_settings(_recorder_settings)
-  my_recorder._dir_name = os.path.join(out_path)
-  my_recorder._enable_record = enabled
+	my_recorder = extension_custom.MyRecorder()
+	my_recorder.on_startup()
+	my_recorder.set_single_settings(_recorder_settings)
+	my_recorder._dir_name = os.path.join(out_path)
+	my_recorder._enable_record = enabled
   my_recorder.ros_cameras = ros_cameras
-  return my_recorder
+	return my_recorder
 
 
 def setup_timeline(config):

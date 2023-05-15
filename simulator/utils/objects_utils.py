@@ -12,11 +12,11 @@ def setup_shapenet(username, password, csv_location):
 	return database
 
 
-def load_object(rng=np.random.default_rng(), obj_name="shapenet", config=None):
+def load_object(rng=np.random.default_rng(), obj_name="shapenet", config=None, scale=1):
 	if obj_name == "shapenet":
-		return load_shapenet_object(rng, config)
+		return load_shapenet_object(rng, config, scale)
 	elif obj_name == "google":
-		return load_google_obj(rng, config)
+		return load_google_obj(rng, config, scale)
 
 
 def load_shapenet_object(rng=np.random.default_rng(), config=None, scale=1):
@@ -29,6 +29,7 @@ def load_shapenet_object(rng=np.random.default_rng(), config=None, scale=1):
 	:return: The path to the object and the synsetId and modelId of the object.
 	"""
 	global database
+	scale /= 100
 	synsetId = rng.choice(list(database)) if config["synsetId"].get() == "random" else config["synsetId"].get()
 	modelId = rng.choice(list(database[synsetId])) if config["modelId"].get() == "random" else config["modelId"].get()
 	_settings = carb.settings.get_settings()
@@ -41,7 +42,7 @@ def load_shapenet_object(rng=np.random.default_rng(), config=None, scale=1):
 	return str(prim.GetPath()), [synsetId, modelId]
 
 
-def load_google_obj(rng=np.random.default_rng(), config=None):
+def load_google_obj(rng=np.random.default_rng(), config=None, scale = 1):
 	"""
 	It loads a random Google 3D asset from the Google Scanned Object, converts it to USD, and then creates a reference to it
 	in the current stage
@@ -107,7 +108,7 @@ def load_google_obj(rng=np.random.default_rng(), config=None):
 				if subchild.GetTypeName().lower() == "mesh":
 					UsdShade.MaterialBindingAPI(subchild).Bind(obj_shade, UsdShade.Tokens.strongerThanDescendants)
 
-	set_scale(stage.GetPrimAtPath(prim_path), 100)
+	set_scale(stage.GetPrimAtPath(prim_path), scale)
 
 	return str(prim_path), asset
 
@@ -131,7 +132,7 @@ async def convert_google_obj(in_path, out_path):
 	return success
 
 
-def load_objects(config, environment, rng, dynamic_prims):
+def load_objects(config, environment, rng, dynamic_prims, scale):
 	"""
 	Load objects in the environment
 
@@ -176,11 +177,11 @@ def load_objects(config, environment, rng, dynamic_prims):
 						ob_type = "google"
 				shapenet_obs -= 1
 			try:
-				my_shape, shape_infos = load_object(rng, ob_type, config)
+				my_shape, shape_infos = load_object(rng, ob_type, config, scale)
 			except:
 				print("Error loading object, try with the other type")
 				try:
-					my_shape, shape_infos = load_object(rng, "google" if ob_type == "shapenet" else "shapenet", config)
+					my_shape, shape_infos = load_object(rng, "google" if ob_type == "shapenet" else "shapenet", config, scale)
 				except:
 					print("Error loading object, giving up")
 					continue

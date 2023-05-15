@@ -39,6 +39,9 @@ import json
 from pyquaternion import Quaternion
 from typing import Dict, Optional, Union
 
+# 2022 edits
+import omni.graph.core as og
+from omni.isaac.core_nodes.scripts.utils import set_target_prims
 
 def add_semantics(prim: Prim, semantic_label: str):
   """
@@ -484,3 +487,10 @@ def toggle_dynamic_objects(dynamic_prims: list, status: bool):
       else:
         imageable.MakeInvisible()
       imageable = []
+
+def reset_physics(timeline, kit, simulation_context):
+    timeline.pause()
+    kit.update()
+    simulation_context.reset()
+    kit.update()
+    timeline.play()
