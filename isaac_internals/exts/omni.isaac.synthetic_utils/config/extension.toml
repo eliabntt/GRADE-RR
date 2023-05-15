@@ -3,7 +3,7 @@ reloadable = true
 order = 0
 
 [package]
-version = "0.3.5"
+version = "0.4.3"
 category = "Simulation"
 title = "Isaac Sim Synthetic Data Utilities"
 description = "Utility functions for generating synthetic data"
@@ -12,14 +12,12 @@ repository = ""
 keywords = ["isaac", "synthetic", "utils"]
 changelog = "docs/CHANGELOG.md"
 readme = "docs/README.md"
-preview_image = "data/preview.png"
 icon = "data/icon.png"
 writeTarget.kit = true
 
 [dependencies]
 "omni.kit.uiapp" = {}
 "omni.syntheticdata" = {}
-"omni.kit.asset_converter" = {}
 "omni.kit.pip_archive" = {} # pulls in pillow
 "omni.isaac.core" = {}
 "omni.isaac.core_archive" = {}
@@ -31,4 +29,12 @@ name = "omni.isaac.synthetic_utils"
 name = "omni.isaac.synthetic_utils.tests"
 
 [[test]]
-dependencies = ["omni.physx"]
+
+dependencies = [
+    "omni.hydra.rtx",                       # "omni.hydra.pxr", Can we run and pass with Storm ?
+    "omni.kit.viewport.utility",
+    "omni.kit.viewport.window",
+    "omni.physx",
+    "omni.kit.primitive.mesh",
+    "omni.kit.material.library",
+]

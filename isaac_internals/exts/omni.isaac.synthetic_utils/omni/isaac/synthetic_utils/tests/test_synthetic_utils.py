@@ -10,6 +10,7 @@
 # NOTE:
 #   omni.kit.test - std python's unittest module with additional wrapping to add suport for async/await tests
 #   For most things refer to unittest docs: https://docs.python.org/3/library/unittest.html
+from omni.isaac.core.utils.viewports import set_camera_view
 import omni.kit.test
 
 import omni.kit.commands
@@ -34,6 +35,7 @@ from omni.isaac.core.utils.extensions import get_extension_path_from_name
 from omni.isaac.core.utils.stage import set_stage_up_axis
 from omni.isaac.core import PhysicsContext
 from omni.physx.scripts.physicsUtils import add_ground_plane
+from omni.kit.viewport.utility import get_active_viewport
 
 # Having a test class dervived from omni.kit.test.AsyncTestCase declared on the root of module will make it auto-discoverable by omni.kit.test
 class TestSyntheticUtils(omni.kit.test.AsyncTestCase):
@@ -55,14 +57,14 @@ class TestSyntheticUtils(omni.kit.test.AsyncTestCase):
 
         # Start Simulation and wait
         self._timeline = omni.timeline.get_timeline_interface()
-        self._viewport_window = omni.kit.viewport_legacy.get_default_viewport_window()
+        self._viewport_api = get_active_viewport()
         self._usd_context = omni.usd.get_context()
         self._sd_helper = SyntheticDataHelper()
         self._synthetic_utils_path = get_extension_path_from_name("omni.isaac.synthetic_utils")
         self._stage = self._usd_context.get_stage()
         self._camera_path = "/Camera"
         camera = self._stage.DefinePrim(self._camera_path, "Camera")
-        self._viewport_window.set_active_camera(self._camera_path)
+        self._viewport_api.set_active_camera(self._camera_path)
 
         pass
 
@@ -89,7 +91,7 @@ class TestSyntheticUtils(omni.kit.test.AsyncTestCase):
                 "boundingBox2DLoose",
                 "boundingBox3D",
             ],
-            self._viewport_window,
+            self._viewport_api,
         )
         await omni.kit.app.get_app().next_update_async()
 
@@ -107,7 +109,7 @@ class TestSyntheticUtils(omni.kit.test.AsyncTestCase):
                 "camera",
                 "pose",
             ],
-            self._viewport_window,
+            self._viewport_api,
             verify_sensor_init=False,
         )
         return copy.deepcopy(gt)
@@ -134,8 +136,7 @@ class TestSyntheticUtils(omni.kit.test.AsyncTestCase):
         )
 
         # setup scene camera
-        self._viewport_window.set_camera_position(self._camera_path, 3.00, 3.0, 3.00, True)
-        self._viewport_window.set_camera_target(self._camera_path, 0, -0.64, 0, True)
+        set_camera_view([3.00, 3.0, 3.00], [0, -0.64, 0], self._camera_path, self._viewport_api)
         await self.initialize_sensors()
 
     # Unit test for sensor groundtruth
@@ -144,7 +145,7 @@ class TestSyntheticUtils(omni.kit.test.AsyncTestCase):
         self._timeline.play()
         await omni.kit.app.get_app().next_update_async()
         await simulate_async(1.0)
-        await omni.syntheticdata.sensors.next_sensor_data_async(self._viewport_window.get_id())
+        await omni.syntheticdata.sensors.next_sensor_data_async(self._viewport_api)
         gt = self.get_groundtruth()
         # Validate Depth groundtruth
         gt_depth = gt["depthLinear"]
@@ -203,17 +204,18 @@ class TestSyntheticUtils(omni.kit.test.AsyncTestCase):
         await omni.kit.app.get_app().next_update_async()
         await simulate_async(1.0)
         await omni.kit.app.get_app().next_update_async()
+        viewport_window = omni.kit.viewport.utility.get_active_viewport_window()
         # Setting up config for writer
         sensor_settings = {}
         sensor_settings_viewport = {"rgb": {"enabled": True}}
-        viewport_name = "Viewport"
+        viewport_name = viewport_window.title
         sensor_settings[viewport_name] = copy.deepcopy(sensor_settings_viewport)
         # Initialize data writer
         output_folder = os.getcwd() + "/output"
         data_writer = NumpyWriter(output_folder, 4, 100, sensor_settings)
         data_writer.start_threads()
         # Get rgb groundtruth
-        gt = self._sd_helper.get_groundtruth(["rgb"], self._viewport_window, verify_sensor_init=False)
+        gt = self._sd_helper.get_groundtruth(["rgb"], self._viewport_api, verify_sensor_init=False)
         # Write rgb groundtruth
         image_id = 1
         groundtruth = {"METADATA": {"image_id": str(image_id), "viewport_name": viewport_name}, "DATA": {}}
@@ -234,10 +236,11 @@ class TestSyntheticUtils(omni.kit.test.AsyncTestCase):
         await omni.kit.app.get_app().next_update_async()
         await simulate_async(1.0)
         await omni.kit.app.get_app().next_update_async()
+        viewport_window = omni.kit.viewport.utility.get_active_viewport_window()
         # Setting up config for writer
         sensor_settings = {}
         sensor_settings_viewport = {"rgb": {"enabled": True}}
-        viewport_name = "Viewport"
+        viewport_name = viewport_window.title
         sensor_settings[viewport_name] = copy.deepcopy(sensor_settings_viewport)
         # Initialize data writer
         output_folder_tight = os.getcwd() + "/kitti_tight"
@@ -252,7 +255,7 @@ class TestSyntheticUtils(omni.kit.test.AsyncTestCase):
         data_writer_loose.start_threads()
         # Get rgb groundtruth
         gt = self._sd_helper.get_groundtruth(
-            ["rgb", "boundingBox2DTight", "boundingBox2DLoose"], self._viewport_window, verify_sensor_init=False
+            ["rgb", "boundingBox2DTight", "boundingBox2DLoose"], self._viewport_api, verify_sensor_init=False
         )
         # Write rgb groundtruth
         image_id = 0
@@ -323,8 +326,7 @@ class TestSyntheticUtils(omni.kit.test.AsyncTestCase):
         self.cube, self.cube_geom = await self.add_cube("/World/Cube", 100.0, self.cube_location)
 
         # setup scene camera
-        self._viewport_window.set_camera_position(self._camera_path, 1000, 1000, 1000, True)
-        self._viewport_window.set_camera_target(self._camera_path, 0, 0, 0, True)
+        set_camera_view([1000, 1000, 1000], [0, 0, 0], self._camera_path, self._viewport_api)
         await self.initialize_sensors()
 
     # Unit test for sensor groundtruth
@@ -333,7 +335,7 @@ class TestSyntheticUtils(omni.kit.test.AsyncTestCase):
 
         # wait for update
         move(Gf.Vec3f(random.random() * 100, random.random() * 100, random.random() * 100))
-        await omni.syntheticdata.sensors.next_sensor_data_async(self._viewport_window.get_id())
+        await omni.syntheticdata.sensors.next_sensor_data_async(self._viewport_api)
 
         # grab ground truth
         gt1 = self.get_groundtruth()
@@ -342,11 +344,11 @@ class TestSyntheticUtils(omni.kit.test.AsyncTestCase):
         move(Gf.Vec3f(random.random() * 100, random.random() * 100, random.random() * 100))
 
         # wait for update
-        await omni.syntheticdata.sensors.next_sensor_data_async(self._viewport_window.get_id())
+        await omni.syntheticdata.sensors.next_sensor_data_async(self._viewport_api)
 
         # grab ground truth
         gt2 = self.get_groundtruth()
-        await omni.syntheticdata.sensors.next_sensor_data_async(self._viewport_window.get_id())
+        await omni.syntheticdata.sensors.next_sensor_data_async(self._viewport_api)
         gt3 = self.get_groundtruth()
 
         # ensure segmentation is identical
@@ -366,7 +368,7 @@ class TestSyntheticUtils(omni.kit.test.AsyncTestCase):
         self.assertNotEqual(gt_box3d1["corners"].tolist(), gt_box3d2["corners"].tolist())
         # Should be no change between these two frames
         self.assertEqual(gt_box3d2["corners"].tolist(), gt_box3d3["corners"].tolist())
-        await omni.syntheticdata.sensors.next_sensor_data_async(self._viewport_window.get_id())
+        await omni.syntheticdata.sensors.next_sensor_data_async(self._viewport_api)
         # stop the scene
 
         pass
@@ -404,8 +406,7 @@ class TestSyntheticUtils(omni.kit.test.AsyncTestCase):
         pass
 
     async def test_remap_semantics(self):
-        self._viewport_window.set_camera_position(self._camera_path, 1000, 1000, 1000, True)
-        self._viewport_window.set_camera_target(self._camera_path, 0, 0, 0, True)
+        set_camera_view([1000, 1000, 1000], [0, 0, 0], self._camera_path, self._viewport_api)
         usd_path = self._synthetic_utils_path + "/data/usd/tests/nested_semantics.usd"
         self.prim = self._stage.DefinePrim("/test_nested", "Xform")
         self.prim.GetReferences().AddReference(usd_path)
@@ -436,8 +437,7 @@ class TestSyntheticUtils(omni.kit.test.AsyncTestCase):
         self.assertEqual(unique_data_a[3], 100)
 
     async def test_nested_semantics(self):
-        self._viewport_window.set_camera_position(self._camera_path, 1000, 1000, 1000, True)
-        self._viewport_window.set_camera_target(self._camera_path, 0, 0, 0, True)
+        set_camera_view([1000, 1000, 1000], [0, 0, 0], self._camera_path, self._viewport_api)
         usd_path = self._synthetic_utils_path + "/data/usd/tests/nested_semantics.usd"
         self.prim = self._stage.DefinePrim("/test_nested", "Xform")
         add_update_semantics(self.prim, "combined")

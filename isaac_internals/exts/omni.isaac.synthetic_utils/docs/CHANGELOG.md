@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.4.3] - 2023-01-19
+### Fixed
+- test errors due to missing button
+
+## [0.4.2] - 2022-10-17
+### Fixed
+- pass viewport api to next_sensor_data_async
+
+## [0.4.1] - 2022-09-07
+### Fixed
+- Fixes for kit 103.5
+
+## [0.4.0] - 2022-09-01
+
+### Changed
+- remove non synthetic data related legacy viewport calls
+
 ## [0.3.5] - 2022-08-12
 
 ### Removed
