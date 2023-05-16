@@ -190,10 +190,11 @@ try:
 	rng = np.random.default_rng()
 	rng_state = np.random.get_state()
 
-	local_file_prefix = "my-computer://"
+	local_file_prefix = "" # if something is broken try my-computer://
 
 	# setup environment variables
-	environment = environment(config, rng, local_file_prefix)
+	meters_per_unit = config["meters_per_unit"].get()
+	environment = environment(config, rng, local_file_prefix, meters_per_unit)
 
 	uuid = roslaunch.rlutil.get_or_generate_uuid(None, False)
 	out_dir = os.path.join(config['out_folder'].get(), environment.env_name)
@@ -225,8 +226,10 @@ try:
 	# do this AFTER loading the world
 	simulation_context = SimulationContext(physics_dt=1.0 / config["physics_hz"].get(),
 	                                       rendering_dt=1.0 / config["render_hz"].get(),
-	                                       stage_units_in_meters=0.01)
-	simulation_context.start_simulation()
+	                                       stage_units_in_meters=meters_per_unit, backend='torch')
+	simulation_context.initialize_physics()
+	physx_interface = omni.physx.acquire_physx_interface()
+	physx_interface.start_simulation()
 
 	_clock_graph = add_clock()  # add ROS clock
 
@@ -250,13 +253,12 @@ try:
 	print("ros node launched")
 
 	kit.update()
-	meters_per_unit = UsdGeom.GetStageMetersPerUnit(stage)
 
 	# use rtx while setting up!
 	set_raytracing_settings(config["physics_hz"].get())
 	env_prim_path = environment.load_and_center(config["env_prim_path"].get())
 	randomize_and_fix_lights(config["_random_light"].get(), rng, env_prim_path, environment.env_limits[-1] - 0.2,
-	                         environment.meters_per_unit, is_rtx=config["rtx_mode"].get())
+	                         meters_per_unit, is_rtx=config["rtx_mode"].get())
 	randomize_roughness(config["_random_roughness"].get(), rng, env_prim_path)
 
 	# set timeline of the experiment
@@ -301,8 +303,8 @@ try:
 
 	print("Loading robots..")
 
-	from omni.isaac.isaac_sensor import _isaac_sensor
-	_is = _isaac_sensor.acquire_imu_sensor_interface()
+	from omni.isaac.sensor import _sensor
+	_is = _sensor.acquire_imu_sensor_interface()
 
 	robot_base_prim_path = config["robot_base_prim_path"].get()
 	base_robot_path = str(config["base_robot_path"].get())
@@ -310,50 +312,45 @@ try:
 	old_pose = []
 	old_h_ap = []
 	old_v_ap = []
+	simulation_context.stop()
 	for n in range(config["num_robots"].get()):
-		simulation_context.stop()
 		import_robot(robot_base_prim_path, n, local_file_prefix, base_robot_path)
 		x, y, z, yaw = get_valid_robot_location(environment, first)
 
-	simulation_context.stop()
-	move_robot(f"{robot_base_prim_path}{n}", [x / meters_per_unit, y / meters_per_unit, z / meters_per_unit], [0,0,yaw],
-	           (environment.env_limits[5]) / meters_per_unit, config["is_iRotate"].get())
+		move_robot(f"{robot_base_prim_path}{n}", [x / meters_per_unit, y / meters_per_unit, z / meters_per_unit], [0,0,yaw],
+		           (environment.env_limits[5]) / meters_per_unit, config["is_iRotate"].get(), meters_per_unit=meters_per_unit)
 
-	c_pose.append([x, y, z])
-	old_pose.append([x, y, z])
-	kit.update()
+		c_pose.append([x, y, z])
+		old_pose.append([x, y, z])
+
+		add_ros_components(robot_base_prim_path, n, ros_transform_components, ros_camera_list, viewport_window_list,
+		                   camera_pose_frames, cam_pose_pubs, imu_pubs, robot_imu_frames,
+		                   robot_odom_frames, odom_pubs,
+		                   dynamic_prims, config, old_h_ap, old_v_ap, _is, simulation_context, _clock_graph)
+		kit.update()
+		first = False
+	import ipdb; ipdb.set_trace()
 	simulation_context.reset()
 	simulation_context.play()
-	kit.update()
-	simulation_context.stop()
-	simulation_context.reset()
-
-	add_ros_components(robot_base_prim_path, n, ros_transform_components, ros_camera_list, viewport_window_list,
-	                   camera_pose_frames, cam_pose_pubs, imu_pubs, robot_imu_frames,
-	                   robot_odom_frames, odom_pubs,
-	                   dynamic_prims, config, old_h_ap, old_v_ap, _is, simulation_context, _clock_graph)
-	kit.update()
-	simulation_context.reset()
-	simulation_context.play()
-	first = False
-
 	for n in range(config["num_robots"].get()):
 		add_npy_viewport(viewport_window_list, robot_base_prim_path, n, old_h_ap, old_v_ap, config,
-		                 config["num_robots"].get() * 1)
-		kit.update()
+		                 config["num_robots"].get() * 2)
+		simulation_context.step()
 
-		for _ in range(50):
-			simulation_context.render()
-		print("Loading robot complete")
-		# legacy code
-		for index, cam in enumerate(viewport_window_list):
-			camera = stage.GetPrimAtPath(cam.get_active_camera())
-			camera.GetAttribute("horizontalAperture").Set(old_h_ap[index])
-			camera.GetAttribute("verticalAperture").Set(old_v_ap[index])
-		set_carb_setting(carb.settings.get_settings(), "/app/hydra/aperture/conform", 5) # this is still necessary!
+	for _ in range(50):
+		simulation_context.render()
+	print("Loading robot complete")
+	# legacy code
+	for index, cam in enumerate(viewport_window_list):
+		camera = stage.GetPrimAtPath(cam.get_active_camera())
+		camera.GetAttribute("horizontalAperture").Set(old_h_ap[index])
+		camera.GetAttribute("verticalAperture").Set(old_v_ap[index])
+	set_carb_setting(carb.settings.get_settings(), "/app/hydra/aperture/conform", 5) # this is still necessary!
+	ipdb.set_trace()
 
-	reset_physics(timeline, kit, simulation_context)
+	reset_physics(timeline, simulation_context)
 
+	ipdb.set_trace()
 	print("Starting FSM - setting up topics...")
 	start_explorer_pubs = []
 	send_waypoint_pubs = []
@@ -376,6 +373,7 @@ try:
 		print("fsm management for robot {} setted up".format(index))
 	print("FSM setted up")
 
+	ipdb.set_trace()
 	print("Loading humans..")
 	my_humans = []
 	my_humans_heights = []
@@ -391,11 +389,13 @@ try:
 	human_anim_len = []
 	added_prims = []
 	human_base_prim_path = config["human_base_prim_path"].get()
-	while n < rng.integers(7, 1 + max(7, config["num_humans"].get())):
+	while n < 5: #rng.integers(7, 1 + max(7, config["num_humans"].get())):
 		anim_len = 0
 		# the animation needs to be shorter than config["max_anim_len"].get() and longer than 0/min_len
 		while anim_len < max(config["min_human_anim_len"].get(), 0) or anim_len > config["max_human_anim_len"].get():
 			folder = rng.choice(human_folders)
+			while "old_textures" in folder:
+				folder = rng.choice(human_folders)
 			random_name = rng.choice(os.listdir(os.path.join(human_export_folder, folder)))
 			asset_path = local_file_prefix + os.path.join(human_export_folder, folder, random_name,
 			                                              random_name + ".usd")
@@ -416,6 +416,7 @@ try:
 		tot_area += areas[-1]
 		n += 1
 
+	ipdb.set_trace()
 	x, y, z, yaw = position_object(environment, type=1, objects=my_humans, ob_stl_paths=used_ob_stl_paths, max_collisions=int(config["allow_collision"].get()))
 	to_be_removed = []
 	human_prim_list = []
@@ -427,6 +428,7 @@ try:
 		else:
 			set_translate(stage.GetPrimAtPath(f"{human_base_prim_path}{n}"),
 			              [x[n] / meters_per_unit, y[n] / meters_per_unit, z[n] / meters_per_unit])
+			set_scale(stage.GetPrimAtPath(f"{human_base_prim_path}{n}"), 1 / meters_per_unit)
 			set_rotate(stage.GetPrimAtPath(f"{human_base_prim_path}{n}"), [0, 0, yaw[n]])
 			human_prim_list.append(f"{human_base_prim_path}{n}")
 			body_origins.append([x[n], y[n], z[n], yaw[n]])
@@ -446,6 +448,7 @@ try:
 			human_anim_len.pop(n)
 		omni.kit.commands.execute("DeletePrimsCommand", paths=[f"{human_base_prim_path}{n}" for n in to_be_removed])
 	print("Loading human complete")
+	ipdb.set_trace()
 
 	google_ob_used, shapenet_ob_used = load_objects(config, environment, rng, dynamic_prims, 1/meters_per_unit)
 
@@ -456,7 +459,8 @@ try:
 		set_pathtracing_settings(config["physics_hz"].get())
 
 	omni.usd.get_context().get_selection().set_selected_prim_paths([], False)
-
+	print("ACTUNG!")
+	ipdb.set_trace()
 	simulation_context.stop()
 	simulation_context.play()
 	for _ in range(5):
@@ -487,15 +491,15 @@ try:
 			cnt += 1
 			if cnt % 10000 == 0:
 				import ipdb
-				ipdb.set_trace()
+			ipdb.set_trace()
 			print("Debug vis")
-			sleeping(simulation_context, viewport_window_list, ros_camera_list, raytracing=config["rtx_mode"].get())
+			sleeping(simulation_context, viewport_window_list, raytracing=config["rtx_mode"].get())
 
 	reversing_timeline_ratio = compute_timeline_ratio(human_anim_len, config["reverse_strategy"].get(),
-                                                  experiment_length)
+	                                                  experiment_length)
 
 	print(f"The reversing ratio is {reversing_timeline_ratio}.\n"
-      f"This implies that that every {experiment_length / reversing_timeline_ratio} frames we reverse the animations")
+	      f"This implies that that every {experiment_length / reversing_timeline_ratio} frames we reverse the animations")
 	cnt_reversal = 1
 	# example
 	# exp length: 600, ratio: 4
@@ -521,7 +525,7 @@ try:
 					sleeping(simulation_context, viewport_window_list, raytracing=config["rtx_mode"].get())
 				starting_to_pub = True
 				timeline.set_current_time(min(- 1 / (config["physics_hz"].get() / ratio_camera),
-        -abs(config["bootstrap_exploration"].get())))
+				                              -abs(config["bootstrap_exploration"].get())))
 				simulation_step = int(timeline.get_current_time() * config["physics_hz"].get()) - 1
 				reset_physics(timeline, kit, simulation_context)
 				print("Bootstrap started")
@@ -531,7 +535,7 @@ try:
 			timeline.set_current_time(0)
 			reset_physics(timeline, kit, simulation_context)
 			move_humans_to_ground(my_humans_heights, human_prim_list, simulation_step / ratio_camera, meters_per_unit,
-                              config["max_distance_human_ground"].get())
+			                      config["max_distance_human_ground"].get())
 			print("Starting recording NOW!")
 			msg = String("starting")
 			starting_pub.publish(msg)

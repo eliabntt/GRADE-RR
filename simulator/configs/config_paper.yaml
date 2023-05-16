@@ -1,19 +1,20 @@
 # GENERAL NOTE the paths need to be ABSOLUTE!
-env_path: "/media/ebonetto/WindowsData/Demo_GRADE"
-#env_path: "/ps/project/irotate/3DFRONT/USD-exports"
-use_stl: True # this disable stl loading thus placement AND robot heading
+env_path: "/ps/project/irotate/3DFRONT/USD-exports"
+use_stl: True # this disable stl loading thus placement AND initial robot heading
+use_npy: True # use limits of the environment saved in the npy file located in the same folder of the environment
+meters_per_unit: 0.01
 human_path: "/ps/project/irotate/cloth3d/exported_usd/"
-base_env_path: "/home/ebonetto/.local/share/ov/pkg/isaac_sim-2021.2.1/isaac_sim_manager/usds/env_base.usd"
+base_env_path: "/media/ebonetto/WindowsData/ov/isaac_sim-2022.2.1/GRADE-RR/usds/env_base.usd"
 reload_references: False
 generate_map: True
 clean_base_env: False
 only_placement: False
-robot_mesh_path: "/home/ebonetto/.local/share/ov/pkg/isaac_sim-2021.2.1/isaac_sim_manager/meshes/drone.dae"
-base_robot_path: "/home/ebonetto/.local/share/ov/pkg/isaac_sim-2021.2.1/isaac_sim_manager/usds/drone_paper.usd"
+robot_mesh_path: "/media/ebonetto/WindowsData/ov/isaac_sim-2022.2.1/GRADE-RR/meshes/drone.dae"
+base_robot_path: "/media/ebonetto/WindowsData/ov/isaac_sim-2022.2.1/GRADE-RR/usds/drone_2022.usd"
 out_folder: "/media/ebonetto/WindowsData/exp_out2/"
 out_folder_npy: "/media/ebonetto/WindowsData/exp_out2/"
 fps: 30
-num_robots: 1
+num_robots: 2
 num_humans: 40
 max_distance_human_ground: 0.1 # max distance from human to ground to be consider to force the first frame grounding of animations
 allow_collision: 200

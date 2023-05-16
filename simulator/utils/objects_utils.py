@@ -98,7 +98,7 @@ def load_google_obj(rng=np.random.default_rng(), config=None, scale = 1):
 	omni.usd.create_material_input(
 		mtl_prim,
 		"diffuse_texture",
-		"my-computer://" + texture_list,
+		"my-computer://" + texture_list, # my-computer seems necessary
 		Sdf.ValueTypeNames.Asset,
 	)
 	obj_shade = UsdShade.Material(mtl_prim)

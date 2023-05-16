@@ -11,7 +11,7 @@ import omni.kit
 import os
 import pickle as pkl
 # ros imports
-import rospy
+import rospy, rosgraph
 import time
 import trimesh
 from PIL import Image
@@ -25,7 +25,7 @@ from omni.isaac.core.utils.carb import set_carb_setting
 from omni.isaac.core.utils.extensions import enable_extension, disable_extension
 from omni.isaac.core.utils.stage import is_stage_loading, set_stage_up_axis
 from omni.isaac.dynamic_control import _dynamic_control
-from omni.isaac.imu_sensor import _imu_sensor
+import omni.isaac.IsaacSensorSchema as IsaacSensorSchema
 from omni.isaac.synthetic_recorder import extension_custom
 from omni.physxcommands import SetStaticColliderCommand, RemoveStaticColliderCommand
 from pxr import UsdGeom, Gf, Usd, UsdSkel, AnimationSchema, Semantics, UsdPhysics, Sdf, UsdShade
@@ -67,22 +67,40 @@ def change_shader_path(shader_path: str):
     stage = omni.usd.get_context().get_stage()
     shader = stage.GetPrimAtPath(shader_path)
     if 'inputs:diffuse_texture' in shader.GetPropertyNames():
-        old_path = str(shader.GetAttribute('inputs:diffuse_texture').Get())
-        new_path = old_path.replace("@", "")
-        # print(f"Changing path {old_path}")
-        if "something" in old_path or "P:" in old_path:
-            new_path = old_path.replace(ntpath.sep, os.sep).replace('P:/', '').replace("@", "")
-        elif "somethingelse" in old_path.lower():
-            splitted = old_path.split(ntpath.sep)
-            tmp_path = ""
-            for i in splitted:
-                tmp_path += i + ntpath.sep
-                if "something" in i:
-                    break
-            tmp_path = tmp_path.replace(ntpath.sep, os.sep)
-            new_path = old_path.replace(ntpath.sep, os.sep).replace(tmp_path, '').replace(
-                "@", "")
-        shader.GetAttribute('inputs:diffuse_texture').Set(new_path)
+      old_path = str(shader.GetAttribute('inputs:diffuse_texture').Get().resolvedPath)
+      new_path = old_path.replace("@", "")
+      # print(f"Changing path {old_path}")
+      if "something" in old_path or "P:" in old_path:
+        new_path = old_path.replace(ntpath.sep, os.sep).replace('P:/', '').replace("@", "")
+      elif "somethingelse" in old_path.lower():
+        splitted = old_path.split(ntpath.sep)
+        tmp_path = ""
+        for i in splitted:
+          tmp_path += i + ntpath.sep
+          if "something" in i:
+            break
+        tmp_path = tmp_path.replace(ntpath.sep, os.sep)
+        new_path = old_path.replace(ntpath.sep, os.sep).replace(tmp_path, '').replace(
+          "@", "")
+      shader.GetAttribute('inputs:diffuse_texture').Set(new_path)
+
+    if 'inputs:reflectionroughness_texture' in shader.GetPropertyNames():
+      old_path = str(shader.GetAttribute('inputs:reflectionroughness_texture').Get().resolvedPath)
+      new_path = old_path.replace("@", "")
+      # print(f"Changing path {old_path}")
+      if "something" in old_path or "P:" in old_path:
+          new_path = old_path.replace(ntpath.sep, os.sep).replace('P:/', '').replace("@", "")
+      elif "somethingelse" in old_path.lower():
+          splitted = old_path.split(ntpath.sep)
+          tmp_path = ""
+          for i in splitted:
+              tmp_path += i + ntpath.sep
+              if "something" in i:
+                  break
+          tmp_path = tmp_path.replace(ntpath.sep, os.sep)
+          new_path = old_path.replace(ntpath.sep, os.sep).replace(tmp_path, '').replace(
+              "@", "")
+      shader.GetAttribute('inputs:reflectionroughness_texture').Set(new_path)
 
 
 def set_colliders(path_main_asset: str, value: bool):
@@ -488,9 +506,9 @@ def toggle_dynamic_objects(dynamic_prims: list, status: bool):
         imageable.MakeInvisible()
       imageable = []
 
-def reset_physics(timeline, kit, simulation_context):
+def reset_physics(timeline, simulation_context):
     timeline.pause()
-    kit.update()
+    simulation_context.step()
     simulation_context.reset()
-    kit.update()
+    simulation_context.step()
     timeline.play()

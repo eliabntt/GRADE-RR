@@ -125,7 +125,7 @@ try:
 	#                           exclusive_select=False)
 	#
 	# set_translate(stage.GetPrimAtPath('/my_robot_0/camera_link/Camera_npy_stereo'), [0.5, 0, 0])
-	viewport = create_viewport("/my_robot_0/camera_link/Camera", config["headless"].get(), 0,
+	viewport, _ = create_viewport("/my_robot_0/camera_link/Camera", config["headless"].get(), 0,
 	                           exp_info["config"]["npy_sensor_size"].get(), old_h_ape, old_v_ape)
 	viewport_window_list.append(viewport)
 	is_rtx = exp_info["config"]["rtx_mode"].get()
