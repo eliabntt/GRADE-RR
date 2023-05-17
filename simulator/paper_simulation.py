@@ -451,10 +451,8 @@ try:
 		set_raytracing_settings(config["physics_hz"].get())
 	else:
 		set_pathtracing_settings(config["physics_hz"].get())
-	for prim in stage.Traverse():
-		paths = [str(prim.GetPath())]
-		omni.usd.get_context().get_selection().set_selected_prim_paths(paths, False)
-	omni.usd.get_context().get_selection().set_selected_prim_paths(omni.usd.get_context().get_selection().get_selected_prim_paths(), False)
+
+	omni.usd.get_context().get_selection().clear_selected_prim_paths()
 
 	for _ in range(5):
 		simulation_context.step(render=False)
