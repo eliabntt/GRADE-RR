@@ -1,0 +1,110 @@
+#usda 1.0
+(
+    customLayerData = {
+        dictionary audioSettings = {
+            double dopplerLimit = 2
+            double dopplerScale = 1
+            double nonSpatialTimeScale = 1
+            double spatialTimeScale = 1
+            double speedOfSound = 340
+        }
+        dictionary cameraSettings = {
+            dictionary Front = {
+                double3 position = (0, 0, 1000)
+                double radius = 500
+                double3 target = (0, 0, 0)
+            }
+            dictionary Perspective = {
+                double3 position = (284.0601537893443, 376.0975079160896, 678.3476801943718)
+                double radius = 4103.913656878516
+                double3 target = (2.25830078125, 4.174749374389648, 163.00079822540283)
+            }
+            dictionary Right = {
+                double3 position = (-1000, 0, -2.220446049250313e-13)
+                double radius = 500
+                double3 target = (0, 0, 0)
+            }
+            dictionary Top = {
+                double3 position = (-8.659560562354932e-14, 1000, 2.220446049250313e-13)
+                double radius = 500
+                double3 target = (0, 0, 0)
+            }
+            string boundCamera = "/OmniverseKit_Persp"
+        }
+        dictionary omni_layer = {
+            dictionary muteness = {
+            }
+        }
+        dictionary renderSettings = {
+        }
+    }
+    defaultPrim = "World"
+    metersPerUnit = 0.009999999776482582
+    timeCodesPerSecond = 24
+    upAxis = "Y"
+)
+
+def Xform "World"
+{
+    def DistantLight "defaultLight" (
+        prepend apiSchemas = ["ShapingAPI"]
+        kind = "model"
+    )
+    {
+        float angle = 1
+        float intensity = 3000
+        float shaping:cone:angle = 180
+        float shaping:cone:softness
+        float shaping:focus
+        color3f shaping:focusTint
+        asset shaping:ies:file
+        float3 xformOp:rotateZYX = (315, 0, 0)
+        float3 xformOp:translate = (0, 0, 0)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZYX"]
+    }
+
+    def PointInstancer "PI"
+    {
+        point3f[] positions = [(0, 0, 0), (2, 0, 100), (4, 0, 200), (6, 0, 300)]
+        int[] protoIndices = [1, 0, 1, 0]
+        rel prototypes = [
+            </World/PI/Prototypes/bench/proto_0>,
+            </World/PI/Prototypes/sofa/proto_0>,
+        ]
+        float3[] scales = [(100, 100, 100), (100, 100, 100), (100, 100, 100), (100, 100, 100)]
+
+        def Xform "Prototypes"
+        {
+            def Xform "chair"
+            {
+            }
+
+            def Xform "bench"
+            {
+                def Xform "proto_0" (
+                    prepend apiSchemas = ["SemanticsAPI:Semantics"]
+                    instanceable = true
+                    references = @./bench_golden.usd@
+                )
+                {
+                    string semantic:Semantics:params:semanticData = "bench"
+                    string semantic:Semantics:params:semanticType = "class"
+                }
+            }
+
+            def Xform "sofa"
+            {
+                def Xform "proto_0" (
+                    prepend apiSchemas = ["SemanticsAPI:Semantics"]
+                    instanceable = true
+                    references = @./sofa_golden.usd@
+                )
+                {
+                    string semantic:Semantics:params:semanticData = "sofa"
+                    string semantic:Semantics:params:semanticType = "class"
+                }
+            }
+        }
+    }
+}
+

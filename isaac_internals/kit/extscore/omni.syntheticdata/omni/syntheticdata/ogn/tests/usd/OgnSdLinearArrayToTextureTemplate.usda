@@ -1,0 +1,76 @@
+#usda 1.0
+(
+    doc ="""Generated from node description file OgnSdLinearArrayToTexture.ogn
+Contains templates for node types found in that file."""
+)
+
+def OmniGraph "TestGraph"
+{
+    token evaluator:type = "push"
+    int2 fileFormatVersion = (1, 3)
+    token flatCacheBacking = "Shared"
+    token pipelineStage = "pipelineStageSimulation"
+
+    def OmniGraphNode "Template_omni_syntheticdata_SdLinearArrayToTexture" (
+        docs="""Synthetic Data node to copy the input buffer array into a texture for visualization"""
+    )
+    {
+        token node:type = "omni.syntheticdata.SdLinearArrayToTexture"
+        int node:typeVersion = 1
+
+        # 10 attributes
+        custom float4[] inputs:data = [] (
+            docs="""Buffer array data"""
+        )
+        custom uint inputs:exec (
+            docs="""Trigger"""
+        )
+        custom uint inputs:height = 0 (
+            docs="""Buffer array height"""
+        )
+        custom uint64 inputs:sdDisplayCudaMipmappedArray = 0 (
+            docs="""Visualization texture CUDA mipmapped array pointer"""
+        )
+        custom uint64 inputs:sdDisplayFormat = 0 (
+            docs="""Visualization texture format"""
+        )
+        custom uint inputs:sdDisplayHeight = 0 (
+            docs="""Visualization texture Height"""
+        )
+        custom uint64 inputs:sdDisplayStream = 0 (
+            docs="""Visualization texture CUDA stream pointer"""
+        )
+        custom uint inputs:sdDisplayWidth = 0 (
+            docs="""Visualization texture width"""
+        )
+        custom uint64 inputs:stream = 0 (
+            docs="""Pointer to the CUDA Stream"""
+        )
+        custom uint inputs:width = 0 (
+            docs="""Buffer array width"""
+        )
+
+        # 7 attributes
+        custom uint64 outputs:cudaPtr (
+            docs="""Display texture CUDA pointer"""
+        )
+        custom uint outputs:exec (
+            docs="""Executes when the event is received"""
+        )
+        custom uint64 outputs:format (
+            docs="""Display texture format"""
+        )
+        custom uint64 outputs:handlePtr (
+            docs="""Display texture handle reference"""
+        )
+        custom uint outputs:height (
+            docs="""Display texture height"""
+        )
+        custom uint64 outputs:stream (
+            docs="""Output texture CUDA stream pointer"""
+        )
+        custom uint outputs:width (
+            docs="""Display texture width"""
+        )
+    }
+}

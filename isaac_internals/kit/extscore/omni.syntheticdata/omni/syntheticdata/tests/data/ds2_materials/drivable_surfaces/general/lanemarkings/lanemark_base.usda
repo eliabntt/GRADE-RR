@@ -1,0 +1,135 @@
+#usda 1.0
+(
+    customLayerData = {
+        dictionary audioSettings = {
+            double dopplerLimit = 2
+            double dopplerScale = 1
+            double nonSpatialTimeScale = 1
+            double spatialTimeScale = 1
+            double speedOfSound = 340
+        }
+        dictionary cameraSettings = {
+            dictionary Front = {
+                double3 position = (0, 0, 50000)
+                double radius = 500
+                double3 target = (0, 0, 0)
+            }
+            dictionary Perspective = {
+                double3 position = (-6935.239931790033, -19547.074794813692, 5089.919351828601)
+                double radius = 22297.085322303585
+                double3 target = (-6429.73102943551, -448.8277460206591, -6406.229319922064)
+            }
+            dictionary Right = {
+                double3 position = (-50000, 0, -1.1102230246251565e-11)
+                double radius = 500
+                double3 target = (0, 0, 0)
+            }
+            dictionary Top = {
+                double3 position = (-6.494670421766199e-12, 50000, 1.1102230246251565e-11)
+                double radius = 500
+                double3 target = (0, 0, 0)
+            }
+            string boundCamera = "/OmniverseKit_Persp"
+        }
+        dictionary renderSettings = {
+            float "rtx:post:lensDistortion:cameraFocalLength" = 18.147562
+        }
+    }
+    defaultPrim = "M_Road_Lane_Lines"
+    endTimeCode = 100
+    metersPerUnit = 0.009999999776482582
+    startTimeCode = 0
+    timeCodesPerSecond = 24
+    upAxis = "Y"
+)
+
+def Material "M_Road_Lane_Lines"
+{
+    token outputs:mdl:displacement.connect = </M_Road_Lane_Lines/Shader.outputs:out>
+    token outputs:mdl:surface.connect = </M_Road_Lane_Lines/Shader.outputs:out>
+    token outputs:mdl:volume.connect = </M_Road_Lane_Lines/Shader.outputs:out>
+
+    def Shader "Shader"
+    {
+        uniform token info:implementationSource = "sourceAsset"
+        uniform asset info:mdl:sourceAsset = @..\..\..\..\..\Projects\DS2-Content\USA\NV_SJ_AirportLoop\USD\materials\M_Road_Cracks.mdl@
+        uniform token info:mdl:sourceAsset:subIdentifier = "M_Road_Cracks"
+        asset inputs:Albedo = @omniverse://drivesim-dev.ov.nvidia.com/Users/.derived/compressedTextures/Projects/DS2-Content/USA/NV_SJ_AirportLoop/USD/materials/M_Lane_Lines/ui0ndfjn_2K_Albedo.png.dds@ (
+            colorSpace = "sRGB"
+            customData = {
+                asset default = @omniverse://drivesim-dev/Projects/DS2-Content/USA/NV_SJ_AirportLoop/USD/materials/M_Road_Cracks/asphalt_crack_01_a_bc_ms.png@
+            }
+        )
+        asset inputs:Asphault_Variation_Noise_A = @omniverse://drivesim-dev.ov.nvidia.com/Users/.derived/compressedTextures/Projects/DS2-Content/USA/NV_SJ_AirportLoop/USD/materials/M_Road_Cracks/blend_noise_a.png.dds@ (
+            colorSpace = "raw"
+            customData = {
+                asset default = @omniverse://drivesim-dev/Projects/DS2-Content/USA/NV_SJ_AirportLoop/USD/materials/M_Road_Cracks/blend_noise_a.png@
+            }
+        )
+        asset inputs:Asphault_Variation_Noise_B = @omniverse://drivesim-dev.ov.nvidia.com/Users/.derived/compressedTextures/Projects/DS2-Content/USA/NV_SJ_AirportLoop/USD/materials/M_Road_Cracks/blend_noise_b.png.dds@ (
+            colorSpace = "raw"
+            customData = {
+                asset default = @omniverse://drivesim-dev/Projects/DS2-Content/USA/NV_SJ_AirportLoop/USD/materials/M_Road_Cracks/blend_noise_b.png@
+            }
+        )
+        float inputs:Crack_Normal_Intensity = 1.25 (
+            customData = {
+                float default = 1
+                dictionary range = {
+                    float max = 100000
+                    float min = -100000
+                }
+            }
+        )
+        asset inputs:Normal = @omniverse://drivesim-dev.ov.nvidia.com/Users/.derived/compressedTextures/Projects/DS2-Content/USA/NV_SJ_AirportLoop/USD/materials/M_Lane_Lines/ui0ndfjn_2K_Normal.png.dds@ (
+            colorSpace = "raw"
+            customData = {
+                asset default = @omniverse://drivesim-dev/Projects/DS2-Content/USA/NV_SJ_AirportLoop/USD/materials/M_Road_Cracks/asphalt_crack_01_a_n_ms.png@
+            }
+        )
+        asset inputs:Oil_Streaks_Overlay = @omniverse://drivesim-dev.ov.nvidia.com/Users/.derived/compressedTextures/Projects/DS2-Content/USA/NV_SJ_AirportLoop/USD/materials/M_Road_Cracks/oil_marks_.png.dds@ (
+            colorSpace = "raw"
+            customData = {
+                asset default = @omniverse://drivesim-dev/Projects/DS2-Content/USA/NV_SJ_AirportLoop/USD/materials/M_Road_Cracks/oil_marks_.png@
+            }
+        )
+        asset inputs:Opacity = @omniverse://drivesim-dev.ov.nvidia.com/Users/.derived/compressedTextures/Projects/DS2-Content/USA/NV_SJ_AirportLoop/USD/materials/M_Lane_Lines/ui0ndfjn_2K_Opacity.png.dds@ (
+            colorSpace = "raw"
+            customData = {
+                asset default = @omniverse://drivesim-dev/Projects/DS2-Content/USA/NV_SJ_AirportLoop/USD/materials/M_Road_Cracks/asphalt_crack_01_a_opacity.png@
+            }
+        )
+        float inputs:Opacity_Adjust = 0.425 (
+            customData = {
+                float default = 1
+                dictionary range = {
+                    float max = 100000
+                    float min = -100000
+                }
+            }
+        )
+        asset inputs:ORM = @omniverse://drivesim-dev.ov.nvidia.com/Users/.derived/compressedTextures/Projects/DS2-Content/USA/NV_SJ_AirportLoop/USD/materials/M_Lane_Lines/ui0ndfjn_2K_ORM.png.dds@ (
+            colorSpace = "raw"
+            customData = {
+                asset default = @omniverse://drivesim-dev/Projects/DS2-Content/USA/NV_SJ_AirportLoop/USD/materials/M_Road_Cracks/asphalt_crack_01_a_orm_ms.png@
+            }
+        )
+        asset inputs:Puddle_Blend = @omniverse://drivesim-dev.ov.nvidia.com/Users/.derived/compressedTextures/Projects/DS2-Content/USA/NV_SJ_AirportLoop/USD/materials/M_Road_Cracks/blend_noise_a.png.dds@ (
+            colorSpace = "raw"
+            customData = {
+                asset default = @omniverse://drivesim-dev/Projects/DS2-Content/USA/NV_SJ_AirportLoop/USD/materials/M_Road_Cracks/blend_noise_a.png@
+            }
+        )
+        float inputs:Road_Crack_WORLD_UV = 1 (
+            customData = {
+                float default = 0
+                dictionary range = {
+                    float max = 100000
+                    float min = -100000
+                }
+            }
+        )
+        token outputs:out
+    }
+}
+

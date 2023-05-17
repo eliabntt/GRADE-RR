@@ -29,7 +29,7 @@ import carb
 import omni
 import numpy as np
 import builtins
-
+from pxr import Usd
 
 class SyntheticDataHelper:
     def __init__(self):
@@ -43,7 +43,6 @@ class SyntheticDataHelper:
         self.sd = sd
 
         self.sd_interface = self.sd.acquire_syntheticdata_interface()
-        self.viewport = omni.kit.viewport_legacy.get_viewport_interface()
         self.carb_settings = carb.settings.acquire_settings_interface()
         self.sensor_helper_lib = sensors
         self.generic_helper_lib = helpers
@@ -100,13 +99,13 @@ class SyntheticDataHelper:
         current_time = omni.timeline.get_timeline_interface().get_current_time()
         view_params = self.generic_helper_lib.get_view_params(viewport)
         hfov = 2 * math.atan(view_params["horizontal_aperture"] / (2 * view_params["focal_length"]))
-        import ipdb; ipdb.set_trace()
-        #vfov = 2 * math.atan(view_params["vertical_aperture"] / (2 * view_params["focal_length"]))
+        vfov = prim.GetAttribute('verticalAperture').Get()
         view_proj_mat = self.generic_helper_lib.get_view_proj_mat(view_params)
 
         return {
             "pose": np.array(prim_tf),
             "hfov": hfov,
+            "vfov": vfov,
             "ctime": current_time,
             "focal_length": view_params["focal_length"],
             "horizontal_aperture": view_params["horizontal_aperture"],
@@ -121,10 +120,13 @@ class SyntheticDataHelper:
         stage = omni.usd.get_context().get_stage()
         mappings = self.generic_helper_lib.get_instance_mappings()
         pose = []
+        timeline = omni.timeline.get_timeline_interface()
+        time = timeline.get_current_time() * timeline.get_time_codes_per_seconds()
+        time = Usd.TimeCode(time)
         for m in mappings:
             prim_path = m[1]
             prim = stage.GetPrimAtPath(prim_path)
-            prim_tf = omni.usd.get_world_transform_matrix(prim)
+            prim_tf = omni.usd.get_world_transform_matrix(prim, time)
             pose.append((str(prim_path), m[2], str(m[3]), np.array(prim_tf)))
         return pose
 

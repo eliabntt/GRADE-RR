@@ -1,0 +1,142 @@
+#usda 1.0
+(
+    customLayerData = {
+        dictionary cameraSettings = {
+            dictionary Front = {
+                double radius = 500
+                double3 target = (0, 0, 0)
+            }
+            dictionary Perspective = {
+                double3 position = (148.34604816491145, 148.34604816491355, 148.34604816490918)
+                double3 target = (-1.8474111129762605e-12, 2.2737367544323206e-13, -3.950617610826157e-12)
+            }
+            dictionary Right = {
+                double radius = 500
+                double3 target = (0, 0, 0)
+            }
+            dictionary Top = {
+                double radius = 500
+                double3 target = (0, 0, 0)
+            }
+            string boundCamera = "/OmniverseKit_Persp"
+        }
+        dictionary renderSettings = {
+            float "rtx:post:lensDistortion:cameraFocalLength" = 18.147562
+        }
+    }
+    defaultPrim = "road_base"
+    endTimeCode = 100
+    metersPerUnit = 0.009999999776482582
+    startTimeCode = 0
+    timeCodesPerSecond = 24
+    upAxis = "Y"
+)
+
+def Material "road_base"
+{
+    token outputs:mdl:displacement.connect = </road_base/Shader.outputs:out>
+    token outputs:mdl:surface.connect = </road_base/Shader.outputs:out>
+    token outputs:mdl:volume.connect = </road_base/Shader.outputs:out>
+
+    def Shader "Shader"
+    {
+        uniform token info:implementationSource = "sourceAsset"
+        uniform asset info:mdl:sourceAsset = @./road_base.mdl@
+        uniform token info:mdl:sourceAsset:subIdentifier = "road_base"
+        float inputs:AlbedoMult = 1.75 (
+            customData = {
+                float default = 2
+                dictionary range = {
+                    float max = 100000
+                    float min = -100000
+                }
+            }
+        )
+        float inputs:Puddle_NoiseBlend = 0.2 (
+            customData = {
+                float default = 1
+                dictionary range = {
+                    float max = 100000
+                    float min = -100000
+                }
+            }
+        )
+        asset inputs:PuddleNoise = @omniverse://drivesim-dev/Library/ds2_materials/drivable_surfaces/general/road/road_base/t_noise01.png@ (
+            colorSpace = "sRGB"
+            customData = {
+                asset default = @/Z18E_3A/ZB8material_2Dflattening_2Dassets/ds2_materials/drivable_surfaces/general/road/road_base/t_noise01.png@
+            }
+        )
+        float inputs:RoughnessMult_Order2 = 0.5 (
+            customData = {
+                float default = 1
+                dictionary range = {
+                    float max = 100000
+                    float min = -100000
+                }
+            }
+        )
+        float inputs:RoughnessOffset_Order3 = 0 (
+            customData = {
+                float default = -0.085716
+                dictionary range = {
+                    float max = 100000
+                    float min = -100000
+                }
+            }
+        )
+        float inputs:RoughnessPow_Order1 = 0.5 (
+            customData = {
+                float default = 1.5
+                dictionary range = {
+                    float max = 100000
+                    float min = -100000
+                }
+            }
+        )
+        asset inputs:Set1Set2BlendNoise = @omniverse://drivesim-dev/Library/ds2_materials/drivable_surfaces/general/road/road_base/t_noise_d.png@ (
+            colorSpace = "sRGB"
+            customData = {
+                asset default = @/Z18E_3A/ZB8material_2Dflattening_2Dassets/ds2_materials/drivable_surfaces/general/road/road_base/t_noise_d.png@
+            }
+        )
+        float inputs:Set1Tile = 4 (
+            customData = {
+                float default = 2.5
+                dictionary range = {
+                    float max = 100000
+                    float min = -100000
+                }
+            }
+        )
+        float inputs:Set2Tile = 8 (
+            customData = {
+                float default = 4
+                dictionary range = {
+                    float max = 100000
+                    float min = -100000
+                }
+            }
+        )
+        float inputs:SpecularMult_Order2 = 0.2 (
+            customData = {
+                float default = 1
+                dictionary range = {
+                    float max = 100000
+                    float min = -100000
+                }
+            }
+        )
+        float inputs:SpecularPow_Order1 = 0.3 (
+            customData = {
+                float default = 1
+                dictionary range = {
+                    float max = 100000
+                    float min = -100000
+                }
+            }
+        )
+        token outputs:out
+    }
+}
+

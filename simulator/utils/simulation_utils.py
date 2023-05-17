@@ -130,19 +130,16 @@ def compute_timeline_ratio(human_anim_len, reverse_strategy, experiment_length):
 def pub_and_write_images(my_recorder, simulation_context, viewport_window_list, second_start,
                          ros_camera_list, raytracing):
 	sleeping(simulation_context, viewport_window_list, raytracing)
-
+	ctime = omni.timeline.get_timeline_interface().get_current_time()
 	for i, cam, outs in ros_camera_list:
 		print(f"Publishing camera {cam}...")
 		for output in outs:
-			og.Controller.attribute(output).set(1)
-			og.Controller.attribute(output).set(1)
-			og.Controller.attribute(output).set(1)
+			og.Controller.attribute(output+ ".inputs:step").set(1)
 	simulation_context.render()
 	for i, cam, outs in ros_camera_list:
 		for output in outs:
-			og.Controller.attribute(output).set(0)
-			og.Controller.attribute(output).set(0)
-			og.Controller.attribute(output).set(0)
+			og.Controller.attribute(output+ ".inputs:step").set(0)
+	omni.timeline.get_timeline_interface().set_current_time(ctime)
 
 	if my_recorder._enable_record and second_start:
 		my_recorder._update()
@@ -161,24 +158,32 @@ def sleeping(simulation_context, viewport_window_list, raytracing, totalSpp=64, 
   carb.settings.get_settings().get("/rtx/pathtracing/spp")
   """
 	# todo is there a better way? I don"t think so, this is variable
+	# fixme making sure timeline does not advance
+	timeline = omni.timeline.get_timeline_interface()
+	mytime = timeline.get_current_time()
+
 	if raytracing:
 		sleep_time = 0
 		start = time.time()
 		for _ in range(100):
 			for vp in viewport_window_list:
 				if vp.fps == 0: continue
-				sleep_time = max(1 / vp.get_fps() * 1.1, sleep_time)
+				sleep_time = max(1 / vp.fps * 1.1, sleep_time)
 			if sleep_time != 0 and time.time() - start > sleep_time * 2:  # overly cautious
 				break
 			simulation_context.render()
+			timeline.set_current_time(mytime)
 	else:
 		cnt = totalSpp
 		increase = spp
 		while cnt >= 0:
 			simulation_context.render()
+			timeline.set_current_time(mytime)
 			cnt -= increase
 		simulation_context.render()
+		timeline.set_current_time(mytime)
 		simulation_context.render()
+		timeline.set_current_time(mytime)
 	time.sleep(0.2)
 
 

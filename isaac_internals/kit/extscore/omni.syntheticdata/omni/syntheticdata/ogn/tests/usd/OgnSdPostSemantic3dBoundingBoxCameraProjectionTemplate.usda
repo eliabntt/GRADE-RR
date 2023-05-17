@@ -1,0 +1,76 @@
+#usda 1.0
+(
+    doc ="""Generated from node description file OgnSdPostSemantic3dBoundingBoxCameraProjection.ogn
+Contains templates for node types found in that file."""
+)
+
+def OmniGraph "TestGraph"
+{
+    token evaluator:type = "push"
+    int2 fileFormatVersion = (1, 3)
+    token flatCacheBacking = "Shared"
+    token pipelineStage = "pipelineStageSimulation"
+
+    def OmniGraphNode "Template_omni_syntheticdata_SdPostSemantic3dBoundingBoxCameraProjection" (
+        docs="""Synthetic Data node to project 3d bounding boxes data in camera space."""
+    )
+    {
+        token node:type = "omni.syntheticdata.SdPostSemantic3dBoundingBoxCameraProjection"
+        int node:typeVersion = 1
+
+        # 14 attributes
+        custom float[] inputs:cameraFisheyeParams = [] (
+            docs="""Camera fisheye projection parameters"""
+        )
+        custom int inputs:cameraModel = 0 (
+            docs="""Camera model (pinhole or fisheye models)"""
+        )
+        custom float2 inputs:cameraNearFar = (0.0, 0.0) (
+            docs="""Camera near/far clipping range"""
+        )
+        custom uint inputs:exec (
+            docs="""Trigger"""
+        )
+        custom uint64 inputs:gpu = 0 (
+            docs="""Pointer to shared context containing gpu foundations"""
+        )
+        custom uint64 inputs:instanceMappingInfoSDPtr = 0 (
+            docs="""uint buffer pointer containing the following information : [numInstances, minInstanceId, numSemantics, minSemanticId, numProtoSemantic]"""
+        )
+        custom float inputs:metersPerSceneUnit = 0.01 (
+            docs="""Scene units to meters scale"""
+        )
+        custom int2 inputs:renderProductResolution = (0, 0) (
+            docs="""RenderProduct resolution"""
+        )
+        custom uint64 inputs:rp = 0 (
+            docs="""Pointer to render product for this view"""
+        )
+        custom uint64 inputs:sdSemBBoxExtentCudaPtr = 0 (
+            docs="""Cuda buffer containing the extent of the bounding boxes as a float4=(u_min,v_min,u_max,v_max) for 2D or a float6=(xmin,ymin,zmin,xmax,ymax,zmax) in object space for 3D"""
+        )
+        custom uint64 inputs:sdSemBBoxInfosCudaPtr = 0 (
+            docs="""Cuda buffer containing valid bounding boxes infos"""
+        )
+        custom uint64 inputs:semanticWorldTransformSDCudaPtr = 0 (
+            docs="""cuda float44 buffer pointer of size numSemantics containing the world semantic transform"""
+        )
+        custom float2 inputs:viewportNearFar = (1.0, 10000000.0) (
+            docs="""near and far plane (in scene units) used to clip the 3d bounding boxes."""
+        )
+        custom int2 inputs:viewportResolution = (65536, 65536) (
+            docs="""viewport width and height (in pixels) used to clip the 3d bounding boxes."""
+        )
+
+        # 3 attributes
+        custom uint outputs:exec (
+            docs="""Trigger"""
+        )
+        custom uint64 outputs:sdSemBBox3dCamCornersCudaPtr (
+            docs="""Cuda buffer containing the projection of the 3d bounding boxes on the camera plane represented as a float4=(u,v,z,a) for each bounding box corners"""
+        )
+        custom uint64 outputs:sdSemBBox3dCamExtentCudaPtr (
+            docs="""Cuda buffer containing the 2d extent of the 3d bounding boxes on the camera plane represented as a float6=(u_min,u_max,v_min,v_max,z_min,z_max)"""
+        )
+    }
+}

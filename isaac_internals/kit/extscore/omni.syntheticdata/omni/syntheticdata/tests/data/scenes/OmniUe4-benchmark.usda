@@ -1,0 +1,445 @@
+#usda 1.0
+(
+    customLayerData = {
+        dictionary audioSettings = {
+            double dopplerLimit = 2
+            double dopplerScale = 1
+            token enableDoppler = "off"
+            double nonSpatialTimeScale = 1
+            double spatialTimeScale = 1
+            double speedOfSound = 340
+        }
+        dictionary cameraSettings = {
+            dictionary Front = {
+                double radius = 500
+                double3 target = (0, 0, 0)
+            }
+            dictionary Perspective = {
+                double3 position = (-24.033213095504543, -12999.287136619847, 1.064741362676223)
+                double3 target = (-28.947327053926287, -12864.479153751896, -24.096511278608087)
+            }
+            dictionary Right = {
+                double radius = 500
+                double3 target = (0, 0, 0)
+            }
+            dictionary Top = {
+                double radius = 500
+                double3 target = (0, 0, 0)
+            }
+            string boundCamera = "/OmniverseKit_Persp"
+        }
+        dictionary omni_layer = {
+            dictionary muteness = {
+            }
+        }
+        dictionary renderSettings = {
+            float "rtx:materialflattener:decalDistanceTolerance" = 1000
+            token "rtx:materialflattener:upAxis" = "z"
+            float "rtx:post:lensDistortion:cameraFocalLength" = 18.147562
+        }
+    }
+    defaultPrim = "World"
+    endTimeCode = 100
+    metersPerUnit = 0.009999999776482582
+    startTimeCode = 0
+    timeCodesPerSecond = 24
+    upAxis = "Z"
+)
+
+def Xform "World"
+{
+    def DistantLight "defaultLight" (
+        prepend apiSchemas = ["ShapingAPI"]
+    )
+    {
+        float angle = 1
+        float intensity = 3000
+        float shaping:cone:angle = 180
+        float shaping:cone:softness
+        float shaping:focus
+        color3f shaping:focusTint
+        asset shaping:ies:file
+        float3 xformOp:rotateZYX = (49.25, 359.75, 0)
+        float3 xformOp:translate = (0, 0, 0)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZYX"]
+    }
+
+    def Scope "Looks"
+    {
+        def Material "road_base"
+        {
+            token outputs:mdl:displacement.connect = </World/Looks/road_base/Shader.outputs:out>
+            token outputs:mdl:surface.connect = </World/Looks/road_base/Shader.outputs:out>
+            token outputs:mdl:volume.connect = </World/Looks/road_base/Shader.outputs:out>
+
+            def Shader "Shader"
+            {
+                uniform token info:implementationSource = "sourceAsset"
+                uniform asset info:mdl:sourceAsset = @../ds2_materials/drivable_surfaces/general/road/road_base.mdl@
+                uniform token info:mdl:sourceAsset:subIdentifier = "road_base"
+                float inputs:AlbedoMult = 1.75 (
+                    customData = {
+                        float default = 2
+                    }
+                )
+                float inputs:Puddle_NoiseBlend = 0.2 (
+                    customData = {
+                        float default = 1
+                    }
+                )
+                float inputs:RoughnessMult_Order2 = 0.5 (
+                    customData = {
+                        float default = 1
+                    }
+                )
+                float inputs:RoughnessOffset_Order3 = 0 (
+                    customData = {
+                        float default = -0.085716
+                    }
+                )
+                float inputs:RoughnessPow_Order1 = 0.5 (
+                    customData = {
+                        float default = 1.5
+                    }
+                )
+                float inputs:WorldSpaceUVMult = 50 (
+                    customData = {
+                        float default = 5000
+                    }
+                )
+                token outputs:out
+            }
+        }
+
+        def Material "road_base_omniue4"
+        {
+            token outputs:mdl:displacement.connect = </World/Looks/road_base/Shader.outputs:out>
+            token outputs:mdl:surface.connect = </World/Looks/road_base/Shader.outputs:out>
+            token outputs:mdl:volume.connect = </World/Looks/road_base/Shader.outputs:out>
+
+            def Shader "Shader"
+            {
+                uniform token info:implementationSource = "sourceAsset"
+                uniform asset info:mdl:sourceAsset = @../ds2_materials/drivable_surfaces/general/road/road_base_omniue4.mdl@
+                uniform token info:mdl:sourceAsset:subIdentifier = "road_base"
+                float inputs:AlbedoMult = 1.75 (
+                    customData = {
+                        float default = 2
+                    }
+                )
+                float inputs:Puddle_NoiseBlend = 0.2 (
+                    customData = {
+                        float default = 1
+                    }
+                )
+                float inputs:RoughnessMult_Order2 = 0.5 (
+                    customData = {
+                        float default = 1
+                    }
+                )
+                float inputs:RoughnessOffset_Order3 = 0 (
+                    customData = {
+                        float default = -0.085716
+                    }
+                )
+                float inputs:RoughnessPow_Order1 = 0.5 (
+                    customData = {
+                        float default = 1.5
+                    }
+                )
+                float inputs:WorldSpaceUVMult = 50 (
+                    customData = {
+                        float default = 5000
+                    }
+                )
+                token outputs:out
+            }
+        }
+
+        def Material "DrivesimPBR_LaneMarking"
+        {
+            token outputs:mdl:displacement.connect = </World/Looks/DrivesimPBR_LaneMarking/Shader.outputs:out>
+            token outputs:mdl:surface.connect = </World/Looks/DrivesimPBR_LaneMarking/Shader.outputs:out>
+            token outputs:mdl:volume.connect = </World/Looks/DrivesimPBR_LaneMarking/Shader.outputs:out>
+
+            def Shader "Shader"
+            {
+                uniform token info:implementationSource = "sourceAsset"
+                uniform asset info:mdl:sourceAsset = @../ds2_materials/DrivesimPBR.mdl@
+                uniform token info:mdl:sourceAsset:subIdentifier = "DrivesimPBR"
+                float inputs:alpha_cutout_cutoff = 1 (
+                    customData = {
+                        float default = 1
+                        dictionary range = {
+                            float max = 1
+                            float min = 0
+                        }
+                    }
+                    displayGroup = "Alpha"
+                    displayName = "Alpha Cutout Cutoff"
+                )
+                asset inputs:diffuse_texture = @../ds2_materials/drivable_surfaces/general/lanemarkings/lw/lw_basecolor.png@ (
+                    colorSpace = "auto"
+                    customData = {
+                        asset default = @@
+                    }
+                    displayGroup = "Diffuse"
+                    displayName = "Albedo Map"
+                )
+                bool inputs:enable_opacity = 0 (
+                    customData = {
+                        bool default = 0
+                    }
+                    displayGroup = "Alpha"
+                    displayName = "Enable Opacity"
+                )
+                bool inputs:enable_opacity_cutout = 1 (
+                    customData = {
+                        bool default = 0
+                    }
+                    displayGroup = "Alpha"
+                    displayName = "Enable Alpha Cutout"
+                )
+                asset inputs:normalmap_texture = @../ds2_materials/drivable_surfaces/general/lanemarkings/lw/lw_n.png@ (
+                    colorSpace = "auto"
+                    customData = {
+                        asset default = @@
+                    }
+                    displayGroup = "Normal"
+                    displayName = "Normal Map"
+                )
+                asset inputs:opacity_texture = @../ds2_materials/drivable_surfaces/general/lanemarkings/lw/lw_opacity.png@ (
+                    colorSpace = "auto"
+                    customData = {
+                        asset default = @@
+                    }
+                    displayGroup = "Alpha"
+                    displayName = "Opacity Map"
+                )
+                asset inputs:ORM_texture = @../ds2_materials/drivable_surfaces/general/lanemarkings/lw/lw_orm.png@ (
+                    colorSpace = "auto"
+                    customData = {
+                        asset default = @@
+                    }
+                    displayGroup = "Reflectivity"
+                    displayName = "ORM Map"
+                )
+                asset inputs:reflectionroughness_texture = @../ds2_materials/drivable_surfaces/general/lanemarkings/lw/lw_r.png@ (
+                    colorSpace = "auto"
+                    customData = {
+                        asset default = @@
+                    }
+                    displayGroup = "Specular"
+                    displayName = "Roughness Map"
+                )
+                float inputs:specular_constant = 1 (
+                    customData = {
+                        float default = 1
+                        dictionary range = {
+                            float max = 1
+                            float min = 0
+                        }
+                    }
+                    displayGroup = "Specular"
+                    displayName = "Specular amount"
+                )
+                float2 inputs:texture_scale = (0.39999998, 115.7) (
+                    customData = {
+                        float2 default = (1, 1)
+                    }
+                    displayGroup = "UV"
+                    displayName = "Texture Scale"
+                )
+                token outputs:out
+            }
+        }
+
+        def Material "DrivesimPBR"
+        {
+            token outputs:mdl:displacement.connect = </World/Looks/DrivesimPBR/Shader.outputs:out>
+            token outputs:mdl:surface.connect = </World/Looks/DrivesimPBR/Shader.outputs:out>
+            token outputs:mdl:volume.connect = </World/Looks/DrivesimPBR/Shader.outputs:out>
+
+            def Shader "Shader"
+            {
+                uniform token info:implementationSource = "sourceAsset"
+                uniform asset info:mdl:sourceAsset = @../ds2_materials/DrivesimPBR.mdl@
+                uniform token info:mdl:sourceAsset:subIdentifier = "DrivesimPBR"
+                float inputs:ao_to_diffuse = 0 (
+                    customData = {
+                        float default = 0
+                    }
+                    displayGroup = "AO"
+                    displayName = "AO to Diffuse"
+                )
+                asset inputs:diffuse_texture = @../ds2_materials/drivable_surfaces/general/asphalt/asphalt_base/asphalt_base_basecolor_ms.png@ (
+                    colorSpace = "auto"
+                    customData = {
+                        asset default = @@
+                    }
+                    displayGroup = "Diffuse"
+                    displayName = "Albedo Map"
+                )
+                bool inputs:enable_opacity = 0 (
+                    customData = {
+                        bool default = 0
+                    }
+                    displayGroup = "Alpha"
+                    displayName = "Enable Opacity"
+                )
+                bool inputs:enable_ORM_texture = 1 (
+                    customData = {
+                        bool default = 1
+                    }
+                    displayGroup = "Reflectivity"
+                    displayName = "Enable ORM Texture"
+                )
+                bool inputs:enable_retroreflection = 0 (
+                    customData = {
+                        bool default = 0
+                    }
+                    displayGroup = "Reflectivity"
+                    displayName = "Enable Retroreflection"
+                )
+                asset inputs:normalmap_texture = @../ds2_materials/drivable_surfaces/general/asphalt/asphalt_base/asphalt_base_n_ms.png@ (
+                    colorSpace = "auto"
+                    customData = {
+                        asset default = @@
+                    }
+                    displayGroup = "Normal"
+                    displayName = "Normal Map"
+                )
+                asset inputs:ORM_texture = @../ds2_materials/drivable_surfaces/general/asphalt/asphalt_base/asphalt_base_orm_ms.png@ (
+                    colorSpace = "auto"
+                    customData = {
+                        asset default = @@
+                    }
+                    displayGroup = "Reflectivity"
+                    displayName = "ORM Map"
+                )
+                token outputs:out
+            }
+        }
+
+        def Material "OmniPBR"
+        {
+            token outputs:mdl:displacement.connect = </World/Looks/OmniPBR/Shader.outputs:out>
+            token outputs:mdl:surface.connect = </World/Looks/OmniPBR/Shader.outputs:out>
+            token outputs:mdl:volume.connect = </World/Looks/OmniPBR/Shader.outputs:out>
+
+            def Shader "Shader"
+            {
+                uniform token info:implementationSource = "sourceAsset"
+                uniform asset info:mdl:sourceAsset = @OmniPBR.mdl@
+                uniform token info:mdl:sourceAsset:subIdentifier = "OmniPBR"
+                token outputs:out
+            }
+        }
+
+        def Material "DrivesimPBR_01"
+        {
+            token outputs:mdl:displacement.connect = </World/Looks/DrivesimPBR_01/Shader.outputs:out>
+            token outputs:mdl:surface.connect = </World/Looks/DrivesimPBR_01/Shader.outputs:out>
+            token outputs:mdl:volume.connect = </World/Looks/DrivesimPBR_01/Shader.outputs:out>
+
+            def Shader "Shader"
+            {
+                uniform token info:implementationSource = "sourceAsset"
+                uniform asset info:mdl:sourceAsset = @E:/material-flattening-assets/ds2_materials/DrivesimPBR.mdl@
+                uniform token info:mdl:sourceAsset:subIdentifier = "DrivesimPBR"
+                token outputs:out
+            }
+        }
+
+        def Material "DrivesimPBR_2"
+        {
+            token outputs:mdl:displacement.connect = </World/Looks/DrivesimPBR_2/Shader.outputs:out>
+            token outputs:mdl:surface.connect = </World/Looks/DrivesimPBR_2/Shader.outputs:out>
+            token outputs:mdl:volume.connect = </World/Looks/DrivesimPBR_2/Shader.outputs:out>
+
+            def Shader "Shader"
+            {
+                uniform token info:implementationSource = "sourceAsset"
+                uniform asset info:mdl:sourceAsset = @../ds2_materials/DrivesimPBR.mdl@
+                uniform token info:mdl:sourceAsset:subIdentifier = "DrivesimPBR"
+                token outputs:out
+            }
+        }
+    }
+
+    def "road_base" (
+        prepend references = @../ds2_materials/drivable_surfaces/general/road/road_base.usda@
+    )
+    {
+        float3 xformOp:rotateXYZ = (0, -0, 0)
+        float3 xformOp:scale = (1, 1, 1)
+        double3 xformOp:translate = (-118.774872, -116.608191, -1723.065986)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+    }
+
+    def Xform "road_omniue4" (
+        prepend references = @maya2_atlas_road_tile_237_01.usd2.usda@
+    )
+    {
+        float3 xformOp:rotateZYX = (-0, 0, -0)
+        float3 xformOp:scale = (1, 120.700005, 1)
+        double3 xformOp:translate = (0, -45001, 0)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZYX", "xformOp:scale"]
+
+        over "SceneNode"
+        {
+            over "Tile_0_0Node"
+            {
+                over "RoadsNode"
+                {
+                    over "Road_RoadNode"
+                    {
+                        over "Road_Road_Layer0Node" (
+                            prepend apiSchemas = ["SemanticsAPI:Semantics"]
+                        )
+                        {
+                            rel material:binding = </World/Looks/road_base> (
+                                bindMaterialAs = "weakerThanDescendants"
+                            )
+                            string semantic:Semantics:params:semanticData = "road"
+                            string semantic:Semantics:params:semanticType = "class"
+                            float3 xformOp:rotateXYZ = (90, -0, 0)
+                            float3 xformOp:scale = (0.9999998, 1, 1)
+                            double3 xformOp:translate = (0, 0, 0)
+                            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    def Mesh "Plane" (
+        prepend apiSchemas = ["SemanticsAPI:Semantics"]
+    )
+    {
+        int[] faceVertexCounts = [4]
+        int[] faceVertexIndices = [0, 1, 3, 2]
+        rel material:binding = </World/Looks/DrivesimPBR_LaneMarking> (
+            bindMaterialAs = "weakerThanDescendants"
+        )
+        normal3f[] normals = [(0, 0, 1), (0, 0, 1), (0, 0, 1), (0, 0, 1)] (
+            interpolation = "faceVarying"
+        )
+        point3f[] points = [(-50, -50, 0), (50, -50, 0), (-50, 50, 0), (50, 50, 0)]
+        bool primvars:isDecal = 1
+        bool primvars:materialFlattening_isDecal = 1
+        float2[] primvars:st = [(0, 0), (1, 0), (1, 1), (0, 1)] (
+            interpolation = "faceVarying"
+        )
+        string semantic:Semantics:params:semanticData = "lane"
+        string semantic:Semantics:params:semanticType = "class"
+        uniform token subdivisionScheme = "none"
+        token visibility = "inherited"
+        double3 xformOp:rotateXYZ = (0, 0, 0)
+        double3 xformOp:scale = (0.005, 50, 1)
+        double3 xformOp:translate = (-24, -10497, 0.1)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+    }
+}
+

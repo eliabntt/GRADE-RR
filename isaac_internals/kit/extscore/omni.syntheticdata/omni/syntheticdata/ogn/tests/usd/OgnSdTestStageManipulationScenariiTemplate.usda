@@ -1,0 +1,34 @@
+#usda 1.0
+(
+    doc ="""Generated from node description file OgnSdTestStageManipulationScenarii.ogn
+Contains templates for node types found in that file."""
+)
+
+def OmniGraph "TestGraph"
+{
+    token evaluator:type = "push"
+    int2 fileFormatVersion = (1, 3)
+    token flatCacheBacking = "Shared"
+    token pipelineStage = "pipelineStageSimulation"
+
+    def OmniGraphNode "Template_omni_syntheticdata_SdTestStageManipulationScenarii" (
+        docs="""Synthetic Data test node applying randomly some predefined stage manipulation scenarii"""
+    )
+    {
+        token node:type = "omni.syntheticdata.SdTestStageManipulationScenarii"
+        int node:typeVersion = 1
+
+        # 2 attributes
+        custom int inputs:randomSeed = 0 (
+            docs="""Random seed"""
+        )
+        custom token inputs:worldPrimPath = "" (
+            docs="""Path of the world prim : contains every modifiable prim, cannot be modified"""
+        )
+
+        # 1 attribute
+        custom uint64 state:frameNumber = 0 (
+            docs="""Current frameNumber (number of invocations)"""
+        )
+    }
+}

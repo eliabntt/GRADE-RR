@@ -1,0 +1,64 @@
+#usda 1.0
+(
+    doc ="""Generated from node description file OgnSdRenderVarToRawArray.ogn
+Contains templates for node types found in that file."""
+)
+
+def OmniGraph "TestGraph"
+{
+    token evaluator:type = "push"
+    int2 fileFormatVersion = (1, 3)
+    token flatCacheBacking = "Shared"
+    token pipelineStage = "pipelineStageSimulation"
+
+    def OmniGraphNode "Template_omni_syntheticdata_SdRenderVarToRawArray" (
+        docs="""Synthetic Data action node to copy the input rendervar into an output raw array"""
+    )
+    {
+        token node:type = "omni.syntheticdata.SdRenderVarToRawArray"
+        int node:typeVersion = 1
+
+        # 5 attributes
+        custom uint64 inputs:cudaStream = 0 (
+            docs="""Pointer to the CUDA stream"""
+        )
+        custom uint inputs:exec (
+            docs="""Trigger"""
+        )
+        custom uint64 inputs:renderResults = 0 (
+            docs="""Render results pointer"""
+        )
+        custom token inputs:renderVar = "" (
+            docs="""Name of the renderVar"""
+        )
+        custom uint64 inputs:swhFrameNumber = 0 (
+            docs="""Fabric frame number"""
+        )
+
+        # 8 attributes
+        custom uint64 outputs:bufferSize (
+            docs="""Size (in bytes) of the buffer (0 if the input is a texture)"""
+        )
+        custom uint64 outputs:cudaStream (
+            docs="""Pointer to the CUDA stream"""
+        )
+        custom uchar[] outputs:data = [] (
+            docs="""Buffer array data"""
+        )
+        custom uint outputs:exec (
+            docs="""Executes when the event is received"""
+        )
+        custom uint64 outputs:format (
+            docs="""Format"""
+        )
+        custom uint outputs:height (
+            docs="""Height  (0 if the input is a buffer)"""
+        )
+        custom uint64 outputs:swhFrameNumber (
+            docs="""Frame number"""
+        )
+        custom uint outputs:width (
+            docs="""Width  (0 if the input is a buffer)"""
+        )
+    }
+}

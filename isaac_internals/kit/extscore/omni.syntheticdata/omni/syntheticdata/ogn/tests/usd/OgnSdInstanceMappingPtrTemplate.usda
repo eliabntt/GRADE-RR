@@ -1,0 +1,79 @@
+#usda 1.0
+(
+    doc ="""Generated from node description file OgnSdInstanceMappingPtr.ogn
+Contains templates for node types found in that file."""
+)
+
+def OmniGraph "TestGraph"
+{
+    token evaluator:type = "push"
+    int2 fileFormatVersion = (1, 3)
+    token flatCacheBacking = "Shared"
+    token pipelineStage = "pipelineStageSimulation"
+
+    def OmniGraphNode "Template_omni_syntheticdata_SdInstanceMappingPtr" (
+        docs="""Synthetic Data node to expose the scene instances semantic hierarchy information"""
+    )
+    {
+        token node:type = "omni.syntheticdata.SdInstanceMappingPtr"
+        int node:typeVersion = 1
+
+        # 5 attributes
+        custom bool inputs:cudaPtr = false (
+            docs="""If true, return cuda device pointer instead of host pointer"""
+        )
+        custom uint inputs:exec (
+            docs="""Trigger"""
+        )
+        custom uint64 inputs:renderResults = 0 (
+            docs="""Render results pointer"""
+        )
+        custom token[] inputs:semanticFilerTokens = [] (
+            docs="""Tokens identifying the semantic filters applied to the output semantic labels. Each token should correspond to an activated SdSemanticFilter node"""
+        )
+        custom uint64 inputs:swhFrameNumber = 0 (
+            docs="""Fabric frame number"""
+        )
+
+        # 13 attributes
+        custom uint outputs:exec (
+            docs="""Executes when the event is received"""
+        )
+        custom uint64 outputs:instanceMapPtr (
+            docs="""Array pointer of numInstances uint16_t containing the semantic index of the instance prim first semantic prim parent"""
+        )
+        custom uint64 outputs:instancePrimPathPtr (
+            docs="""Array pointer of numInstances uint64_t containing the prim path tokens for every instance prims"""
+        )
+        custom uint outputs:minInstanceIndex (
+            docs="""Instance index of the first instance prim in the instance arrays"""
+        )
+        custom uint outputs:minSemanticIndex (
+            docs="""Semantic index of the first semantic prim in the semantic arrays"""
+        )
+        custom uint outputs:numInstances (
+            docs="""Number of instances prim in the instance arrays"""
+        )
+        custom uint outputs:numSemantics (
+            docs="""Number of semantic prim in the semantic arrays"""
+        )
+        custom uint64[] outputs:semanticLabelTokenPtrs (
+            docs="""Array containing for every input semantic filters the corresponding array pointer of numSemantics uint64_t representing the semantic label of the semantic prim"""
+        )
+        custom uint64 outputs:semanticLocalTransformPtr (
+            docs="""Array pointer of numSemantics 4x4 float matrices containing the transform from world to object space for every semantic prims"""
+        )
+        custom uint64 outputs:semanticMapPtr (
+            docs="""Array pointer of numSemantics uint16_t containing the semantic index of the semantic prim first semantic prim parent"""
+        )
+        custom uint64 outputs:semanticPrimPathPtr (
+            docs="""Array pointer of numSemantics uint32_t containing the prim part of the prim path tokens for every semantic prims"""
+        )
+        custom uint64 outputs:semanticWorldTransformPtr (
+            docs="""Array pointer of numSemantics 4x4 float matrices containing the transform from local to world space for every semantic entity"""
+        )
+        custom uint64 outputs:swhFrameNumber (
+            docs="""Fabric frame number"""
+        )
+    }
+}

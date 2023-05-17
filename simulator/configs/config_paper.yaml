@@ -14,15 +14,15 @@ base_robot_path: "/media/ebonetto/WindowsData/ov/isaac_sim-2022.2.1/GRADE-RR/usd
 out_folder: "/media/ebonetto/WindowsData/exp_out2/"
 out_folder_npy: "/media/ebonetto/WindowsData/exp_out2/"
 fps: 30
-num_robots: 2
+num_robots: 1
 num_humans: 40
 max_distance_human_ground: 0.1 # max distance from human to ground to be consider to force the first frame grounding of animations
 allow_collision: 200
 experiment_length: 1800 # camera frames length
 autonomous: True # true -> FUEL, false -> random goals
 obstacles: {
-  "shapenet": 5, # 5, 10
-  "google": 5
+  "shapenet": 0, # 5, 10
+  "google": 1
 }
 physics_hz: 240 # NOTE THAT THIS IS THE RATE OF CLOCK AND IMU
 render_hz: 240 # LEAVE IT EQUAL TO PHYSICS HZ

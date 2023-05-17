@@ -1,0 +1,148 @@
+#usda 1.0
+(
+    customLayerData = {
+        dictionary audioSettings = {
+            double dopplerLimit = 2
+            double dopplerScale = 1
+            token enableDistanceDelay = "off"
+            token enableDoppler = "off"
+            double nonSpatialTimeScale = 1
+            double spatialTimeScale = 1
+            double speedOfSound = 340
+        }
+        dictionary cameraSettings = {
+            dictionary Front = {
+                double3 position = (0, 0, 1000)
+                double radius = 500
+                double3 target = (0, 0, 0)
+            }
+            dictionary Perspective = {
+                double3 position = (1980.5111035466489, 475.2360575421583, 2180.5243867717586)
+                double radius = 2676.7526261935177
+                double3 target = (435.0872419642733, -1070.1877671536854, 635.100525189383)
+            }
+            dictionary Right = {
+                double3 position = (-1000, 0, -2.220446049250313e-13)
+                double radius = 500
+                double3 target = (0, 0, 0)
+            }
+            dictionary Top = {
+                double3 position = (-8.659560562354932e-14, 1000, 2.220446049250313e-13)
+                double radius = 500
+                double3 target = (0, 0, 0)
+            }
+            string boundCamera = "/OmniverseKit_Persp"
+        }
+        dictionary omni_layer = {
+            dictionary muteness = {
+            }
+        }
+        dictionary renderSettings = {
+        }
+    }
+    defaultPrim = "World"
+    metersPerUnit = 0.009999999776482582
+    timeCodesPerSecond = 24
+    upAxis = "Y"
+)
+
+def Xform "World"
+{
+    def DistantLight "defaultLight" (
+        prepend apiSchemas = ["ShapingAPI"]
+        kind = "model"
+    )
+    {
+        float angle = 1
+        float intensity = 3000
+        float shaping:cone:angle = 180
+        float shaping:cone:softness
+        float shaping:focus
+        color3f shaping:focusTint
+        asset shaping:ies:file
+        float3 xformOp:rotateZYX = (315, 0, 0)
+        float3 xformOp:translate = (0, 0, 0)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZYX"]
+    }
+
+    def Xform "Prototypes"
+    {
+        token visibility = "invisible"
+
+        def Xform "bench" (
+            prepend apiSchemas = ["SemanticsAPI:Semantics"]
+            instanceable = true
+            references = @./bench_golden.usd@
+        )
+        {
+            string semantic:Semantics:params:semanticData = "bench"
+            string semantic:Semantics:params:semanticType = "class"
+        }
+
+        def Xform "sofa" (
+            prepend apiSchemas = ["SemanticsAPI:Semantics"]
+            instanceable = true
+            references = @./sofa_golden.usd@
+        )
+        {
+            string semantic:Semantics:params:semanticData = "sofa"
+            string semantic:Semantics:params:semanticType = "class"
+        }
+    }
+
+    def "Objects"
+    {
+        def Xform "obj_667" (
+            prepend apiSchemas = ["SemanticsAPI:Semantics"]
+            instanceable = true
+            references = @./bench_golden.usd@
+        )
+        {
+            string semantic:Semantics:params:semanticData = "bench"
+            string semantic:Semantics:params:semanticType = "class"
+            float3 xformOp:scale = (100, 100, 100)
+            double3 xformOp:translate = (1334, 0, 1700)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        }
+
+        def Xform "obj_716" (
+            prepend apiSchemas = ["SemanticsAPI:Semantics"]
+            instanceable = true
+            references = @./sofa_golden.usd@
+        )
+        {
+            string semantic:Semantics:params:semanticData = "sofa"
+            string semantic:Semantics:params:semanticType = "class"
+            float3 xformOp:scale = (100, 100, 100)
+            double3 xformOp:translate = (1432, 0, 1600)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        }
+
+        def Xform "obj_717" (
+            prepend apiSchemas = ["SemanticsAPI:Semantics"]
+            instanceable = true
+            references = @./sofa_golden.usd@
+        )
+        {
+            string semantic:Semantics:params:semanticData = "sofa"
+            string semantic:Semantics:params:semanticType = "class"
+            float3 xformOp:scale = (100, 100, 100)
+            double3 xformOp:translate = (1434, 0, 1700)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        }
+
+        def Xform "obj_767" (
+            prepend apiSchemas = ["SemanticsAPI:Semantics"]
+            instanceable = true
+            references = @./bench_golden.usd@
+        )
+        {
+            string semantic:Semantics:params:semanticData = "bench"
+            string semantic:Semantics:params:semanticType = "class"
+            float3 xformOp:scale = (100, 100, 100)
+            double3 xformOp:translate = (1534, 0, 1700)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        }
+    }
+}
+

@@ -1,0 +1,221 @@
+[package]
+# Semantic Versioning is used: https://semver.org/
+version = "0.2.4"
+title = "Synthetic Data Sensors"
+category = "Internal"
+description="An extension for providing python access to the synthetic data sensors, useful helper functions and sensor visualization."
+readme = "docs/README.md"
+preview_image = "data/preview.png"
+icon = "data/icon.png"
+authors = ["NVIDIA"]
+keywords = ["kit", "synthetic", "data", "visualization", "groundtruth", "sensor"]
+changelog="docs/CHANGELOG.md"
+
+[dependencies]
+"omni.ui" = {}
+"omni.kit.pip_archive" = {}
+"omni.kit.commands" = {}
+"omni.graph" = {}
+"omni.graph.nodes" = {}
+"omni.graph.action" = {}
+"omni.usd" = {}
+"omni.kit.async_engine" = {}
+"omni.kit.viewport.utility" = {}
+"omni.kit.viewport.menubar.core" = {optional = true}
+
+[[python.module]]
+name = "omni.syntheticdata"
+
+# Watch the .ogn files for hot reloading (only for Python files)
+[fswatcher.patterns]
+include = ["*.ogn", "*.py"]
+exclude = ["Ogn*Database.py"]
+
+[[native.plugin]]
+path = "bin/*.plugin"
+recursive = false
+
+[python.pipapi]
+requirements = ["numpy", "Pillow"]
+
+[[test]]
+timeout = 1200
+args = [
+    "--vulkan",
+    "--/app/content/emptyStageOnStart=true",
+    "--/app/asyncRendering=false",
+    "--/app/settings/flatCacheStageFrameHistoryCount=3",
+    "--/app/renderer/waitIdle=true",
+    "--/app/hydraEngine/waitIdle=true",
+    "--/rtx/post/aa/op=0",
+    "--/rtx-defaults/post/aa/op=0",
+    "--/rtx/hydra/enableSemanticSchema=true",
+    "--/rtx-defaults/hydra/enableSemanticSchema=true",
+    "--/rtx/raytracing/cached/enabled=false",
+    "--/rtx/raytracing/lightcache/spatialCache/enabled=false",
+    "--/syntheticdata/sensors/perSubsetSegmentation=true",
+    "--/renderer/debug/aftermath/enabled=false"
+]
+dependencies = [
+    "omni.kit.uiapp",
+    "omni.kit.window.extensions",
+    "omni.kit.commands",
+    "omni.hydra.rtx",
+    "omni.kit.hydra_texture",
+    "omni.kit.window.viewport"
+]
+stdoutFailPatterns.exclude = [
+    "*road_base_omniue4.mdl*",
+    "*DrivesimPBR.mdl*",
+    "*omni.graph.core*",
+    "*omni::graph::core*",
+    "*omni.kit.app.impl*",
+    "*__OgnSdgInstanceMappingCache__*",
+    "*Failed to delete file 'C:*",
+    "*ModuleNotFoundError: No module named 'omni.kit.material'*", # OM-55405
+    "*OgnSdOnNewFrame : frames * discarded*",
+]
+
+pythonTests.include = [
+     "omni.syntheticdata.tests.helpers.*",
+     "omni.syntheticdata.tests.sensors.*",
+     "omni.syntheticdata.tests.visualize.*"
+]
+
+pythonTests.exclude = [
+     "omni.syntheticdata.tests.sensors.test_stage_manipulation.*",
+     "omni.syntheticdata.tests.visualize.test_flattener*"
+]
+
+# pythonTests.unreliable = [
+#     "*test_cross_correspondence", # OM-55199
+#     "*test_swh_frame_number", # OM-55199
+#     "*test_reduce_occlusion", # OM-55199
+#     "*test_semantic_filter_world_and_sphere_test", # OM-55531
+#     "*test_sync_idle", # OM-58580
+#     "*test_golden_image", # OM-58580
+#     "*test_merge_sensors", # OM-58999
+# ]
+
+[[test]]
+name="pipeline"
+timeout = 1200
+args = [
+    "--/app/content/emptyStageOnStart=true",
+    "--/app/asyncRendering=false",
+    "--/app/settings/flatCacheStageFrameHistoryCount=3",
+    "--no-window",
+    "--/rtx/post/aa/op=0",
+    "--/rtx-defaults/post/aa/op=0",
+    "--/rtx/raytracing/cached/enabled=false",
+    "--/rtx/raytracing/lightcache/spatialCache/enabled=false",
+    "--/rtx/pathtracing/cached/enabled=false",
+    "--/rtx/pathtracing/lightcache/spatialCache/enabled=false",
+    "--/renderer/debug/aftermath/enabled=false"
+]
+dependencies = [
+    "omni.hydra.rtx",
+    "omni.kit.hydra_texture"
+]
+stdoutFailPatterns.exclude = [
+    "*road_base_omniue4.mdl*",
+    "*DrivesimPBR.mdl*",
+    "*omni.graph.core*",
+    "*omni::graph::core*",
+    "*omni.kit.app.impl*",
+    "*__OgnSdgInstanceMappingCache__*",
+    "*Failed to delete file 'C:*",
+    "*ModuleNotFoundError: No module named 'omni.kit.material'*", # OM-55405
+]
+
+pythonTests.include = [
+    "omni.syntheticdata.tests.pipeline.*"
+]
+
+[[test]]
+name="graph"
+timeout = 1200
+args = [
+    "--/app/content/emptyStageOnStart=true",
+    "--/app/asyncRendering=false",
+    "--/app/settings/flatCacheStageFrameHistoryCount=3",
+    "--no-window",
+    "--/rtx/post/aa/op=0",
+    "--/rtx-defaults/post/aa/op=0",
+    "--/rtx/raytracing/cached/enabled=false",
+    "--/rtx/raytracing/lightcache/spatialCache/enabled=false",
+    "--/rtx/pathtracing/cached/enabled=false",
+    "--/rtx/pathtracing/lightcache/spatialCache/enabled=false",
+    "--/renderer/debug/aftermath/enabled=false"
+]
+dependencies = [
+    "omni.hydra.rtx",
+    "omni.kit.hydra_texture"
+]
+stdoutFailPatterns.exclude = [
+    "*road_base_omniue4.mdl*",
+    "*DrivesimPBR.mdl*",
+    "*omni.graph.core*",
+    "*omni::graph::core*",
+    "*omni.kit.app.impl*",
+    "*__OgnSdgInstanceMappingCache__*",
+    "*Failed to delete file 'C:*",
+    "*ModuleNotFoundError: No module named 'omni.kit.material'*", # OM-55405
+]
+
+pythonTests.include = [
+    "omni.syntheticdata.tests.graph.*"
+]
+
+[[test]]
+name="flattener"
+timeout = 600
+args = [
+    "--vulkan",
+    "--/app/content/emptyStageOnStart=true",
+    "--/app/asyncRendering=false",
+    "--/app/settings/flatCacheStageFrameHistoryCount=3",
+    "--/app/renderer/waitIdle=true",
+    "--/app/hydraEngine/waitIdle=true",
+    "--/renderer/multiGpu/enabled=false",
+    "--/renderer/multiGpu/maxGpuCount=1",
+    "--/rtx/post/aa/op=0",
+    "--/rtx-defaults/post/aa/op=0",
+    "--/rtx/hydra/enableSemanticSchema=true",
+    "--/rtx-defaults/hydra/enableSemanticSchema=true",
+    "--/rtx/materialflattener/disableTileBudget=true",
+    "--/rtx/materialflattener/enabled=true",
+    "--/rtx/materialflattener/numTexelsPerWorldUnit=32",
+    "--/rtx/materialflattener/enableSegmentation=true",
+    "--/rtx/virtualtexture/fixedMemoryPoolChunkSizeMB=32",
+    "--/rtx/raytracing/cached/enabled=false",
+    "--/rtx/raytracing/lightcache/spatialCache/enabled=false",
+    "--/syntheticdata/sensors/perSubsetSegmentation=true",
+    "--/renderer/debug/aftermath/enabled=false"
+]
+dependencies = [
+    "omni.kit.uiapp",
+    "omni.kit.window.extensions",
+    "omni.kit.commands",
+    "omni.hydra.rtx",
+    "omni.kit.hydra_texture",
+    "omni.kit.window.viewport"
+]
+stdoutFailPatterns.exclude = [
+    "*road_base_omniue4.mdl*",
+    "*DrivesimPBR.mdl*",
+    "*omni.graph.core*",
+    "*omni::graph::core*",
+    "*omni.kit.app.impl*",
+    "*__OgnSdgInstanceMappingCache__*",
+    "*Failed to delete file 'C:*",
+    "*ModuleNotFoundError: No module named 'omni.kit.material'*", # OM-55405
+]
+
+pythonTests.include = [
+    "omni.syntheticdata.tests.visualize.test_flattener*"
+]
+
+pythonTests.unreliable = [
+    "omni.syntheticdata.tests.visualize.test_flattener*" # OM-55405
+]

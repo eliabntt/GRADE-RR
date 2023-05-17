@@ -1,25 +1,33 @@
-# omni imports
 import asyncio
 import carb
 import ipdb
 import json
 import ntpath
-# general imports
 import numpy as np
-import omni.isaac.shapenet as shapenet
-import omni.kit
 import os
 import pickle as pkl
-# ros imports
-import rospy, rosgraph
+from PIL import Image
+from pyquaternion import Quaternion
+import scipy.spatial.transform as tf
+from stl import mesh
 import time
 import trimesh
-from PIL import Image
+from typing import Dict, Optional, Union
+
+# ros
+import rospy, rosgraph
 from collision_check.srv import *
 from geometry_msgs.msg import PoseStamped, Point
 from nav_msgs.msg import Odometry
+from sensor_msgs.msg import Imu
+from std_msgs.msg import String
+
+# omni
+import omni.isaac.shapenet as shapenet
+import omni.kit
 from omni.isaac import RangeSensorSchema
 from omni.isaac.core import SimulationContext, PhysicsContext
+import omni.replicator.core as rep
 from omni.isaac.core.prims import XFormPrim
 from omni.isaac.core.utils.carb import set_carb_setting
 from omni.isaac.core.utils.extensions import enable_extension, disable_extension
@@ -30,14 +38,6 @@ from omni.isaac.synthetic_recorder import extension_custom
 from omni.physxcommands import SetStaticColliderCommand, RemoveStaticColliderCommand
 from pxr import UsdGeom, Gf, Usd, UsdSkel, AnimationSchema, Semantics, UsdPhysics, Sdf, UsdShade
 from pxr.Usd import Prim
-from pyquaternion import Quaternion
-from sensor_msgs.msg import Imu
-from std_msgs.msg import String
-from stl import mesh
-from PIL import Image
-import json
-from pyquaternion import Quaternion
-from typing import Dict, Optional, Union
 
 # 2022 edits
 import omni.graph.core as og
@@ -507,8 +507,6 @@ def toggle_dynamic_objects(dynamic_prims: list, status: bool):
       imageable = []
 
 def reset_physics(timeline, simulation_context):
-    timeline.pause()
-    simulation_context.step()
+    timeline.stop()
     simulation_context.reset()
-    simulation_context.step()
     timeline.play()

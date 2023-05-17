@@ -50,7 +50,7 @@ class MyRecorder():
         self._current_fps = ""
 
         self._settings = get_settings()
-        self._viewport = omni.kit.viewport_legacy.get_viewport_interface()
+        self._viewport = omni.kit.viewport.window
         self._viewport_names = []
         self._num_viewports = 0
         self.data_writer = None
@@ -77,6 +77,7 @@ class MyRecorder():
         self._num_threads = 10
         self._max_queue_size = 500
         self.verify = {}
+        self.ros_cameras = 0
 
     def get_default_settings(self):
         return self.sensor_settings_default
@@ -86,18 +87,19 @@ class MyRecorder():
 
     def set_settings(self, settings):
         for index, viewport_name in enumerate(self._viewport_names):
-            if (index + 1) % 2 == 0:
-                viewport_name = viewport_name.split(" ")[0] + str(int((index + 1) / 2))
+            if index >= self.ros_cameras:
+                viewport_name = viewport_name.split(" ")[0] + str(int(index - self.ros_cameras))
                 self._sensor_settings[viewport_name] = copy.deepcopy(settings)
             else:
                 continue
 
     # def _update(self, e: carb.events.IEvent):
     def _update(self):
-        if len(self._viewport.get_instance_list()) != self._num_viewports:
-            self._num_viewports = len(self._viewport.get_instance_list())
-            self._viewport_names = [self._viewport.get_viewport_window_name(vp) for vp in
-                                    self._viewport.get_instance_list()]
+        tmp = [x for x in self._viewport.get_viewport_window_instances()]
+
+        if len(tmp) != self._num_viewports:
+            self._num_viewports = len(tmp)
+            self._viewport_names = [x.name for x in tmp]
             self._is_first_run = [True] * self._num_viewports
             self.set_settings(self._sensor_settings_single)
             self.verify[self._viewport_names[-1]] = True
@@ -122,10 +124,10 @@ class MyRecorder():
             self.data_writer.start_threads()
         self._render_mode = str(self._settings.get("/rtx/rendermode"))
         for index, viewport_name in enumerate(self._viewport_names):
-            if (index + 1) % 2 != 0:
+            if index < self.ros_cameras:
                 continue
             real_viewport_name = viewport_name
-            viewport_name = viewport_name.split(" ")[0] + str(int((index + 1) / 2))
+            viewport_name = viewport_name.split(" ")[0] + str(int(index - self.ros_cameras))
 
             groundtruth = {
                 "METADATA": {
@@ -171,15 +173,18 @@ class MyRecorder():
             if self._sensor_settings[viewport_name]["camera"]["enabled"]:
                 gt_list.append("camera")
 
-            # viewport = omni.kit.viewport.get_default_viewport_window()
-            viewport = self._viewport.get_viewport_window(self._viewport.get_instance(real_viewport_name))
+            for j in tmp:
+                if j.name == real_viewport_name:
+                    viewport = j
+                    break
+
             try:
-                gt = self.sd_helper.get_groundtruth(gt_list, viewport,
+                gt = self.sd_helper.get_groundtruth(gt_list, viewport.viewport_api,
                                                     verify_sensor_init=self.verify[real_viewport_name])
                 self.verify[real_viewport_name] = False
             except:
                 self.verify[real_viewport_name] = True
-                gt = self.sd_helper.get_groundtruth(gt_list, viewport,
+                gt = self.sd_helper.get_groundtruth(gt_list, viewport.viewport_api,
                                                     verify_sensor_init=self.verify[real_viewport_name])
                 self.verify[real_viewport_name] = False
 
@@ -264,7 +269,8 @@ class MyRecorder():
                 groundtruth["METADATA"]["BBOX3D"]["COLORIZE"] = self._sensor_settings[viewport_name]["bbox_3d"][
                     "colorize"]
                 groundtruth["METADATA"]["BBOX3D"]["NPY"] = self._sensor_settings[viewport_name]["bbox_3d"]["npy"]
-                groundtruth["METADATA"]["BBOX3D_IMAGE"] = visualize.get_bbox3d(viewport)
+                # if self._sensor_settings[viewport_name]["bbox_3d"]["colorize"]:
+                groundtruth["METADATA"]["BBOX3D_IMAGE"] = visualize.get_bbox3d(viewport.viewport_api)
 
             # Motion vector
             if self._sensor_settings[viewport_name]["motion-vector"]["enabled"] and gt["state"]["motion-vector"]:

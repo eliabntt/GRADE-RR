@@ -2,7 +2,7 @@ import utils.misc_utils
 from omni.isaac.core.utils.prims import set_targets
 from scipy.spatial.transform import Rotation
 from utils.misc_utils import *
-
+from omni.isaac.core.utils.render_product import create_hydra_texture
 
 def create_odom_message(_dc, robot_body_ptr, handle, meters_per_unit):
 	"""
@@ -100,25 +100,6 @@ def create_camera_pose_message(_dc, camera_body_ptr, handle, meters_per_unit):
 	return camera_pose
 
 
-def create_imu_message(frame, last_reading, meters_per_unit):
-	"""
-	Create the IMU
-	--- Deprecated in the new version as there is an handler that takes care of publishing at a desired FPS
-	"""
-	imu_msg = Imu()
-	imu_msg.header.frame_id = frame[1:] if frame.startswith("/") else frame
-	imu_msg.header.stamp = rospy.Time.now()
-	imu_msg.angular_velocity.x = last_reading["ang_vel_x"]
-	imu_msg.angular_velocity.y = last_reading["ang_vel_y"]
-	imu_msg.angular_velocity.z = last_reading["ang_vel_z"]
-	imu_msg.linear_acceleration.x = last_reading["lin_acc_x"] * meters_per_unit
-	imu_msg.linear_acceleration.y = last_reading["lin_acc_y"] * meters_per_unit
-	imu_msg.linear_acceleration.z = last_reading["lin_acc_z"] * meters_per_unit
-	imu_msg.angular_velocity_covariance = [0, 0, 0, 0, 0, 0, 0, 0, 0]
-	imu_msg.linear_acceleration_covariance = [0, 0, 0, 0, 0, 0, 0, 0, 0]
-	return imu_msg
-
-
 def add_pose_tree(path: str, irotate: bool):
 	"""
 	Add the tf publisher to the desired path.
@@ -156,61 +137,8 @@ def add_pose_tree(path: str, irotate: bool):
 	return f"/{path}/TFActionGraph"
 
 
-def add_lidar(path: str):
-	"""
-	Add the lidar sensor to the desired path.
-	This path should be the link itself where we want the lidar.
-
-	"""
-
-	result, prim_path = omni.kit.commands.execute("ROSBridgeCreateLidar", path="/ROS_Lidar", parent=path,
-	                                              lidar_prim_rel=[path + '/Lidar'], frame_id=path[1:],
-	                                              laser_scan_topic='/robot/laser/scan', enabled=False)
-	#                                                  laser_scan_topic=path + '/laser_scan', enabled=False)
-	if result:
-		return prim_path
-	else:
-		raise Exception("Lidar not added")
-
-
-# todo fixme
-def add_3d_lidar(path: str, create_sensor=True):
-	"""
-	Add the lidar sensor to the desired path.
-	This path should be the link itself where we want the lidar.
-	"""
-	if create_sensor:
-		omni.kit.commands.execute('RangeSensorCreateLidar',
-		                          path='/Lidar',
-		                          parent=path,
-		                          min_range=0.8,
-		                          max_range=100.0,
-		                          draw_points=False,
-		                          draw_lines=False,
-		                          horizontal_fov=360.0,
-		                          vertical_fov=30.0,
-		                          horizontal_resolution=0.2,
-		                          vertical_resolution=2.0,
-		                          rotation_rate=0.0,  # this is a bug on isaac
-		                          high_lod=True,
-		                          yaw_offset=0.0,
-		                          enable_semantics=False)
-
-	result, prim_path = omni.kit.commands.execute('ROSBridgeCreateLidar',
-	                                              path='/ROS_Lidar',
-	                                              parent='/my_robot_0/yaw_link',
-	                                              lidar_prim_rel=[path + '/Lidar'], frame_id=path[1:],
-	                                              laser_scan_enabled=False,
-	                                              enabled=False, point_cloud_enabled=True)
-
-	if result:
-		return str(prim_path.GetPath())
-	else:
-		raise Exception("Lidar not added")
-
-
 def add_camera_and_viewport(path: str, resolution: list, old_h_ape, old_v_ape, sc, is_headless=False, index=0,
-                            robot_index=0, cam_per_robot = 1, camera_path="Camera"):
+                            robot_index=0, cam_per_robot=1, camera_path="Camera"):
 	"""
 	The function create first the ROSBridge Camera and then the corresponding viewport.
 	index is the number of the camera for the given robot.
@@ -220,9 +148,16 @@ def add_camera_and_viewport(path: str, resolution: list, old_h_ape, old_v_ape, s
 	resolution = tuple(resolution)
 
 	camera_path = path + f"/{camera_path}"
-	viewport, viewport_name = create_viewport(camera_path, is_headless, robot_index * cam_per_robot + index, resolution,
-	                                          old_h_ape, old_v_ape)
+	index = robot_index * cam_per_robot + index
+
+	stage = omni.usd.get_context().get_stage()
+	camera = stage.GetPrimAtPath(camera_path)
+	old_h_ape.append(camera.GetAttribute("horizontalAperture").Get())
+	old_v_ape.append(camera.GetAttribute("verticalAperture").Get())
+
+	viewport_name = "Viewport" + (f" {index + 1}" if str(index + 1) != "0" and str(index + 1) != "1" else "")
 	sc.step()
+
 	keys = og.Controller.Keys
 	(camera_graph, _, _, _) = og.Controller.edit(
 		{
@@ -234,6 +169,7 @@ def add_camera_and_viewport(path: str, resolution: list, old_h_ape, old_v_ape, s
 			keys.CREATE_NODES: [
 				("OnTick", "omni.graph.action.OnTick"),
 				("createViewport", "omni.isaac.core_nodes.IsaacCreateViewport"),
+				("setViewportResolution", "omni.isaac.core_nodes.IsaacSetViewportResolution"),
 				("getRenderProduct", "omni.isaac.core_nodes.IsaacGetViewportRenderProduct"),
 				("setCamera", "omni.isaac.core_nodes.IsaacSetCameraOnRenderProduct"),
 				("cameraHelperRgb", "omni.isaac.ros_bridge.ROS1CameraHelper"),
@@ -244,6 +180,10 @@ def add_camera_and_viewport(path: str, resolution: list, old_h_ape, old_v_ape, s
 				("OnTick.outputs:tick", "createViewport.inputs:execIn"),
 				("createViewport.outputs:execOut", "getRenderProduct.inputs:execIn"),
 				("createViewport.outputs:viewport", "getRenderProduct.inputs:viewport"),
+
+				("createViewport.outputs:execOut", "setViewportResolution.inputs:execIn"),
+				("createViewport.outputs:viewport", "setViewportResolution.inputs:viewport"),
+
 				("getRenderProduct.outputs:execOut", "setCamera.inputs:execIn"),
 				("getRenderProduct.outputs:renderProductPath", "setCamera.inputs:renderProductPath"),
 				("setCamera.outputs:execOut", "cameraHelperRgb.inputs:execIn"),
@@ -254,7 +194,9 @@ def add_camera_and_viewport(path: str, resolution: list, old_h_ape, old_v_ape, s
 				("getRenderProduct.outputs:renderProductPath", "cameraHelperDepth.inputs:renderProductPath"),
 			],
 			og.Controller.Keys.SET_VALUES: [
-				("createViewport.inputs:name", viewport_name),
+				("createViewport.inputs:viewportId", index),
+				("setViewportResolution.inputs:height", int(resolution[1])),
+				("setViewportResolution.inputs:width", int(resolution[0])),
 
 				("cameraHelperRgb.inputs:frameId", path[1:]),
 				("cameraHelperRgb.inputs:topicName", path + f"/{index}/rgb/image_raw"),
@@ -276,8 +218,16 @@ def add_camera_and_viewport(path: str, resolution: list, old_h_ape, old_v_ape, s
 		attribute="inputs:cameraPrim",
 		target_prim_paths=[camera_path],
 	)
-
-	return camera_graph.get_path_to_graph(), viewport
+	og.Controller.evaluate_sync(camera_graph)
+	for _ in range(5):
+		sc.step()
+		omni.kit.app.get_app().update()
+	viewport_handle = [x for x in omni.kit.viewport.window.get_viewport_window_instances()][-1].viewport_api
+	viewport_handle.set_texture_resolution((resolution[0], resolution[1]))
+	for _ in range(5):
+		sc.step()
+		omni.kit.app.get_app().update()
+	return camera_graph.get_path_to_graph(), viewport_handle
 
 
 def add_joint_state(path: str):
@@ -375,7 +325,8 @@ def get_vp_list():
 	from omni.kit.viewport.window import get_viewport_window_instances
 	return [x for x in get_viewport_window_instances()]
 
-def create_viewport(camera_path, is_headless, index, resolution, old_h_ape, old_v_ape):
+
+def create_viewport(camera_path, is_headless, index, resolution, old_h_ape, old_v_ape, sc):
 	"""
 	The function create the viewport for the given camera.
 	Creates an handle, a viewport and the window position/size if the system is not headless.
@@ -391,12 +342,15 @@ def create_viewport(camera_path, is_headless, index, resolution, old_h_ape, old_
 	if not viewport_handle:
 		viewport = omni.kit.viewport.utility.create_viewport_window(name=viewport_name)
 		viewport_handle = omni.kit.viewport.utility.get_viewport_from_window_name(viewport.name)
-	viewport_handle.set_texture_resolution((resolution[0], resolution[1]))
 	if not is_headless:
 		viewport.setPosition(1000, 400)
 		viewport.height, viewport.width = 300, 300
 
 	viewport_handle.set_active_camera(camera_path)
+	for _ in range(10):
+		sc.step()
+	viewport_handle.set_texture_resolution((resolution[0], resolution[1]))
+	sc.step()
 	return viewport_handle, viewport.name
 
 
@@ -451,6 +405,24 @@ def ros_launchers_setup(roslaunch, env_limits_shifted, config):
 	return launch_files
 
 
+def create_imu_message(frame, last_reading, meters_per_unit):
+	"""
+	Create the IMU message from the last reading.
+	"""
+	imu_msg = Imu()
+	imu_msg.header.frame_id = frame[1:] if frame.startswith("/") else frame
+	imu_msg.header.stamp = rospy.Time.now()
+	imu_msg.angular_velocity.x = last_reading.ang_vel_x
+	imu_msg.angular_velocity.y = last_reading.ang_vel_y
+	imu_msg.angular_velocity.z = last_reading.ang_vel_z
+	imu_msg.linear_acceleration.x = last_reading.lin_acc_x * meters_per_unit * meters_per_unit
+	imu_msg.linear_acceleration.y = last_reading.lin_acc_y * meters_per_unit * meters_per_unit
+	imu_msg.linear_acceleration.z = last_reading.lin_acc_z * meters_per_unit * meters_per_unit
+	imu_msg.angular_velocity_covariance = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+	imu_msg.linear_acceleration_covariance = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+	return imu_msg
+
+
 def setup_imu_sensor(_is, config, imu_sensor_path):
 	"""
 	Setup the IMU sensor config.
@@ -474,10 +446,8 @@ def pub_imu(_is, imu_pubs, robot_imu_frames, meters_per_unit):
 	Simple message publisher
 	"""
 	for index, handle in enumerate(robot_imu_frames):
-		readings = _is.get_sensor_readings(handle + "/imu_sensor")
-		if len(readings) != 0:
-			last_reading = readings[-1]
-			imu_pubs[index].publish(create_imu_message(handle, last_reading, meters_per_unit))
+		last_reading = _is.get_sensor_sim_reading(handle + "/imu_sensor")
+		imu_pubs[index].publish(create_imu_message(handle, last_reading, meters_per_unit))
 
 
 def pub_cam_pose(camera_pose_frames, cam_pose_pubs, _dc, meters_per_unit):
@@ -550,14 +520,13 @@ def get_valid_robot_location(environment, first):
 	return x[0], y[0], z[0], yaw
 
 
-def control_camera(viewport, component, sc):
+def control_camera(viewport, sc):
 	sc.step()
 
 	if viewport is not None:
 		import omni.syntheticdata._syntheticdata as sd
 
 		stage = omni.usd.get_context().get_stage()
-
 		# Required for editing the SDGPipeline graph which exists in the Session Layer
 		with Usd.EditContext(stage, stage.GetSessionLayer()):
 			# Get name of rendervar for RGB sensor type
@@ -585,10 +554,9 @@ def control_camera(viewport, component, sc):
 			return rgb_camera_gate_path, depth_camera_gate_path, camera_info_gate_path
 
 
-
 def add_ros_components(robot_base_prim_path, n, ros_transform_components, ros_camera_list, viewport_window_list,
                        camera_pose_frames, cam_pose_pubs, imu_pubs, robot_imu_frames,
-                       robot_odom_frames, odom_pubs,
+                       robot_odom_frames, odom_pubs, lidars,
                        dynamic_prims, config, old_h_ape, old_v_ape, _is, simulation_context, _clock, irotate=False):
 	"""
 	Add the ROS components to the robot.
@@ -614,8 +582,8 @@ def add_ros_components(robot_base_prim_path, n, ros_transform_components, ros_ca
 	                                              config["robot_sensor_size"].get(),
 	                                              old_h_ape, old_v_ape, simulation_context,
 	                                              config["headless"].get(), 0,
-	                                              n, cam_per_robot = 2)  # cam index is useful if you want multiple cameras
-	cam_outputs = control_camera(viewport, component, simulation_context)
+	                                              n, cam_per_robot=2)  # cam index is useful if you want multiple cameras
+	cam_outputs = control_camera(viewport, simulation_context)
 	ros_camera_list.append([n + 0, component, cam_outputs])
 	viewport_window_list.append(viewport)
 
@@ -623,10 +591,12 @@ def add_ros_components(robot_base_prim_path, n, ros_transform_components, ros_ca
 	                                              config["robot_sensor_size"].get(),
 	                                              old_h_ape, old_v_ape, simulation_context,
 	                                              config["headless"].get(), 1,
-	                                              n, cam_per_robot = 2)  # cam index is useful if you want multiple cameras
-	cam_outputs = control_camera(viewport, component, simulation_context)
+	                                              n, cam_per_robot=2)  # cam index is useful if you want multiple cameras
+	cam_outputs = control_camera(viewport, simulation_context)
 	ros_camera_list.append([n + 1, component, cam_outputs])
 	viewport_window_list.append(viewport)
+
+	omni.kit.app.get_app().update()
 
 	# append camera pose frame (we need only one) and pubs
 	camera_pose_frames.append(f"{robot_base_prim_path}{n}/camera_link")
@@ -667,7 +637,8 @@ def add_ros_components(robot_base_prim_path, n, ros_transform_components, ros_ca
 	# add robot to the list of dynamic prims
 	stage = omni.usd.get_context().get_stage()
 	dynamic_prims.append(stage.GetPrimAtPath(f"{robot_base_prim_path}{n}"))
-
+	sensor = add_lidar(f"{robot_base_prim_path}{n}/yaw_link", [0, 0, -.1], [0, 0, 0], is_3d=True, is_2d=True)
+	lidars.append(sensor)
 
 def get_robot_joint_init_loc(name):
 	"""
@@ -966,12 +937,57 @@ def add_irotate_ros_components(camera_odom_frames, camera_odom_pubs, lidar_compo
 	camera_odom_frames.append(f"{robot_base_prim_path}{n}/cameraholder_link")
 	camera_odom_pubs.append(rospy.Publisher(f"{robot_base_prim_path}{n}/camera_odom", Odometry, queue_size=10))
 
-	lidar_components.append(add_lidar(f"{robot_base_prim_path}{n}/lasersensor_link"))
+	lidar_components.append(add_lidar(f"{robot_base_prim_path}{n}/lasersensor_link"), is_2d = True, is_3d=False)
 
 
-def add_npy_viewport(viewport_window_list, robot_base_prim_path, n, old_h_ape, old_v_ape, config, tot_num_ros_cam=1):
+def add_lidar(path, translation=[0, 0, 0], orientation=[0, 0, 0], is_2d=True, is_3d=False, degrees=True):
+
+	# drive sim applies 0.5,-0.5,-0.5,w(-0.5), we have to apply the reverse
+	base_or = tf.Rotation.from_quat([0.5, -0.5, -0.5, -0.5])
+	orientation = tf.Rotation.from_euler('xyz', orientation, degrees=degrees)
+	orientation = (base_or * orientation).as_quat()
+
+	success, sensor = omni.kit.commands.execute(
+		"IsaacSensorCreateRtxLidar",
+		path="/RTX_Lidar",
+		parent=path,
+		config="Example_Rotary",
+		translation=(translation[0], translation[1], translation[2]),
+		orientation=Gf.Quatd(orientation[3], orientation[0], orientation[1], orientation[2]),  # Gf.Quatd is w,i,j,k
+	)
+
+	omni.kit.app.get_app().update()
+	omni.kit.app.get_app().update()
+	omni.kit.app.get_app().update()
+	render_product_path = rep.create.render_product(sensor.GetPath().pathString, resolution=(1, 1))
+	# _, render_product_path = create_hydra_texture([1, 1], sensor.GetPath().pathString)
+	omni.kit.app.get_app().update()
+	omni.kit.app.get_app().update()
+	# add the lidar to the graph
+	# config is isaac_sim-2022.2.1/exts/omni.sensors.nv.lidar/data/Example_Rotary.json
+	if is_3d:
+		writer = rep.writers.get("RtxLidar" + "ROS1PublishPointCloud")
+		writer.initialize(topicName=f"{path}/lidar/point_cloud", frameId=path[1:])
+		writer.attach([render_product_path])
+	if is_2d:
+		writer = rep.writers.get("RtxLidar" + "ROS1PublishLaserScan")
+		writer.initialize(topicName=f"{path}/lidar/laser_scan", frameId=path[1:], rotationRate=100,
+		                  horizontalFov=360, depthRange=[0.1,100], horizontalResolution=0.1)
+		writer.attach([render_product_path])
+
+
+
+	# todo for lidar  one can change directly /Render/PostProcess/SDGPipeline/RenderProduct_Isaac_RtxSensorCpuIsaacComputeRTXLidarFlatScan
+	# but NOT for the 3d lidar
+	# todo theoretically I can avoid returning anything making just sure that I render at each loop
+
+	return omni.syntheticdata.SyntheticData._get_node_path(
+				"PostProcessDispatch" + "IsaacSimulationGate", render_product_path
+			)
+def add_npy_viewport(viewport_window_list, robot_base_prim_path, n, old_h_ape, old_v_ape, config, sc,
+                     tot_num_ros_cam=1):
 	viewport_npy, _ = create_viewport(f"{robot_base_prim_path}{n}/camera_link/Camera_npy", config["headless"].get(),
-	                                  tot_num_ros_cam + 1 * n, config["npy_sensor_size"].get(), old_h_ape, old_v_ape)
+	                                  tot_num_ros_cam + 1 * n, config["npy_sensor_size"].get(), old_h_ape, old_v_ape, sc)
 	viewport_window_list.append(viewport_npy)
 
 

@@ -1,0 +1,79 @@
+#usda 1.0
+(
+    doc ="""Generated from node description file OgnSdRenderProductCamera.ogn
+Contains templates for node types found in that file."""
+)
+
+def OmniGraph "TestGraph"
+{
+    token evaluator:type = "push"
+    int2 fileFormatVersion = (1, 3)
+    token flatCacheBacking = "Shared"
+    token pipelineStage = "pipelineStageSimulation"
+
+    def OmniGraphNode "Template_omni_syntheticdata_SdRenderProductCamera" (
+        docs="""Synthetic Data node to expose the camera data"""
+    )
+    {
+        token node:type = "omni.syntheticdata.SdRenderProductCamera"
+        int node:typeVersion = 2
+
+        # 4 attributes
+        custom uint inputs:exec (
+            docs="""Trigger"""
+        )
+        custom token inputs:renderProductPath = "" (
+            docs="""RenderProduct prim path"""
+        )
+        custom uint64 inputs:renderResults = 0 (
+            docs="""Render results"""
+        )
+        custom uint64 inputs:swhFrameNumber = 0 (
+            docs="""Fabric frame number"""
+        )
+
+        # 14 attributes
+        custom float2 outputs:cameraApertureOffset (
+            docs="""Camera horizontal and vertical aperture offset"""
+        )
+        custom float2 outputs:cameraApertureSize (
+            docs="""Camera horizontal and vertical aperture"""
+        )
+        custom float outputs:cameraFStop (
+            docs="""Camera fStop"""
+        )
+        custom float[] outputs:cameraFisheyeParams (
+            docs="""Camera fisheye projection parameters"""
+        )
+        custom float outputs:cameraFocalLength (
+            docs="""Camera focal length"""
+        )
+        custom float outputs:cameraFocusDistance (
+            docs="""Camera focus distance"""
+        )
+        custom int outputs:cameraModel (
+            docs="""Camera model (pinhole or fisheye models)"""
+        )
+        custom float2 outputs:cameraNearFar (
+            docs="""Camera near/far clipping range"""
+        )
+        custom matrix4d outputs:cameraProjection (
+            docs="""Camera projection matrix"""
+        )
+        custom matrix4d outputs:cameraViewTransform (
+            docs="""Camera view matrix"""
+        )
+        custom uint outputs:exec (
+            docs="""Executes for each newFrame event received"""
+        )
+        custom float outputs:metersPerSceneUnit (
+            docs="""Scene units to meters scale"""
+        )
+        custom int2 outputs:renderProductResolution (
+            docs="""RenderProduct resolution"""
+        )
+        custom uint64 outputs:swhFrameNumber (
+            docs="""Fabric frame number"""
+        )
+    }
+}

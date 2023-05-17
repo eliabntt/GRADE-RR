@@ -1,0 +1,33 @@
+{
+    "SdTestStageManipulationScenarii": {
+        "version": 1,
+        "description": [
+            "Synthetic Data test node applying randomly some predefined stage manipulation scenarii"
+        ],
+        "categories": [
+            "graph:simulation",
+            "internal:test"
+        ],
+        "language": "Python",
+        "state": {
+            "frameNumber": {
+                "type": "uint64",
+                "description": "Current frameNumber (number of invocations)",
+                "default": 0
+            }
+        },
+        "inputs": {
+            "randomSeed": {
+                "type": "int",
+                "description": "Random seed"
+            },
+            "worldPrimPath": {
+                "type": "token",
+                "description": "Path of the world prim : contains every modifiable prim, cannot be modified"
+            }
+        },
+        "exclude": [
+            "tests"
+        ]
+    }
+}

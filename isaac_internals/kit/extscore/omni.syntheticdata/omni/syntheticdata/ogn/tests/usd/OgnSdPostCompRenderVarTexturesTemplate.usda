@@ -1,0 +1,50 @@
+#usda 1.0
+(
+    doc ="""Generated from node description file OgnSdPostCompRenderVarTextures.ogn
+Contains templates for node types found in that file."""
+)
+
+def OmniGraph "TestGraph"
+{
+    token evaluator:type = "push"
+    int2 fileFormatVersion = (1, 3)
+    token flatCacheBacking = "Shared"
+    token pipelineStage = "pipelineStageSimulation"
+
+    def OmniGraphNode "Template_omni_syntheticdata_SdPostCompRenderVarTextures" (
+        docs="""Synthetic Data node to compose a front renderVar texture into a back renderVar texture"""
+    )
+    {
+        token node:type = "omni.syntheticdata.SdPostCompRenderVarTextures"
+        int node:typeVersion = 1
+
+        # 9 attributes
+        custom uint64 inputs:cudaPtr = 0 (
+            docs="""Front texture CUDA pointer"""
+        )
+        custom uint64 inputs:format = 0 (
+            docs="""Front texture format"""
+        )
+        custom uint64 inputs:gpu = 0 (
+            docs="""Pointer to shared context containing gpu foundations"""
+        )
+        custom uint inputs:height = 0 (
+            docs="""Front texture height"""
+        )
+        custom token inputs:mode = "line" (
+            docs="""Mode : grid, line"""
+        )
+        custom float3 inputs:parameters = (0, 0, 0) (
+            docs="""Parameters"""
+        )
+        custom token inputs:renderVar = "LdrColor" (
+            docs="""Name of the back RenderVar"""
+        )
+        custom uint64 inputs:rp = 0 (
+            docs="""Pointer to render product for this view"""
+        )
+        custom uint inputs:width = 0 (
+            docs="""Front texture width"""
+        )
+    }
+}

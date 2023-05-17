@@ -312,6 +312,7 @@ try:
 	old_pose = []
 	old_h_ap = []
 	old_v_ap = []
+	lidars = []
 	simulation_context.stop()
 	for n in range(config["num_robots"].get()):
 		import_robot(robot_base_prim_path, n, local_file_prefix, base_robot_path)
@@ -325,32 +326,28 @@ try:
 
 		add_ros_components(robot_base_prim_path, n, ros_transform_components, ros_camera_list, viewport_window_list,
 		                   camera_pose_frames, cam_pose_pubs, imu_pubs, robot_imu_frames,
-		                   robot_odom_frames, odom_pubs,
+		                   robot_odom_frames, odom_pubs, lidars,
 		                   dynamic_prims, config, old_h_ap, old_v_ap, _is, simulation_context, _clock_graph)
 		kit.update()
 		first = False
-	import ipdb; ipdb.set_trace()
-	simulation_context.reset()
-	simulation_context.play()
+
 	for n in range(config["num_robots"].get()):
-		add_npy_viewport(viewport_window_list, robot_base_prim_path, n, old_h_ap, old_v_ap, config,
+		add_npy_viewport(viewport_window_list, robot_base_prim_path, n, old_h_ap, old_v_ap, config, simulation_context,
 		                 config["num_robots"].get() * 2)
 		simulation_context.step()
 
 	for _ in range(50):
 		simulation_context.render()
 	print("Loading robot complete")
-	# legacy code
-	for index, cam in enumerate(viewport_window_list):
-		camera = stage.GetPrimAtPath(cam.get_active_camera())
-		camera.GetAttribute("horizontalAperture").Set(old_h_ap[index])
-		camera.GetAttribute("verticalAperture").Set(old_v_ap[index])
-	set_carb_setting(carb.settings.get_settings(), "/app/hydra/aperture/conform", 5) # this is still necessary!
-	ipdb.set_trace()
 
-	reset_physics(timeline, simulation_context)
+	print("WARNING: THIS NO LONGER WORKS, NEEDS TO BE FIXED BY NVIDIA!!!!")
+	time.sleep(5)
 
-	ipdb.set_trace()
+	# # legacy code
+	# for index, cam in enumerate(viewport_window_list):
+	# 	camera = stage.GetPrimAtPath(cam.get_active_camera())
+	# 	camera.GetAttribute("horizontalAperture").Set(old_h_ap[index])
+	# 	camera.GetAttribute("verticalAperture").Set(old_v_ap[index])
 	print("Starting FSM - setting up topics...")
 	start_explorer_pubs = []
 	send_waypoint_pubs = []
@@ -373,7 +370,6 @@ try:
 		print("fsm management for robot {} setted up".format(index))
 	print("FSM setted up")
 
-	ipdb.set_trace()
 	print("Loading humans..")
 	my_humans = []
 	my_humans_heights = []
@@ -416,7 +412,6 @@ try:
 		tot_area += areas[-1]
 		n += 1
 
-	ipdb.set_trace()
 	x, y, z, yaw = position_object(environment, type=1, objects=my_humans, ob_stl_paths=used_ob_stl_paths, max_collisions=int(config["allow_collision"].get()))
 	to_be_removed = []
 	human_prim_list = []
@@ -448,8 +443,7 @@ try:
 			human_anim_len.pop(n)
 		omni.kit.commands.execute("DeletePrimsCommand", paths=[f"{human_base_prim_path}{n}" for n in to_be_removed])
 	print("Loading human complete")
-	ipdb.set_trace()
-
+	print("between this and the next there's a hidden reset")
 	google_ob_used, shapenet_ob_used = load_objects(config, environment, rng, dynamic_prims, 1/meters_per_unit)
 
 	# IT IS OF CRUCIAL IMPORTANCE THAT AFTER THIS POINT THE RENDER GETS DONE WITH THE SLEEPING CALL! OTHERWISE PATH TRACING SPP WILL GET RUINED
@@ -457,21 +451,25 @@ try:
 		set_raytracing_settings(config["physics_hz"].get())
 	else:
 		set_pathtracing_settings(config["physics_hz"].get())
+	for prim in stage.Traverse():
+		paths = [str(prim.GetPath())]
+		omni.usd.get_context().get_selection().set_selected_prim_paths(paths, False)
+	omni.usd.get_context().get_selection().set_selected_prim_paths(omni.usd.get_context().get_selection().get_selected_prim_paths(), False)
 
-	omni.usd.get_context().get_selection().set_selected_prim_paths([], False)
-	print("ACTUNG!")
-	ipdb.set_trace()
-	simulation_context.stop()
-	simulation_context.play()
 	for _ in range(5):
 		simulation_context.step(render=False)
 		sleeping(simulation_context, viewport_window_list, raytracing=config["rtx_mode"].get())
 	timeline.set_current_time(0)
 	simulation_step = 0  # this is NOT the frame, this is the "step" (related to physics_hz)
 
-	my_recorder = recorder_setup(config['_recorder_settings'].get(), out_dir_npy, config['record'].get())
+	my_recorder = recorder_setup(config['_recorder_settings'].get(), out_dir_npy, config['record'].get(), ros_cameras=2)
 
+	simulation_context.stop()
 	timeline.set_current_time(0)  # set to 0 to be sure that the first frame is recorded
+	timeline.set_auto_update(False)
+	for _ in range(5):
+		kit.update()
+	simulation_context.play()
 	timeline.set_auto_update(False)
 
 	first_start = False
@@ -512,14 +510,15 @@ try:
 	starting_to_pub = False
 	my_recorder._enable_record = False
 	status = True
-	reset_physics(timeline, kit, simulation_context)
 
 	while kit.is_running():
+		# NOTE EVERYTHING THAT NEEDS TO BE RENDERED NEEDS TO BE MOVED AFTER THE TIMELINE UPDATE CONSISTENTLY
 		if can_start:
 			last_check_time = rospy.Time.now()
 			if second_start:
 				if config['record'].get():
-					reset_physics(timeline, kit, simulation_context)
+					import ipdb; ipdb.set_trace()
+					# reset_physics(timeline, simulation_context)
 					sleeping(simulation_context, viewport_window_list, raytracing=config["rtx_mode"].get())
 					my_recorder._update()
 					sleeping(simulation_context, viewport_window_list, raytracing=config["rtx_mode"].get())
@@ -527,13 +526,13 @@ try:
 				timeline.set_current_time(min(- 1 / (config["physics_hz"].get() / ratio_camera),
 				                              -abs(config["bootstrap_exploration"].get())))
 				simulation_step = int(timeline.get_current_time() * config["physics_hz"].get()) - 1
-				reset_physics(timeline, kit, simulation_context)
+				# reset_physics(timeline, simulation_context)
 				print("Bootstrap started")
 				can_start = False
 		simulation_step += 1
 		if starting_to_pub and simulation_step == 0:
 			timeline.set_current_time(0)
-			reset_physics(timeline, kit, simulation_context)
+			# reset_physics(timeline, simulation_context)
 			move_humans_to_ground(my_humans_heights, human_prim_list, simulation_step / ratio_camera, meters_per_unit,
 			                      config["max_distance_human_ground"].get())
 			print("Starting recording NOW!")
@@ -557,6 +556,9 @@ try:
 		# get the current time in ROS
 		print("Clocking...")
 		og.Controller.evaluate_sync(_clock_graph)
+		ctime = timeline.get_current_time()
+		simulation_context.render()
+		timeline.set_current_time(ctime)
 
 		# publish IMU
 		print("Publishing IMU...")
@@ -594,15 +596,25 @@ try:
 					else:
 						timeline.rewind_one_frame()
 
+		if simulation_step % ratio_camera == 0:
+			for lidar in lidars:
+				og.Controller.attribute(lidar+".inputs:step").set(1)
+			ctime = timeline.get_current_time()
+			simulation_context.render()
+			timeline.set_current_time(ctime)
+			for lidar in lidars:
+				og.Controller.attribute(lidar+".inputs:step").set(0)
+
 		# publish camera (30 hz)
 		if simulation_step % ratio_camera == 0:
+			import ipdb; ipdb.set_trace()
+			ctime = timeline.get_current_time()
 			print("Publishing cameras...")
-			# getting skel pose for each joint
-			# get_skeleton_info(meters_per_unit, body_origins, body_list)
 
 			# FIRST ONE WRITTEN IS AT 1/30 on the timeline
 			pub_and_write_images(my_recorder, simulation_context, viewport_window_list,
 			                     second_start, ros_camera_list, config["rtx_mode"].get())
+			timeline.set_current_time(ctime)
 
 		if simulation_step % ratio_camera == 0 and simulation_step / ratio_camera == experiment_length \
 				and not config["neverending"].get():

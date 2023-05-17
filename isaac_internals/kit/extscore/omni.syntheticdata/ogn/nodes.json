@@ -1,0 +1,172 @@
+{
+    "nodes": {
+        "omni.syntheticdata.SdInstanceMapping": {
+            "description": "Synthetic Data node to expose the scene instances semantic hierarchy information",
+            "version": 1,
+            "extension": "omni.syntheticdata",
+            "language": "C++"
+        },
+        "omni.syntheticdata.SdInstanceMappingPtr": {
+            "description": "Synthetic Data node to expose the scene instances semantic hierarchy information",
+            "version": 1,
+            "extension": "omni.syntheticdata",
+            "language": "C++"
+        },
+        "omni.syntheticdata.SdLinearArrayToTexture": {
+            "description": "Synthetic Data node to copy the input buffer array into a texture for visualization",
+            "version": 1,
+            "extension": "omni.syntheticdata",
+            "language": "C++"
+        },
+        "omni.syntheticdata.SdNoOp": {
+            "description": "Synthetic Data pass through node",
+            "version": 1,
+            "extension": "omni.syntheticdata",
+            "language": "C++"
+        },
+        "omni.syntheticdata.SdOnNewFrame": {
+            "description": "Synthetic Data postprocess node to execute pipeline after the NewFrame event has been received",
+            "version": 1,
+            "extension": "omni.syntheticdata",
+            "language": "C++"
+        },
+        "omni.syntheticdata.SdOnNewRenderProductFrame": {
+            "description": "Synthetic Data postprocess node to execute pipeline after the NewFrame event has been received on the given renderProduct",
+            "version": 1,
+            "extension": "omni.syntheticdata",
+            "language": "C++"
+        },
+        "omni.syntheticdata.SdPostCompRenderVarTextures": {
+            "description": "Synthetic Data node to compose a front renderVar texture into a back renderVar texture",
+            "version": 1,
+            "extension": "omni.syntheticdata",
+            "language": "C++"
+        },
+        "omni.syntheticdata.SdPostInstanceMapping": {
+            "description": "Synthetic Data node to compute and store scene instances semantic hierarchy information",
+            "version": 2,
+            "extension": "omni.syntheticdata",
+            "language": "C++"
+        },
+        "omni.syntheticdata.SdPostRenderVarDisplayTexture": {
+            "description": "Synthetic Data node to copy the input aov texture into the corresponding visualization texture",
+            "version": 1,
+            "extension": "omni.syntheticdata",
+            "language": "C++"
+        },
+        "omni.syntheticdata.SdPostRenderVarTextureToBuffer": {
+            "description": "Expose a device renderVar buffer a texture one.",
+            "version": 1,
+            "extension": "omni.syntheticdata",
+            "language": "C++"
+        },
+        "omni.syntheticdata.SdPostRenderVarToHost": {
+            "description": "Expose a host renderVar from the input device renderVar.",
+            "version": 1,
+            "extension": "omni.syntheticdata",
+            "language": "C++"
+        },
+        "omni.syntheticdata.SdPostSemantic3dBoundingBoxCameraProjection": {
+            "description": "Synthetic Data node to project 3d bounding boxes data in camera space.",
+            "version": 1,
+            "extension": "omni.syntheticdata",
+            "language": "C++"
+        },
+        "omni.syntheticdata.SdPostSemantic3dBoundingBoxFilter": {
+            "description": "Synthetic Data node to cull the semantic 3d bounding boxes.",
+            "version": 1,
+            "extension": "omni.syntheticdata",
+            "language": "C++"
+        },
+        "omni.syntheticdata.SdPostSemanticBoundingBox": {
+            "description": "Synthetic Data node to compute the bounding boxes of the scene semantic entities.",
+            "version": 1,
+            "extension": "omni.syntheticdata",
+            "language": "C++"
+        },
+        "omni.syntheticdata.SdRenderProductCamera": {
+            "description": "Synthetic Data node to expose the camera data",
+            "version": 2,
+            "extension": "omni.syntheticdata",
+            "language": "C++"
+        },
+        "omni.syntheticdata.SdRenderVarDisplayTexture": {
+            "description": "Synthetic Data node to expose texture handle of a visualization AOV",
+            "version": 1,
+            "extension": "omni.syntheticdata",
+            "language": "C++"
+        },
+        "omni.syntheticdata.SdRenderVarPtr": {
+            "description": "Synthetic Data node exposing the raw pointer data of a rendervar.",
+            "version": 1,
+            "extension": "omni.syntheticdata",
+            "language": "C++"
+        },
+        "omni.syntheticdata.SdRenderVarToRawArray": {
+            "description": "Synthetic Data action node to copy the input rendervar into an output raw array",
+            "version": 1,
+            "extension": "omni.syntheticdata",
+            "language": "C++"
+        },
+        "omni.syntheticdata.SdSemanticFilter": {
+            "description": "Synthetic Data node to declare a semantic filter.",
+            "version": 1,
+            "extension": "omni.syntheticdata",
+            "language": "C++"
+        },
+        "omni.syntheticdata.SdSimInstanceMapping": {
+            "description": "Synthetic Data node to update and cache the instance mapping data",
+            "version": 1,
+            "extension": "omni.syntheticdata",
+            "language": "C++"
+        },
+        "omni.syntheticdata.SdSimRenderProductCamera": {
+            "description": "Synthetic Data node to expose the renderProduct camera in the fabric",
+            "version": 1,
+            "extension": "omni.syntheticdata",
+            "language": "C++"
+        },
+        "omni.syntheticdata.SdTestInstanceMapping": {
+            "description": "Synthetic Data node to test the instance mapping pipeline",
+            "version": 1,
+            "extension": "omni.syntheticdata",
+            "language": "C++"
+        },
+        "omni.syntheticdata.SdTestPrintRawArray": {
+            "description": "Synthetic Data test node printing the input linear array",
+            "version": 1,
+            "extension": "omni.syntheticdata",
+            "language": "Python"
+        },
+        "omni.syntheticdata.SdTestRenderProductCamera": {
+            "description": "Synthetic Data node to test the renderProduct camera pipeline",
+            "version": 1,
+            "extension": "omni.syntheticdata",
+            "language": "C++"
+        },
+        "omni.syntheticdata.SdTestStageManipulationScenarii": {
+            "description": "Synthetic Data test node applying randomly some predefined stage manipulation scenarii",
+            "version": 1,
+            "extension": "omni.syntheticdata",
+            "language": "Python"
+        },
+        "omni.syntheticdata.SdTestStageSynchronization": {
+            "description": "Synthetic Data node to test the pipeline stage synchronization",
+            "version": 1,
+            "extension": "omni.syntheticdata",
+            "language": "C++"
+        },
+        "omni.syntheticdata.SdTextureToLinearArray": {
+            "description": "SyntheticData node to copy the input texture into a linear array buffer",
+            "version": 1,
+            "extension": "omni.syntheticdata",
+            "language": "C++"
+        },
+        "omni.syntheticdata.SdUpdateSwFrameNumber": {
+            "description": "Synthetic Data node to return the current update swhFrameNumber",
+            "version": 1,
+            "extension": "omni.syntheticdata",
+            "language": "C++"
+        }
+    }
+}

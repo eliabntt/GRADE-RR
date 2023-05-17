@@ -1,0 +1,73 @@
+#usda 1.0
+(
+    doc ="""Generated from node description file OgnSdTextureToLinearArray.ogn
+Contains templates for node types found in that file."""
+)
+
+def OmniGraph "TestGraph"
+{
+    token evaluator:type = "push"
+    int2 fileFormatVersion = (1, 3)
+    token flatCacheBacking = "Shared"
+    token pipelineStage = "pipelineStageSimulation"
+
+    def OmniGraphNode "Template_omni_syntheticdata_SdTextureToLinearArray" (
+        docs="""SyntheticData node to copy the input texture into a linear array buffer"""
+    )
+    {
+        token node:type = "omni.syntheticdata.SdTextureToLinearArray"
+        int node:typeVersion = 1
+
+        # 10 attributes
+        custom uint64 inputs:cudaMipmappedArray = 0 (
+            docs="""Pointer to the CUDA Mipmapped Array"""
+        )
+        custom uint64 inputs:format = 0 (
+            docs="""Format"""
+        )
+        custom uint inputs:height = 0 (
+            docs="""Height"""
+        )
+        custom double inputs:hydraTime = 0.0 (
+            docs="""Hydra time in stage"""
+        )
+        custom uint inputs:mipCount = 0 (
+            docs="""Mip Count"""
+        )
+        custom uint inputs:outputHeight = 0 (
+            docs="""Requested output height"""
+        )
+        custom uint inputs:outputWidth = 0 (
+            docs="""Requested output width"""
+        )
+        custom double inputs:simTime = 0.0 (
+            docs="""Simulation time"""
+        )
+        custom uint64 inputs:stream = 0 (
+            docs="""Pointer to the CUDA Stream"""
+        )
+        custom uint inputs:width = 0 (
+            docs="""Width"""
+        )
+
+        # 6 attributes
+        custom float4[] outputs:data = [] (
+            docs="""Buffer array data"""
+        )
+        custom uint outputs:height (
+            docs="""Buffer array height"""
+        )
+        custom double outputs:hydraTime (
+            docs="""Hydra time in stage"""
+        )
+        custom double outputs:simTime (
+            docs="""Simulation time"""
+        )
+        custom uint64 outputs:stream (
+            docs="""Pointer to the CUDA Stream"""
+        )
+        custom uint outputs:width (
+            docs="""Buffer array width"""
+        )
+    }
+}

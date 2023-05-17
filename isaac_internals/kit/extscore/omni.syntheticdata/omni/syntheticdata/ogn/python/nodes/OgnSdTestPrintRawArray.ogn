@@ -1,0 +1,104 @@
+{
+    "SdTestPrintRawArray": {
+        "version": 1,
+        "description": [ "Synthetic Data test node printing the input linear array" ],
+        "categories": ["graph:action","internal:test"],
+        "language": "Python",
+        "state": {
+            "initialSWHFrameNumber": {
+                "type": "int64",
+                "description": "Initial swhFrameNumber",
+                "default": -1
+            }
+        },
+        "inputs": {
+            "mode": {
+                "type" : "token",
+                "description" : "Mode in [printFormatted, printReferences, testReferences]",
+                "default" : "printFormatted"
+            },
+            "exec": {
+                "type": "execution",
+                "description": "Trigger"
+            },
+            "randomSeed": {
+                "type": "int",
+                "description": "Random seed"
+            },
+            "swhFrameNumber": {
+                "type": "uint64",
+                "description": "Frame number"
+            },
+            "data": {
+                "type": "uchar[]",
+                "description": "Buffer array data",
+                "default": []
+            },
+            "width": {
+                "type": "uint",
+                "description": "Width  (0 if the input is a buffer)"
+            },
+            "height": {
+                "type": "uint",
+                "description": "Height  (0 if the input is a buffer)"
+            },
+            "bufferSize": {
+                "type": "uint",
+                "description": "Size (in bytes) of the buffer (0 if the input is a texture)"
+            },
+            "elementType": {
+                "type": "token",
+                "description": "Type of the array element",
+                "default": "uint8"
+            },
+            "elementCount": {
+                "type": "int",
+                "description": "Number of array element",
+                "default": 1
+            },
+            "referenceTolerance": {
+                "type": "float",
+                "description": "Reference tolerance",
+                "default": 0.1
+            },
+            "referenceSWHFrameNumbers": {
+                "type": "uint[]",
+                "description": "Reference swhFrameNumbers relative to the first one",
+                "default": [11,17,29]
+            },
+            "referenceNumUniqueRandomValues": {
+                "type": "int",
+                "description" : "Number of reference unique random values to compare",
+                "default" : 7
+            },
+            "referenceValues": {
+                "type": "float[]",
+                "description": "Reference data point values"
+            }
+        },
+        "outputs": {
+            "exec": {
+                "type": "execution",
+                "description": "Executes when the event is received",
+                "uiName": "Received"
+            },
+            "swhFrameNumber": {
+                "type": "uint64",
+                "description": "FrameNumber just rendered"
+            }
+        },
+        "tokens": [
+            "uint16",
+            "int16",
+            "uint32",
+            "int32",
+            "float32",
+            "token",
+            "printFormatted",
+            "printReferences"
+        ],
+        "exclude": [
+            "tests"
+        ]
+    }
+}

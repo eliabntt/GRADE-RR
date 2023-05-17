@@ -1,0 +1,119 @@
+#usda 1.0
+(
+    customLayerData = {
+        dictionary cameraSettings = {
+            dictionary Front = {
+                double3 position = (0, 0, 50000)
+                double radius = 500
+            }
+            dictionary Perspective = {
+                double3 position = (25.320213923059804, 25.32022525282619, 25.32021392305995)
+                double3 target = (-0.000003978038350282986, 0.00000795607681425281, -0.0000039780382046217255)
+            }
+            dictionary Right = {
+                double3 position = (-50000, 0, 0)
+                double radius = 500
+            }
+            dictionary Top = {
+                double3 position = (0, 50000, 0)
+                double radius = 500
+            }
+            string boundCamera = "/OmniverseKit_Persp"
+        }
+        dictionary omni_layer = {
+            dictionary muteness = {
+            }
+        }
+        dictionary renderSettings = {
+        }
+    }
+    defaultPrim = "World"
+    endTimeCode = 100
+    metersPerUnit = 0.01
+    startTimeCode = 0
+    timeCodesPerSecond = 24
+    upAxis = "Y"
+)
+
+def Xform "World"
+{
+    def Xform "prototypes"
+    {
+        token visibility = "invisible"
+
+        def Xform "Cone"
+        {
+            def Cone "Cone" (
+                prepend apiSchemas = ["SemanticsAPI:Semantics"]
+            )
+            {
+                string semantic:Semantics:params:semanticData = "cone_p"
+                string semantic:Semantics:params:semanticType = "class"
+            }
+        }
+
+        def Xform "Cube"
+        {
+            def Cube "Cube" (
+                prepend apiSchemas = ["SemanticsAPI:Semantics"]
+            )
+            {
+                string semantic:Semantics:params:semanticData = "cube_p"
+                string semantic:Semantics:params:semanticType = "class"
+            }
+        }
+    }
+
+    def PointInstancer "PI"
+    {
+        point3f[] positions = [(0, 10, 0), (10, 10, 0), (0, 10, 10), (10, 10, 10)]
+        int[] protoIndices = [0, 0, 0, 1]
+        rel prototypes = [
+            </World/PI/Xform/Cone>,
+            </World/PI/Xform/Cube>,
+        ]
+
+        def Xform "Xform"
+        {
+            token visibility = "invisible"
+
+            def "Cone" (
+                prepend references = </World/prototypes/Cone>
+            )
+            {
+            }
+
+            def "Cube" (
+                prepend references = </World/prototypes/Cube>
+            )
+            {
+            }
+        }
+    }
+}
+
+def Xform "Environment"
+{
+    double3 xformOp:rotateXYZ = (0, 0, 0)
+    double3 xformOp:scale = (1, 1, 1)
+    double3 xformOp:translate = (0, 0, 0)
+    uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+
+    def DistantLight "defaultLight" (
+        prepend apiSchemas = ["ShapingAPI"]
+    )
+    {
+        float angle = 1
+        float intensity = 3000
+        float shaping:cone:angle = 180
+        float shaping:cone:softness
+        float shaping:focus
+        color3f shaping:focusTint
+        asset shaping:ies:file
+        double3 xformOp:rotateXYZ = (315, 0, 0)
+        double3 xformOp:scale = (1, 1, 1)
+        double3 xformOp:translate = (0, 0, 0)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+    }
+}
+

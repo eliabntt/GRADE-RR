@@ -1,0 +1,43 @@
+{
+    "writer_name": "BasicWriter",
+    "custom_writer_name": "MyCustomWriter",
+    "num_frames": 0,
+    "rt_subframes": 0,
+    "control_timeline": false,
+    "out_dir": "_out_sdrec",
+    "out_write_type": "OVERWRITE",
+    "basic_writer_params": {
+        "rgb": true,
+        "bounding_box_2d_tight": false,
+        "bounding_box_2d_loose": false,
+        "semantic_segmentation": false,
+        "colorize_semantic_segmentation": false,
+        "instance_id_segmentation": false,
+        "colorize_instance_id_segmentation": false,
+        "instance_segmentation": false,
+        "colorize_instance_segmentation": false,
+        "distance_to_camera": false,
+        "distance_to_image_plane": false,
+        "bounding_box_3d": false,
+        "occlusion": false,
+        "normals": false,
+        "motion_vectors": false,
+        "camera_params": false,
+        "pointcloud": false,
+        "pointcloud_include_unlabelled": false,
+        "skeleton_data": false
+    },
+    "use_s3": false,
+    "s3_params": {
+        "s3_bucket": "",
+        "s3_region": "",
+        "s3_endpoint": ""
+    },
+    "rp_data": [
+        [
+            "/OmniverseKit_Persp",
+            512,
+            512
+        ]
+    ]
+}
