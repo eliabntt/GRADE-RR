@@ -515,8 +515,6 @@ try:
 			last_check_time = rospy.Time.now()
 			if second_start:
 				if config['record'].get():
-					import ipdb; ipdb.set_trace()
-					# reset_physics(timeline, simulation_context)
 					sleeping(simulation_context, viewport_window_list, raytracing=config["rtx_mode"].get())
 					my_recorder._update()
 					sleeping(simulation_context, viewport_window_list, raytracing=config["rtx_mode"].get())
@@ -605,7 +603,6 @@ try:
 
 		# publish camera (30 hz)
 		if simulation_step % ratio_camera == 0:
-			import ipdb; ipdb.set_trace()
 			ctime = timeline.get_current_time()
 			print("Publishing cameras...")
 
