@@ -31,14 +31,18 @@
         createCookie(name,"",-1);
     }
 
-    console.log("aaaa");
     if(readCookie('cookie-consent')==='true') {
         {% include ga.js %}
         document.getElementById('cookie-notice').style.display = 'none';
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-RYLD885H00');
+        ga('send', 'pageview');
     } else {
         if (readCookie('cookie-notice-dismissed') ==="true" && readCookie("cookie-consent")==="false"){
             document.getElementById('cookie-notice').style.display = 'block';
-            window['ga-disable-UA-203204240-1'] = true;
+            window['ga-disable-G-RYLD885H00'] = true;
         }
     }
 
@@ -53,7 +57,7 @@
         createCookie('cookie-consent','false',31);
         document.getElementById('cookie-notice').style.display = 'none';
         document.getElementById('cookie-notice').style.display = 'block';
-        window['ga-disable-UA-203204240-1'] = true;
+        window['ga-disable-G-RYLD885H00'] = true;
         eraseCookie("_ga");
         eraseCookie("_gat");
         eraseCookie("_gid");

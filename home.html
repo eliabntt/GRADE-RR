@@ -24,7 +24,8 @@ layout: default
           <sup>*</sup> Corresponding Author
         </p>
         <h5>
-          <a href="https://arxiv.org/abs/2303.04466">[Paper]</a>&nbsp; <!-- todo fixme -->
+          <a href="https://arxiv.org/abs/2303.04466">[Grade Paper]</a>&nbsp; <!-- todo fixme -->
+          <a href="https://arxiv.org/abs/2305.00432">[Synthetic Zebras Paper]</a>&nbsp; <!-- todo fixme -->
           <a href="https://github.com/eliabntt/GRADE_data/">[Download Data]</a>&nbsp;
           <a href="https://github.com/eliabntt/Front3D_to_USD">[Environment Generation Code]</a>&nbsp; </br>
           <a href="https://github.com/eliabntt/animated_human_SMPL_to_USD">[SMPL animation to USD]</a>&nbsp;
@@ -38,11 +39,21 @@ layout: default
 <center>
   <section>
     <div class="container-fluid">
+      <div class="row">
+      <div class="col-sm-6">
       <div class="embed-responsive embed-responsive-16by9" style="max-width: 1320px;">
         <iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="" src="https://www.youtube-nocookie.com/embed/cmywCSD-9TU" title="independentCamera" data-dashlane-frameid="1498">
         </iframe>
       </div>
     </div>
+      <div class="col-sm-6">
+      <div class="embed-responsive embed-responsive-16by9" style="max-width: 1320px;">
+        <iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="" src="https://www.youtube-nocookie.com/embed/NntEgJVDIVw" title="independentCamera" data-dashlane-frameid="1498">
+        </iframe>
+      </div>
+      </div>
+    </div>    
+  </div>
   </section>
 </center>
 
@@ -52,14 +63,15 @@ layout: default
         <h2 class="section-heading text-uppercase text-center">News</h2>
         <h5 class="text-muted" style="text-align:left;">
           <ul>
-            <li>10 May 2023: Showing how to use ONLY Synthetic Zebras to train a detector. <a href="https://keeper.mpdl.mpg.de/d/12abb3bb6b12491480d5/">Data</a> and <a href="https://arxiv.org/abs/2305.00432">paper</a>. Submitted for the 2023 ECMR conference.</li>
-            <li>Accepted ICRA 2023 workshop paper <a href="https://openreview.net/forum?id=SUIOuV2y-Ce">Learning from synthetic data generated with GRADE</a></li>
-            <li>Accepted ICRA 2023 workshop extended abstract <a href="https://arxiv.org/abs/2305.04286">Simulation of Dynamic Environments for SLAM</a></li>
+            <li>May 2023: Main code porting to Isaac 2022 available in the <a href="https://github.com/eliabntt/GRADE-RR/tree/v2022">v2022</a> branch. </li>
+            <li>May 2023: Showing how to use ONLY Synthetic Zebras to train a detector. <a href="https://keeper.mpdl.mpg.de/d/12abb3bb6b12491480d5/">Data</a> and <a href="https://arxiv.org/abs/2305.00432">paper</a> already available.</li>
+            <li>May 2023: Generate outdoor aerial views of Zebras with <a href="https://github.com/eliabntt/GRADE-RR/blob/main/simulator/zebra_datagen.py">this code.</a>
+            <li>Accepted ICRA 2023 <em>Pretraining for Robotics</em> workshop paper <a href="https://openreview.net/forum?id=SUIOuV2y-Ce">Learning from synthetic data generated with GRADE</a></li>
+            <li>Accepted ICRA 2023 <em>Active Methods in Autonomous Navigation</em> workshop paper <a href="https://arxiv.org/abs/2305.04286">Simulation of Dynamic Environments for SLAM</a></li>
             <li>Watch my talk at <a href="https://www.nvidia.com/gtc/session-catalog/?tab.catalogallsessionstab=16566177511100015Kus&search=S51570#/session/1666623015127001DShI" target="_blank">GTC 2023</a></li>
-            <li>10 March 2023: Annoncing <a href="https://github.com/eliabntt/GRADE-RR">GRADE-RR</a>. Work submitted at T-RO journal.</li>
-            <li>10 March 2023: Take a look at our released data <a href="https://github.com/eliabntt/GRADE_data">here</a></li>
-            <li>10 March 2023: Download the labelled <i>fr3/walking</i> sequences of the TUM RGBD dataset <a href="https://github.com/eliabntt/GRADE_data">here</a></li>
-            <li>Upcoming in 2023: Full code porting to Isaac 2022/2023 </li>
+            <li>March 2023: Annoncing <a href="https://github.com/eliabntt/GRADE-RR">GRADE</a>. Work submitted at T-RO journal.</li>
+            <li>March 2023: Take a look at our released data <a href="https://github.com/eliabntt/GRADE_data">here</a></li>
+            <li>March 2023: Download the labelled <i>fr3/walking</i> sequences of the TUM RGBD dataset <a href="https://github.com/eliabntt/GRADE_data">here</a></li>
           </ul>
         </h5>
       </div>
@@ -73,35 +85,46 @@ layout: default
         </div>
         <hr />
         <p>
-          With GRADE-RR we provide a pipeline to easily simulate robots in photorealistic dynamic environments.
+          With GRADE we provide a pipeline to easily simulate robots in photorealistic dynamic environments.
 
           This will simplify the robotics research by a great extent by allowing easy data generation and precise custom simulations.
           
           The project is based on <a href="https://developer.nvidia.com/isaac-sim">Isaac Sim</a>, <a href="https://www.nvidia.com/en-us/omniverse/">Omniverse</a> and the open source <a
             href="https://github.com/PixarAnimationStudios/USD">USD</a> format.
           
-          Our framework is easily expandable and customizable for any use case, we will welcome any contribution that you may have.
-
-          We put focus to four main components: i) indoor environments, ii) dynamic assets, iii) robot/camera setup and control, iv) simulation control, data processing and extra tools.
+            <br>
+            <br>
+            On our first work, we put the focus into four main components: i) indoor environments, ii) dynamic assets, iii) robot/camera setup and control, iv) simulation control, data processing and extra tools.
           
-          Thanks to the ROS support and the python interface, each one of our modules can be easily removed from the pipeline, or exchanged with <i>your</i> custom implementations.
-
-          This means, for example, that you can use your own placement strategy, assets, robot, or control mechanism. 
+        <!--  This means, for example, that you can use your own placement strategy, assets, robot, or control mechanism. 
           
-          We worked towards a flexible system that could address many needs, e.g. working with or without ROS, with or without physics, with your own software in the loop, to generate noisy or groundtruth data.
+          We worked towards a flexible system that could address many needs, e.g. working with or without ROS, with or without physics, with your own software in the loop, to generate noisy or groundtruth data.-->
 
           Using our framework we generate an indoor dynamic environment dataset, and showcase various scenarios such as heterogeneous multi-robot setup and outdoor video capturing. 
-          This dataset will be published soon. However, following our instructions, you will be able to reproduce the dataset on your own machine.
-        
+
           The data generated is solely based on publicly available datasets and tools such as: <a href="https://tianchi.aliyun.com/specials/promotion/alibaba-3d-scene-dataset">3D-Front</a>,
           <a href="https://research.google/resources/datasets/scanned-objects-google-research/">Google Scanned Objects</a>, <a href="https://shapenet.org/">ShapeNet</a>, <a href="https://chalearnlap.cvc.uab.cat/dataset/38/description/">Cloth3D</a>, <a href="https://amass.is.tue.mpg.de/">AMASS</a>,
           <a href="https://smpl.is.tue.mpg.de/">SMPL</a> and <a href="https://github.com/DLR-RM/BlenderProc/">BlenderProc</a>.
 
-          The generated data has been used to extensive test various SLAM libraries and synthetic data usability in human detection/segmentation task with both Mask-RCNN and YOLOv5.
+          This has been used to extensive test various SLAM libraries and synthetic data usability in human detection/segmentation task with both Mask-RCNN and YOLOv5.
 
           You can already check the data used for training, and the sequences we used to test the SLAM frameworks <a href="https://github.com/eliabntt/GRADE_data/tree/main">here</a>.
+    <br>
+    <br>
 
-          For further details check the paper or write me an <a href="mailto:elia.bonetto@tue.mpg.de">e-mail</a>.
+          After that, we used the very same framework to generate a dataset of zebras captured outdoor from aerial views, and demonstrated that we can train a detector <em>without using real world images</em> achieving <em>94% mAP</em>.
+          We already released the images and most of the data for you to experiment with. 
+        
+          <br>
+          <br>
+          Thanks to the ROS support and the python interface, each one of our modules can be easily removed from the pipeline, or exchanged with <i>your</i> custom implementations.
+          Our framework is easily expandable and customizable for any use case, and we will welcome any contribution that you may have.
+          <br>
+          <br>
+          Note that the use of ROS is neither necessary nor mandatory. You can use the system without any working knowledge of ROS or of its components.
+          <br>
+          <br>
+          For further details check the papers (<a href="https://arxiv.org/abs/2303.04466">GRADE</a>, <a href="https://arxiv.org/abs/2305.00432">Zebras</a>) or write me an <a href="mailto:elia.bonetto@tue.mpg.de">e-mail</a>.
         </p>
       </div>
 
@@ -131,7 +154,7 @@ layout: default
           Using Omniverse's <a href="https://docs.omniverse.nvidia.com/con_connect/con_connect/overview.html">connectors</a> you can convert almost any environment to the USD format. This can then be imported directly in IsaacSim.
           Our <a href="https://github.com/eliabntt/Front3D_to_USD">conversion tool</a>, based on BlenderProc, focuses on the 3D-Front dataset, the biggest available semantically-annotated indoor dataset with actual 3D meshes.        
           However, as we show in our work we can easily import environments from other applications such as UnrealEngine, or download environments from popular marketplaces such as <a href="https://sketchfab.com/feed">SketchFab</a>.
-          For example, we use the same system to convert BlenderProc environments (download them with <a href="https://github.com/eliabntt/GRADE-RR/blob/main/scripts/get_benchbot.sh">this</a>), and FBX files. 
+          For example, we use the same system to convert BlenderProc environments (download them with <a href="https://github.com/eliabntt/GRADE-RR/blob/main/scripts/get_benchbot.sh">this</a>), and FBX files.
           Our script will automatically extract other useful information such as the STL of the environment, convert it to x3d (which can be then converted to octomap), and get an approximated enclosing polygon.
           Find more information on how you can easily convert an environment <a href="https://github.com/eliabntt/Front3D_to_USD">here</a>.
         </p>
@@ -140,18 +163,19 @@ layout: default
         <h4 class="service-heading">Dynamic assets</h4>
         <p class="text-muted">
           Most of the robotics research is being carried out in <b>static</b> environments. This mainly because animated assets are difficult to simulate, place and manage.
-          In our work, we focused mainly on animated clothed humans by converting and placing inside our environments <a
+          We focused mostly on animated clothed humans by converting and placing inside our environments <a
             href="https://chalearnlap.cvc.uab.cat/dataset/38/description/">Cloth3D</a> and <a href="https://amass.is.tue.mpg.de/">AMASS (CMU)</a> animated assets.
           To do so, we implemented a simple to use <a href="https://github.com/eliabntt/animated_human_SMPL_to_USD">tool</a> that allows a streamlined conversion between SMPL
-          mesh and clothes animation to the USD format. The tool is expandable to different body models (e.g. SMPL-X) or different data sources. It can be used to export single frames, subsections of the animation, and to create a trace of the 3D occupancy of the movement.
+          mesh and clothes animation to the USD format. The tool is expandable to different body models (e.g. SMPL-X) or different data sources.
 
-          The animations are then placed in the simulation with an easy to understand technique which can be easily exchanged with custom implementations.
-          Our strategy use the STL trace of the animation and the STL of the environment to check for collisions. With that, we can interatively place multiple meshes. To do so, we use MoveIt's FCL interface and a custom service that we make available <a href="https://github.com/eliabntt/moveit_based_collision_checker_and_placement">here</a>.
-          We plan to do the same with the <code>trimesh</code> library thus ditching the ROS requirement.
-          
+          The animations are then placed in the simulation with an easy to understand technique which can be easily exchanged with your own script.
+          Our strategy use the STL trace of the animation and of the environment to check for collisions using a custom <a href="https://github.com/eliabntt/moveit_based_collision_checker_and_placement">service</a> based on MoveIt's FCL interface.
+          <br>
+          <br>
           However, dynamic assets are not only humans but there can be also objects or animals. Luckly, you can easily simulate those too.
           For example, <a href="https://github.com/eliabntt/GRADE-RR/blob/beaeddde94bccf9fcabea04db9fe68e67109828c/simulator/utils/objects_utils.py#L195">here</a> we show how you can add flying properties to objects. 
           The zebras we showcase in the video (get them <a href="https://bit.ly/3Ijpzc3">here</a>) were converted using blender to the USD format. The translation and rotation offset was added manually animated using <a href="https://docs.omniverse.nvidia.com/app_create/prod_extensions/ext_animation_curves.html">this procedure</a> and then manually placed and scaled in the savanna environment.
+          The zebras used for the generation instead are randomly scaled and placed (statically) at simulation time. Check how <a href="https://github.com/eliabntt/GRADE-RR/blob/main/simulator/zebra_datagen.py">here</a> and <a href="https://github.com/eliabntt/GRADE-RR/blob/main/simulator/utils/zebra_utils.py">here</a>.
         </p>
       </div>
     </div>
@@ -163,16 +187,23 @@ layout: default
           You can control the robot in various ways with or without ROS and with or without physics. Non-physics enabled possibilities include control through teleporting and as a flying object.
           Physics-enabled ones include software in the loop, joint-based waypoints, pre-developed controllers (e.g. standard vehicles) and directly through joint commands.
           Find out more <a href="https://github.com/eliabntt/GRADE-RR/blob/main/MOVEMENT.md">here</a>.
-          Then, since Isaac Sim does not provide fluid-dynamic simulation and frictionless perpendicular movement, we developed a custom
+          <br>
+          <br>
+          Since Isaac Sim does not provide fluid-dynamic simulation and frictionless perpendicular movement, we developed a custom
           virtual <a href="https://github.com/eliabntt/custom_6dof_joint_controller">6DOF joint controller</a> that works both with position and velocity setpoints. This allowed us to control both a drone and a 3-wheeled omnidirectional robot.
           
           The joint controller would work for any robot that you have, provided that you include in it your own joint definitions.
 
-          Robot's sensors can be created at run-time (<a href="https://github.com/eliabntt/GRADE-RR/blob/beaeddde94bccf9fcabea04db9fe68e67109828c/simulator/paper_simulation.py#L325">main script</a>, <a href="https://github.com/eliabntt/GRADE-RR/blob/beaeddde94bccf9fcabea04db9fe68e67109828c/simulator/utils/robot_utils.py#L439">function</a>), and dynamically changed, or pre-configured directly in the USD file.
+          <br>
+          <br>
+                    Robot's sensors can be created at run-time (<a href="https://github.com/eliabntt/GRADE-RR/blob/beaeddde94bccf9fcabea04db9fe68e67109828c/simulator/paper_simulation.py#L325">main script</a>, <a href="https://github.com/eliabntt/GRADE-RR/blob/beaeddde94bccf9fcabea04db9fe68e67109828c/simulator/utils/robot_utils.py#L439">function</a>), and dynamically changed, or pre-configured directly in the USD file.
 
-          Data publishing can be controlled manually, therefore each sensor can have a custom publishing and, if you want, failure rate (<a href="https://github.com/eliabntt/GRADE-RR/blob/beaeddde94bccf9fcabea04db9fe68e67109828c/simulator/paper_simulation.py#L555">link</a>).
+                    <br>
+                    <br>Data publishing can be controlled manually, therefore each sensor can have a custom publishing and, if you want, failure rate (<a href="https://github.com/eliabntt/GRADE-RR/blob/beaeddde94bccf9fcabea04db9fe68e67109828c/simulator/paper_simulation.py#L555">link</a>).
 
-          Since the simulator is ROS-enabled any sensor can be published manually with added noise and any custom topic can be added or listened.
+                    <br>
+                    <br>
+                              Since the simulator is ROS-enabled any sensor can be published manually with added noise and any custom topic can be added or listened. However, the use of ROS is <em>NOT mandatory NOR required</em>.
         </p>
       </div>
 
@@ -463,7 +494,7 @@ layout: default
       </div>
       <div class="col-md-12">
         <p class="text-muted">
-          GRADE-RR was collected as a tool for research in robotics. The dataset may
+          GRADE was developed as a tool for research in robotics. The dataset may
         have unintended biases (including those of a societal, gender or racial nature).
         </p>
       </div>

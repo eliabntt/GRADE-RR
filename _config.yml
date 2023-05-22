@@ -19,9 +19,10 @@ email: elia.bonetto@tuebingen.mpg.de
 description: >-
   GRADE dataset
 baseurl: "/GRADE-RR" # the subpath of your site, e.g. /blog
-url: "http://eliabntt.github.io" # the base hostname & protocol for your site, e.g. http://example.com
+url: "https://eliabntt.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: ""
 github_username: "eliabntt"
+google_analytics: "G-RYLD885H00"
 
 # Build settings
 markdown: kramdown
