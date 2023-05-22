@@ -734,11 +734,13 @@ console.log("cookie");
 
         document.getElementById('cookie-notice').style.display = 'none';
         window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
+        function gtag(){
+            dataLayer.push(arguments);
+        }
         gtag('js', new Date());
         gtag('config', 'G-RYLD885H00');
-        ga('send', 'pageview');
-    } else {
+        gtag('event', 'page_view', { 'send_to': 'G-RYLD885H00' });
+        } else {
         if (readCookie('cookie-notice-dismissed') ==="true" && readCookie("cookie-consent")==="false"){
             document.getElementById('cookie-notice').style.display = 'block';
             window['ga-disable-G-RYLD885H00'] = true;
