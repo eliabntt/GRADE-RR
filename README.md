@@ -1,6 +1,7 @@
 # GRADE-RR or how to Generate Realistic Animated Dynamic Environments for Robotics Research
 ## Project developed with Isaac Sim 2021.2.1
-#### Isaac 2022 branch is being updated --- All the commands will work equally between the two versions.
+
+## Isaac 2022 branch is updated --- Only for the main paper_simulation script and the helper code. Will finish that in a while. 
 
 This repository contains the code of GRADE.
 
