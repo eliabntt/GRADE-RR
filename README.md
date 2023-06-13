@@ -1,7 +1,6 @@
 # GRADE-RR or how to Generate Realistic Animated Dynamic Environments for Robotics Research
-## Project developed with Isaac Sim 2021.2.1
 
-## Isaac 2022 branch is updated --- Only for the main paper_simulation script and the helper code. Will finish that in a while. 
+## Isaac 2022.2.1 branch is updated --- Only for the main paper_simulation script and all the utils scripts.
 
 This repository contains the code of GRADE.
 
@@ -24,13 +23,16 @@ Each step of the pipeline can be easily customized, expanded or removed from you
 
 If you want more information check out my [GTC talk](https://www.nvidia.com/gtc/session-catalog/?search=bonetto&tab.catalogallsessionstab=16566177511100015Kus&search=bonetto#/session/1666623015127001DShI), the [paper](https://arxiv.org/abs/2303.04466) or our [website](https://eliabntt.github.io/grade-rr).
 
-With this framework in conjuction with our [people generator](https://github.com/eliabntt/animated_human_SMPL_to_USD), [environment exporter](https://github.com/eliabntt/Front3D_to_USD) and [control framework](https://github.com/eliabntt/ros_isaac_drone) (which can control any thanks to our [custom 6DOF joint controller](https://github.com/eliabntt/custom_6dof_joint_controller)), we generated a dataset.
+With this framework in conjuction with our [people generator](https://github.com/eliabntt/animated_human_SMPL_to_USD), [environment exporter](https://github.com/eliabntt/Front3D_to_USD) and [control framework](https://github.com/eliabntt/ros_isaac_drone) (which can control any thanks to our [custom 6DOF joint controller](https://github.com/eliabntt/custom_6dof_joint_controller)), we generated a dataset of indoor animated scenes.
 
 The dataset has been then postprocessed with our set of [tools](https://github.com/robot-perception-group/GRADE-eval), [evaluated](https://github.com/robot-perception-group/GRADE-eval) against popular SLAM libraries and used to test the realism of our synthetic data by [training Yolo and MaskRCNN](https://github.com/eliabntt/GRADE-train).
 
+Moreover, we used this project to generate a synthetic Zebra dataset focused on aerial views. Check the [paper](https://arxiv.org/abs/2305.00432) and the [data](https://keeper.mpdl.mpg.de/d/12abb3bb6b12491480d5/). To do so, we used [this](https://github.com/eliabntt/GRADE-RR/blob/main/simulator/zebra_datagen.py) main file.
+
 In this readme I'll give the main installation instructions, and links to other resources that you should read to work with this software.
 
-The main branch (for now) contains code compatible with the 2021.2.1 version of the code. Some modifications are necessary for upgrading to the 2022 version and we are working on that.
+The main branch (for now) contains code compatible with the 2021.2.1 version of the code.
+
 _______
 ## List of project-related repositories
 
@@ -58,8 +60,6 @@ Host: d28dzv1nop4bat.cloudfront.net
 Service: s3
 Redirection: https://d28dzv1nop4bat.cloudfront.net
 ```
-
-For 2022 this should not be necessary.
 
 From now on, we will assume that you installed Isaac Sim within a `ISAAC_FOLDER`. Default location is `~/.local/share/ov/pkg/isaac-version/`.
 
@@ -196,10 +196,11 @@ The data will be available in our [data repository](https://github.com/eliabntt/
 
 __________
 ### CITATION
-If you find this work useful please cite our work as
+If you find this work useful please cite our work
 
+1. GRADE: currently under revision
 ```
-@misc{https://doi.org/10.48550/arxiv.2303.04466,
+@misc{bonetto2023grade,
   doi = {10.48550/ARXIV.2303.04466},
   url = {https://arxiv.org/abs/2303.04466},
   author = {Bonetto, Elia and Xu, Chenghao and Ahmad, Aamir},
@@ -208,6 +209,38 @@ If you find this work useful please cite our work as
   publisher = {arXiv},
   year = {2023},
   copyright = {arXiv.org perpetual, non-exclusive license}
+}
+```
+2. Synthetic zebras: currently under revision
+```
+@misc{bonetto2023synthetic,
+      title={Synthetic Data-based Detection of Zebras in Drone Imagery}, 
+      author={Elia Bonetto and Aamir Ahmad},
+      year={2023},
+      publisher = {arXiv},
+      url = {https://arxiv.org/abs/2305.00432},
+      doi = {10.48550/arXiv.2305.00432},
+      primaryClass={cs.CV}
+}
+```
+3. Dyanmic SLAM evaluations: published at the Active Vision for Robotics Workshop at ICRA 2023
+```
+@inproceedings{ bonetto2023dynamicSLAM, 
+            title={{S}imulation of {D}ynamic {E}nvironments for {SLAM}}, 
+            author={Elia Bonetto and Chenghao Xu and Aamir Ahmad}, 
+            booktitle={ICRA2023 Workshop on Active Methods in Autonomous Navigation}, 
+            year={2023}, 
+            url={https://arxiv.org/abs/2305.04286}}
+```
+4. Detection and segmentation of humans in indoor scenes using synthetic data: published at the Pretraining for Robotics workshop at ICRA 2023
+```
+@inproceedings{
+bonetto2023learning,
+title={Learning from synthetic data generated with {GRADE}},
+author={Elia Bonetto and Chenghao Xu and Aamir Ahmad},
+booktitle={ICRA2023 Workshop on Pretraining for Robotics (PT4R)},
+year={2023},
+url={https://openreview.net/forum?id=SUIOuV2y-Ce}
 }
 ```
 ____________
