@@ -223,7 +223,7 @@ If you find this work useful please cite our work
       primaryClass={cs.CV}
 }
 ```
-3. Dyanmic SLAM evaluations: published at the Active Vision for Robotics Workshop at ICRA 2023
+3. Dyanmic SLAM evaluations: published at the Active Methods in Autonomous Navigation Workshop at ICRA 2023
 ```
 @inproceedings{ bonetto2023dynamicSLAM, 
             title={{S}imulation of {D}ynamic {E}nvironments for {SLAM}}, 
