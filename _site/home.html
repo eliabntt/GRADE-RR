@@ -74,14 +74,27 @@
           <br />
           <sup>*</sup> Corresponding Author
         </p>
+
+        <div class="container-fluid">
+          <div class="col-md-12 mx-auto img text-center" style="max-width: 900px;">
+            <img class="img-fluid" src="/GRADE-RR/static/img/NewCover.jpg">
+          </div>
+        </div>
+        <br />
+
         <h5>
-          <a href="https://arxiv.org/abs/2303.04466">[Grade Paper]</a>&nbsp; <!-- todo fixme -->
-          <a href="https://arxiv.org/abs/2305.00432">[Synthetic Zebras Paper]</a>&nbsp; <!-- todo fixme -->
-          <a href="https://openreview.net/forum?id=SUIOuV2y-Ce">[Pretraining4Robotics ICRA2023]</a>&nbsp; <!-- todo fixme -->
-          <a href="https://arxiv.org/abs/2305.04286">[Active Methods in Auto. Nav. ICRA2023]</a>&nbsp; <!-- todo fixme -->
+          Project papers: <a href="https://arxiv.org/abs/2303.04466">[GRADE Paper]</a>&nbsp; <!-- todo fixme -->
+          <a href="https://arxiv.org/abs/2305.00432">[Synthetic Data-based Detection of Zebras in Drone Imagery - ECMR 2023]</a>&nbsp; <!-- todo fixme -->
           <br>
-          <a href="https://github.com/eliabntt/GRADE_data/">[Download Data]</a>&nbsp;
-          <a href="https://github.com/eliabntt/Front3D_to_USD">[Environment Generation Code]</a>&nbsp; </br>
+          <br>
+          Workshop papers: <a href="https://openreview.net/forum?id=SUIOuV2y-Ce">[Learning from synthetic data generated with GRADE - Pretraining4Robotics ICRA2023]</a>&nbsp; <!-- todo fixme -->
+          <a href="https://arxiv.org/abs/2305.04286">[Simulation of Dynamic Environments for SLAM - Active Methods in Auto. Nav. ICRA2023]</a>&nbsp; <!-- todo fixme -->
+          <br>
+          <br>
+          Data: <a href="https://github.com/eliabntt/GRADE_data/">[Download Data]</a>&nbsp;
+          <br>
+          <br>
+          Code: <a href="https://github.com/eliabntt/Front3D_to_USD">[Environment Generation Code]</a>&nbsp;
           <a href="https://github.com/eliabntt/animated_human_SMPL_to_USD">[SMPL animation to USD]</a>&nbsp;
           <a href="https://github.com/eliabntt/GRADE-RR">[GRADE framework]</a>
           <a href="https://github.com/robot-perception-group/GRADE_tools/">[Data Processing and Evaluation]</a>
@@ -121,8 +134,9 @@
       <h2 class="section-heading text-uppercase text-center">News</h2>
       <h5 class="text-muted" style="text-align:left;">
         <ul>
+          <li>June 2023: <a href="https://arxiv.org/abs/2305.00432">Synthetic Data-based Detection of Zebras in Drone Imagery</a> has been accepted as oral presentation at the next ECMR 2023 </li>
           <li>May 2023: Main code porting to Isaac 2022 available in the <a
-              href="https://github.com/eliabntt/GRADE-RR/tree/v2022">v2022</a> branch. </li>
+            href="https://github.com/eliabntt/GRADE-RR/tree/v2022">v2022</a> branch. </li>
           <li>May 2023: Showing how to use ONLY Synthetic Zebras to train a detector. <a
               href="https://keeper.mpdl.mpg.de/d/12abb3bb6b12491480d5/">Data</a> and <a
               href="https://arxiv.org/abs/2305.00432">paper</a> already available.</li>
@@ -380,80 +394,127 @@
   </div>
 </section>
 
-
-<section class="bg-light" id="carousel">
-  <div id="carousel-main" class="carousel slide col-md-6 mx-auto container-fluid" data-ride="carousel">
-    <ol class="carousel-indicators">
-      <li data-target="#carousel-main" data-slide-to="0" class="active"></li>
-      <li data-target="#carousel-main" data-slide-to="1"></li>
-      <li data-target="#carousel-main" data-slide-to="2"></li>
-      <li data-target="#carousel-main" data-slide-to="3"></li>
-      <li data-target="#carousel-main" data-slide-to="4"></li>
-      <li data-target="#carousel-main" data-slide-to="5"></li>
-      <li data-target="#carousel-main" data-slide-to="6"></li>
-      <li data-target="#carousel-main" data-slide-to="7"></li>
-    </ol>
-    <div class="carousel-inner">
-      <div class="carousel-item active" data-bs-interval="2000">
-        <img class="d-block img-fluid" src="/GRADE-RR/static/carousel/rgb_conv.jpg" alt="A sample image">
-        <div class="carousel-caption d-none d-md-block">
-          <p>Sample of groundtruth generated data</p>
+<section>
+  <div class="row">
+    <div class="col-lg-6">
+      <section class="bg-light" id="carousel">
+    <div id="carousel-main" class="carousel slide mx-auto container-fluid" data-ride="carousel">
+      <ol class="carousel-indicators">
+        <li data-target="#carousel-main" data-slide-to="0" class="active"></li>
+        <li data-target="#carousel-main" data-slide-to="1"></li>
+        <li data-target="#carousel-main" data-slide-to="2"></li>
+        <li data-target="#carousel-main" data-slide-to="3"></li>
+        <li data-target="#carousel-main" data-slide-to="4"></li>
+        <li data-target="#carousel-main" data-slide-to="5"></li>
+        <li data-target="#carousel-main" data-slide-to="6"></li>
+        <li data-target="#carousel-main" data-slide-to="7"></li>
+      </ol>
+      <div class="carousel-inner">
+        <div class="carousel-item active" data-bs-interval="2000">
+          <img class="d-block img-fluid" src="/GRADE-RR/static/carousel/rgb_conv.jpg" alt="A sample image">
+          <div class="carousel-caption d-none d-md-block">
+            <p>Sample of groundtruth generated data</p>
+          </div>
+        </div>
+        <div class="carousel-item" data-bs-interval="2000">
+          <img class="d-block img-fluid" src="/GRADE-RR/static/carousel/depth_conv.jpg" alt="Depth">
+          <div class="carousel-caption d-none d-md-block">
+            <p>Depth</p>
+          </div>
+        </div>
+        <div class="carousel-item" data-bs-interval="2000">
+          <img class="d-block img-fluid" src="/GRADE-RR/static/carousel/SMPL.png" alt="SMPL">
+          <div class="carousel-caption d-none d-md-block">
+            <p>SMPL shapes</p>
+          </div>
+        </div>
+        <div class="carousel-item" data-bs-interval="2000">
+          <img class="d-block img-fluid" src="/GRADE-RR/static/carousel/motion.jpg" alt="Motion vector">
+          <div class="carousel-caption d-none d-md-block">
+            <p>Motion vector</p>
+          </div>
+        </div>
+        <div class="carousel-item" data-bs-interval="2000">
+          <img class="d-block img-fluid" src="/GRADE-RR/static/carousel/bbox2d_conv.jpg" alt="2D bounding boxes">
+          <div class="carousel-caption d-none d-md-block">
+            <p>2D bounding boxes</p>
+          </div>
+        </div>
+        <div class="carousel-item" data-bs-interval="2000">
+          <img class="d-block img-fluid" src="/GRADE-RR/static/carousel/normal.jpg" alt="Normals">
+          <div class="carousel-caption d-none d-md-block">
+            <p>Normals</p>
+          </div>
+        </div>
+        <div class="carousel-item" data-bs-interval="2000">
+          <img class="d-block img-fluid" src="/GRADE-RR/static/carousel/instance_conv.jpg"
+            alt="Instance segmentation">
+          <div class="carousel-caption d-none d-md-block">
+            <p>Instance segmentation</p>
+          </div>
         </div>
       </div>
-      <div class="carousel-item" data-bs-interval="2000">
-        <img class="d-block img-fluid" src="/GRADE-RR/static/carousel/depth_conv.jpg" alt="Depth">
-        <div class="carousel-caption d-none d-md-block">
-          <p>Depth</p>
-        </div>
-      </div>
-      <div class="carousel-item" data-bs-interval="2000">
-        <img class="d-block img-fluid" src="/GRADE-RR/static/carousel/SMPL.png" alt="SMPL">
-        <div class="carousel-caption d-none d-md-block">
-          <p>SMPL shapes</p>
-        </div>
-      </div>
-      <div class="carousel-item" data-bs-interval="2000">
-        <img class="d-block img-fluid" src="/GRADE-RR/static/carousel/motion.jpg" alt="Motion vector">
-        <div class="carousel-caption d-none d-md-block">
-          <p>Motion vector</p>
-        </div>
-      </div>
-      <div class="carousel-item" data-bs-interval="2000">
-        <img class="d-block img-fluid" src="/GRADE-RR/static/carousel/bbox2d_conv.jpg" alt="2D bounding boxes">
-        <div class="carousel-caption d-none d-md-block">
-          <p>2D bounding boxes</p>
-        </div>
-      </div>
-      <div class="carousel-item" data-bs-interval="2000">
-        <img class="d-block img-fluid" src="/GRADE-RR/static/carousel/normal.jpg" alt="Normals">
-        <div class="carousel-caption d-none d-md-block">
-          <p>Normals</p>
-        </div>
-      </div>
-      <div class="carousel-item" data-bs-interval="2000">
-        <img class="d-block img-fluid" src="/GRADE-RR/static/carousel/instance_conv.jpg"
-          alt="Instance segmentation">
-        <div class="carousel-caption d-none d-md-block">
-          <p>Instance segmentation</p>
-        </div>
-      </div>
-      <div class="carousel-item" data-bs-interval="2000">
-        <img class="d-block img-fluid" src="/GRADE-RR/static/carousel/PromImg.png" alt="Another point of view">
-        <div class="carousel-caption d-none d-md-block">
-          <p>Another point of view with overlays</p>
-        </div>
-      </div>
+      <a class="carousel-control-prev" href="#carousel-main" role="button" data-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="sr-only">Previous</span>
+      </a>
+      <a class="carousel-control-next" href="#carousel-main" role="button" data-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="sr-only">Next</span>
+      </a>
     </div>
-    <a class="carousel-control-prev" href="#carousel-main" role="button" data-slide="prev">
-      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-      <span class="sr-only">Previous</span>
-    </a>
-    <a class="carousel-control-next" href="#carousel-main" role="button" data-slide="next">
-      <span class="carousel-control-next-icon" aria-hidden="true"></span>
-      <span class="sr-only">Next</span>
-    </a>
+      </section>
+    </div>
+    <div class="col-lg-6">
+      <section class="bg-light" id="carousel-zebras">
+        <div id="carousel-main-zebras" class="carousel slide mx-auto container-fluid" data-ride="carousel">
+          <ol class="carousel-indicators">
+            <li data-target="#carousel-main" data-slide-to="0" class="active"></li>
+            <li data-target="#carousel-main" data-slide-to="1"></li>
+            <li data-target="#carousel-main" data-slide-to="2"></li>
+            <li data-target="#carousel-main" data-slide-to="3"></li>
+          </ol>
+          <div class="carousel-inner">
+            <div class="carousel-item active" data-bs-interval="2000">
+              <img class="d-block img-fluid" src="/GRADE-RR/static/carousel/zebras/rgb_conv.jpg" alt="A sample image">
+              <div class="carousel-caption d-none d-md-block">
+                <p>Sample of groundtruth generated data</p>
+              </div>
+            </div>
+            <div class="carousel-item" data-bs-interval="2000">
+              <img class="d-block img-fluid" src="/GRADE-RR/static/carousel/zebras/depth_conv.jpg" alt="Depth">
+              <div class="carousel-caption d-none d-md-block">
+                <p>Depth</p>
+              </div>
+            </div>
+            <div class="carousel-item" data-bs-interval="2000">
+              <img class="d-block img-fluid" src="/GRADE-RR/static/carousel/zebras/bbox2d_conv.jpg" alt="2D bounding boxes">
+              <div class="carousel-caption d-none d-md-block">
+                <p>2D bounding boxes</p>
+              </div>
+            </div>
+            <div class="carousel-item" data-bs-interval="2000">
+              <img class="d-block img-fluid" src="/GRADE-RR/static/carousel/zebras/instance_conv.png"
+                alt="Instance segmentation">
+              <div class="carousel-caption d-none d-md-block">
+                <p>Instance segmentation</p>
+              </div>
+            </div>
+          </div>
+          <a class="carousel-control-prev" href="#carousel-main-zebras" role="button" data-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="sr-only">Previous</span>
+          </a>
+          <a class="carousel-control-next" href="#carousel-main-zebras" role="button" data-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="sr-only">Next</span>
+          </a>
+        </div>
+      </section>
+    </div>
   </div>
 </section>
+
 <section class="bg-light" id="download">
   <div class="container-fluid">
     <div class="row">
@@ -677,16 +738,15 @@
       <pre>
         <code id="paper2">
           
-          @misc{bonetto2023synthetic,
-            doi = {10.48550/arXiv.2305.00432},
-            url = {https://arxiv.org/abs/2305.00432}
-            title={{S}ynthetic {D}ata-based {D}etection of {Z}ebras in {D}rone {I}magery}, 
-            author={Elia Bonetto and Aamir Ahmad},
-            year={2023},
-            eprint={2305.00432},
-            archivePrefix={arXiv},
-            publisher = {arXiv},
-            copyright = {arXiv.org perpetual, non-exclusive license}
+          @conference{bonetto2023ECMRZebras,
+            title = {Synthetic Data-based Detection of Zebras in Drone Imagery},
+            author = {Bonetto, Elia and Ahmad, Aamir},
+            booktitle = {IEEE European Conference on Mobile Robots},
+            publisher = {IEEE},
+            month = sep,
+            year = {2023},
+            doi = {},
+            month_numeric = {9}
           }
           
         </code>
