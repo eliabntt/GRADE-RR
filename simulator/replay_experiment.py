@@ -123,9 +123,14 @@ try:
 	#                           path_from='/my_robot_0/camera_link/Camera_npy',
 	#                           path_to='/my_robot_0/camera_link/Camera_npy_stereo',
 	#                           exclusive_select=False)
-	#
-	# set_translate(stage.GetPrimAtPath('/my_robot_0/camera_link/Camera_npy_stereo'), [0.5, 0, 0])
-	viewport = create_viewport("/my_robot_0/camera_link/Camera", config["headless"].get(), 0,
+	# set_translate(stage.GetPrimAtPath('/my_robot_0/camera_link/Camera_npy_stereo'), [.5, 0, 0])
+	# set_rotate(stage.GetPrimAtPath('/my_robot_0/camera_link/Camera_npy_stereo'), [np.pi/2, 0, 0])
+	# viewport = create_viewport("/my_robot_0/camera_link/Camera_npy_stereo", config["headless"].get(), 0,
+	#                            exp_info["config"]["npy_sensor_size"].get(), old_h_ape, old_v_ape)
+	# viewport_window_list.append(viewport)
+
+	ros_cameras = 0 # set this to the number of ros cameras that you just added. This is used to set the correct recorder
+	viewport = create_viewport("/my_robot_0/camera_link/Camera", config["headless"].get(), 1,
 	                           exp_info["config"]["npy_sensor_size"].get(), old_h_ape, old_v_ape)
 	viewport_window_list.append(viewport)
 	is_rtx = exp_info["config"]["rtx_mode"].get()
@@ -135,7 +140,8 @@ try:
 		set_pathtracing_settings(exp_info["config"]["physics_hz"].get())
 
 	simulation_context.play()
-	for _ in range(5): simulation_context.render()
+	for _ in range(5):
+		simulation_context.render()
 	old_v_ape = [2.32] * len(old_v_ape)  # todo this is harcoded
 	for index, cam in enumerate(viewport_window_list):
 		simulation_context.step(render=False)
@@ -189,7 +195,7 @@ try:
 	robot_collisions(False)
 	kit.update()
 	simulation_context.stop()
-	move_robot('/my_robot_0', [0, 0, 0], [0,0,0], 0)
+	move_robot('/my_robot_0', [0, 0, 0], [0,0,0], 300) # todo use the limit of the robot
 	kit.update()
 	simulation_context.play()
 	for _ in range(5):
@@ -211,7 +217,7 @@ try:
 		_settings["motion-vector"]["enabled"] = write_flow
 		_settings["motion-vector"]["colorize"] = False
 		_settings["motion-vector"]["npy"] = True
-		my_recorder_flow = recorder_setup(_settings, True, out_dir_npy, True, 0)
+		my_recorder_flow = recorder_setup(_settings, out_dir_npy, True, ros_cameras)
 		my_recorder_flow._enable_record = False
 
 	if write_normals:
@@ -222,12 +228,13 @@ try:
 		_settings["normals"]["enabled"] = write_normals
 		_settings["motion-vector"]["colorize"] = False
 		_settings["motion-vector"]["npy"] = True
-		my_recorder_normals = recorder_setup(_settings, True, out_dir_npy, True, 0)
+		my_recorder_normals = recorder_setup(_settings, out_dir_npy, True, ros_cameras)
 		my_recorder_normals._enable_record = False
 
 	if write:
 		_tmp = exp_info['config']['_recorder_settings'].get()
-		_tmp["depth"]["enabled"] = False
+		_tmp["depth"]["enabled"] = True
+		_tmp["rgb"]["enabled"] = True
 		_tmp["depthLinear"]["enabled"] = False
 		_tmp["semantic"]["enabled"] = False
 		_tmp["normals"]["enabled"] = False
@@ -235,7 +242,7 @@ try:
 		_tmp["bbox_2d_tight"]["enabled"] = False
 		_tmp["bbox_3d"]["enabled"] = False
 
-		my_recorder = recorder_setup(_tmp, out_dir_npy, True, 0)
+		my_recorder = recorder_setup(_tmp, out_dir_npy, True, ros_cameras)
 		my_recorder._enable_record = False
 
 	# how to hide dynamic content
@@ -252,10 +259,12 @@ try:
 			_dc = dynamic_control_interface()
 			handle = _dc.get_rigid_body('/my_robot_0/yaw_link')
 			if not use_teleport:
+				from omni.isaac.dynamic_control import _dynamic_control
+
+				_dc = _dynamic_control.acquire_dynamic_control_interface()
 				art = _dc.get_articulation('/my_robot_0')
-				body = _dc.get_articulation_root_body(art)
+				joint_order = ['x_joint', 'y_joint', 'z_joint', 'roll_joint', 'pitch_joint', 'yaw_joint']
 				joints = []
-				_dc.wake_up_articulation(art)
 				for joint in joint_order:
 					joints.append(_dc.find_articulation_dof(art, joint))
 
@@ -264,7 +273,8 @@ try:
 			omni.kit.commands.execute("RosBridgeUsePhysicsStepSimTime", use_physics_step_sim_time=True)
 			omni.kit.commands.execute("RosBridgeTickComponent", path="/ROS_Clock")  # need to initialize
 			prev_time = timeline.get_current_time() + 7 / 240 * (
-						simulation_step == 0)  # to account for an "issue" during generation
+					simulation_step == 0)  # to account for an "issue" during generation
+			simulation_step += 8
 
 			if write:
 				my_recorder._update()
@@ -295,8 +305,7 @@ try:
 					print(
 						f"pose diff {np.array(_dc.get_rigid_body_pose(handle).p) / 100 - np.array([robot_pose[int(cnt_tf / 2)][0].x, robot_pose[int(cnt_tf / 2)][0].y, robot_pose[int(cnt_tf / 2)][0].z])}")
 			else:
-				vel = np.array(joint_velocity[
-					               cnt_tf])  # or average position between the two, or use the IMU to interpolate also which has 240 hz
+				vel = np.array(joint_velocity[cnt_tf])  # or average position between the two, or use the IMU to interpolate also which has 240 hz
 				pos = (np.array(joint_position[cnt_tf][:3]) + vel[:3] * 1 / 240) / meters_per_unit + init_pos
 				ori = (np.array(joint_position[cnt_tf][3:]) + vel[3:] * 1 / 240) + init_rot
 				teleport("/my_robot_0", pos, tf.Rotation.from_euler('XYZ', ori).as_quat())
@@ -305,18 +314,31 @@ try:
 			if simulation_step % ratio_tf == 0:
 				cnt_tf += 1
 				vel = np.array(joint_velocity[cnt_tf])
+				next_vel = vel
+				if cnt_tf < len(joint_position) - 1:
+					next_vel = np.array(joint_velocity[cnt_tf + 1])
 				if cnt_tf == 0:
-					teleport("/my_robot_0", np.array(joint_position[cnt_tf][:3]) / meters_per_unit + init_pos
-					         , tf.Rotation.from_euler('XYZ', joint_position[cnt_tf][3:] + init_rot - vel[3:] * 1 / 240).as_quat())
+					pos = np.append(np.array(joint_position[cnt_tf][:3]) / meters_per_unit + init_pos - vel[3:] * 1 / 240,
+					                joint_position[cnt_tf][3:] + init_rot - vel[3:] * 1 / 240)
 
-				_dc.set_rigid_body_linear_velocity(body, vel[:3] / meters_per_unit)
-				_dc.set_rigid_body_angular_velocity(body, vel[3:])
+					for idx, joint in enumerate(joints):
+						_dc.set_dof_position(joint, pos[idx])
 
-				if (simulation_step % (ratio_tf * 2) == 0):
-					myp = _dc.get_rigid_body_pose(handle)
-					print(
-						f"pose diff {np.array(_dc.get_rigid_body_pose(handle).p) / 100 - np.array([robot_pose[int(cnt_tf / 2)][0].x, robot_pose[int(cnt_tf / 2)][0].y, robot_pose[int(cnt_tf / 2)][0].z])}")
-		simulation_context.render()
+			cvel = (vel + next_vel)/2
+			cvel[:3] = cvel[:3] / meters_per_unit
+
+			_dc.set_articulation_dof_velocity_targets(art, list(cvel))
+			for idx, joint in enumerate(joints):
+				_dc.set_dof_velocity(joint, cvel[idx])
+
+			if (simulation_step % (ratio_tf * 2) == 0):
+				import ipdb;
+
+				ipdb.set_trace()
+				myp = _dc.get_rigid_body_pose(handle)
+				print(
+					f"pose diff {np.array(_dc.get_rigid_body_pose(handle).p) / 100 - np.array([robot_pose[int(cnt_tf / 2)][0].x, robot_pose[int(cnt_tf / 2)][0].y, robot_pose[int(cnt_tf / 2)][0].z])}")
+
 		# you can either do this or the old way. This changes the location of objects/animations in substeps such that
 		# sensors can eventually perceive it. Note that "forward" is set on the camera loop as it was set in the main
 		# generation loop. This means that you "rewind" only at the -eight frame.
@@ -324,6 +346,7 @@ try:
 		prev_time = timeline.get_current_time()
 
 		simulation_context.step(render=False)
+		simulation_context.render()
 
 		print("Clocking...")
 		# NOTE THAT THIS MIGHT GET CONFUSING -- reindexing/retiming is needed for sure
@@ -337,17 +360,17 @@ try:
 			if (simulation_step + ratio_camera) / ratio_camera < (experiment_length / reversing_timeline_ratio) * (
 					cnt_reversal):
 				forward = True
-				# timeline.forward_one_frame() # or you can advance time directly here as it was done previously, note that you need to remove the "+ratio_camera" above
+			# timeline.forward_one_frame() # or you can advance time directly here as it was done previously, note that you need to remove the "+ratio_camera" above
 			else:
 				if (simulation_step + ratio_camera) / ratio_camera >= ((experiment_length - 1) / reversing_timeline_ratio) * (
 						cnt_reversal + 1) or \
 						(timeline.get_current_time() - 1 / timeline.get_time_codes_per_seconds()) < 0:
 					cnt_reversal += 2
 					forward = True
-					# timeline.forward_one_frame() # note that you need to remove the "+ratio_camera" above
+				# timeline.forward_one_frame() # note that you need to remove the "+ratio_camera" above
 				else:
 					forward = False
-					# timeline.rewind_one_frame()
+			# timeline.rewind_one_frame()
 			if write_flow:
 				if my_recorder_flow._enable_record:
 					simulation_context.render()
@@ -383,9 +406,9 @@ try:
 		# 	print("Publish LiDAR")
 		# 	if simulation_step == 0:
 		# 		pub twice - first one enables
-				# omni.kit.commands.execute("RosBridgeTickComponent", path=lidar_prim)
-			# simulation_context.render() # this IS necessary
-			# omni.kit.commands.execute("RosBridgeTickComponent", path=lidar_prim)
+		# omni.kit.commands.execute("RosBridgeTickComponent", path=lidar_prim)
+		# simulation_context.render() # this IS necessary
+		# omni.kit.commands.execute("RosBridgeTickComponent", path=lidar_prim)
 
 		if simulation_step % ratio_camera == 0 and simulation_step / ratio_camera == experiment_length:
 			print("End of experiment!!!")
