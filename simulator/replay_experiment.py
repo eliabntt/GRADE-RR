@@ -335,9 +335,6 @@ try:
 				_dc.set_dof_velocity(joint, cvel[idx])
 
 			if (simulation_step % (ratio_tf * 2) == 0):
-				import ipdb;
-
-				ipdb.set_trace()
 				myp = _dc.get_rigid_body_pose(handle)
 				print(
 					f"pose diff {np.array(_dc.get_rigid_body_pose(handle).p) / 100 - np.array([robot_pose[int(cnt_tf / 2)][0].x, robot_pose[int(cnt_tf / 2)][0].y, robot_pose[int(cnt_tf / 2)][0].z])}")
