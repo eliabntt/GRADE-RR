@@ -246,7 +246,10 @@ try:
 		my_recorder._enable_record = False
 
 	# how to hide dynamic content
-	dynamicprims = [stage.GetPrimAtPath(f"/my_human_{i}") for i in range(12)]
+	dynamicprims = []
+	for prim in stage.Traverse():
+		if 'my_human' in str(prim.GetPath()).lower():
+			dynamicprims.append(prim)
 	for prim in stage.GetPrimAtPath("/World").GetChildren()[6:]:
 		dynamicprims.append(prim)
 	toggle_dynamic_objects(dynamicprims, False)
