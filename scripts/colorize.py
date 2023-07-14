@@ -273,11 +273,12 @@ def boolean_string(s):
 
 parser = argparse.ArgumentParser(description="Colorize data")
 parser.add_argument("--viewport_folder", type=str)
-parser.add_argument("--img_id", type=int, default=-1)
+parser.add_argument("--img_id", type=str, default=-1)
 parser.add_argument("--save_imgs", type=boolean_string, default=True)
 parser.add_argument("--save_video", type=boolean_string, default=False)
 parser.add_argument("--always_update_map", type=boolean_string, default=False)
-parser.add_argument("--semantics", type=boolean_string, default=True)
+parser.add_argument("--semantics", type=boolean_string, default=False)
+parser.add_argument("--convert_depth", type=boolean_string, default=True) # used to better visualize inverse depth
 parser.add_argument("--corrected_bbox_folder", type=str, default="")
 parser.add_argument("--vertical_aperture", type=float, default=2.32)
 parser.add_argument("--output_dir", type=str)
@@ -288,23 +289,28 @@ config.set_args(args)
 
 minid = 1
 maxid = 1801
-if config["img_id"].get() <= -1:
-  print("Processing all images")
+if config["img_id"].get().isdigit():
+  img_id = int(config["img_id"].get())
+  if img_id <= -1:
+    print("Processing all images")
+  else:
+    minid = img_id
+    maxid = img_id + 1
+  ids = [i for i in range(minid, maxid)]
 else:
-  minid = config["img_id"].get()
-  maxid = config["img_id"].get() + 1
-
+  ids = [config["img_id"].get()]
 
 vertical_aperture = config["vertical_aperture"].get()
 viewport = config["viewport_folder"].get()
 subfolders = os.listdir(config["viewport_folder"].get())
-depth_enabled = "depthLinear" in subfolders
-normals_enabled = "normals" in subfolders
-bbox2d_enabled = "bbox_2d_tight" in subfolders
-bbox3d_enabled = "bbox_3d" in subfolders  # todo these need to be fixed
-instance_enabled = "instance" in subfolders
-sem_enabled = "instance" in subfolders and config["semantics"].get()
-motion_enabled = "motion-vector" in subfolders
+depthLinear_enabled = "depthLinear" in subfolders
+depth_enabled = "depth" in subfolders
+normals_enabled = False #"normals" in subfolders
+bbox2d_enabled = False#"bbox_2d_tight" in subfolders
+bbox3d_enabled = False#"bbox_3d" in subfolders  # todo these need to be fixed
+instance_enabled = False#"instance" in subfolders
+sem_enabled = False#"instance" in subfolders and config["semantics"].get()
+motion_enabled = False #"motion-vector" in subfolders
 always_update_map = config["always_update_map"].get()
 
 save_video = config["save_video"].get()
@@ -320,16 +326,26 @@ else:
   corrected_bbox_folder = None
 
 old_instance_map = None
-vrgb, vdepth, vnormals, vbbox2d, vbbox3d, vinstance, vmotion, vsem = [], [], [], [], [], [], [], []
-for i in range(minid, maxid):
+vrgb, vdepth, vdepthLinear, vnormals, vbbox2d, vbbox3d, vinstance, vmotion, vsem = [], [], [], [], [], [], [], [], []
+for i in ids:
   rgb = cv2.imread(os.path.join(viewport, "rgb", f"{i}.png"))
   if save_img:
     cv2.imwrite(os.path.join(outdir, f"rgb_{i}.png"), rgb)
   if save_video:
     vrgb.append(os.path.join(outdir, f"rgb_{i}.png"))
 
-  if depth_enabled:
+  if depthLinear_enabled:
     depth = np.load(os.path.join(viewport, "depthLinear", f"{i}.npy"))
+    depth = colorize_depth(depth)
+    if save_img:
+      cv2.imwrite(os.path.join(outdir, f"depthLinear_{i}.png"), depth)
+    if save_video:
+      vdepthLinear.append(os.path.join(outdir, f"depthLinear_{i}.png"))
+
+  if depth_enabled:
+    depth = np.load(os.path.join(viewport, "depth", f"{i}.npy"))
+    if config["convert_depth"].get():
+      depth = 1/depth
     depth = colorize_depth(depth)
     if save_img:
       cv2.imwrite(os.path.join(outdir, f"depth_{i}.png"), depth)
@@ -372,7 +388,7 @@ for i in range(minid, maxid):
     rgb_data = copy.deepcopy(rgb)
     e = []
     for idx,bb in enumerate(bbox3d):
-      if bb['semanticLabel'] in ['human','google','shapenet']:
+      if bb['semanticLabel'] in ['zebra','human','google','shapenet']:
         e.append(corners[idx])
 
     if corrected_bbox_folder is not None:
@@ -424,8 +440,8 @@ for i in range(minid, maxid):
 
 if save_video:
   height, width, layers = rgb.shape
-  for v in zip([vrgb, vdepth, vnormals, vbbox2d, vbbox3d, vinstance, vmotion, vsem],
-               ["rgb", "depth", "normals", "bbox2d", "bbox3d", "instance", "motion", "sem"]):
+  for v in zip([vrgb, vdepth, vdepthLinear, vnormals, vbbox2d, vbbox3d, vinstance, vmotion, vsem],
+               ["rgb", "depth", "depthLinear", "normals", "bbox2d", "bbox3d", "instance", "motion", "sem"]):
     if len(v[0]) > 0:
       video = cv2.VideoWriter(os.path.join(outdir, f"{v[1]}.mp4"), cv2.VideoWriter_fourcc(*"mp4v"), 30, (width, height))
       for img_path in v[0]:

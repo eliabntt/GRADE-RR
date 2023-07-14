@@ -1,6 +1,13 @@
-cc_path: ".." # set your cc_texture path
-front3d_path: ".." # set your global 3d_front path
-cloth3d_path: ".."
-surreal_path: ".."
+cc_path: "../.." # set your cc_texture path
+prefix_cc: ""
+
+front3d_path: "../.." # set your global 3d_front path
+prefix_front3d: ""
+
+cloth3d_path: "../../.."
+prefix_cloth3d: ""
+
+surreal_path: "../.."
+prefix_surreal: ""
+
 normpath: True
-prefix: ""

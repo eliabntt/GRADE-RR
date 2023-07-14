@@ -137,7 +137,7 @@ def add_pose_tree(path: str, irotate: bool):
 	return f"/{path}/TFActionGraph"
 
 
-def add_camera_and_viewport(path: str, resolution: list, old_h_ape, old_v_ape, sc, is_headless=False, index=0,
+def add_camera_and_viewport(path: str, resolution: list, old_h_ape, old_v_ape, sc, index=0,
                             robot_index=0, cam_per_robot=1, camera_path="Camera"):
 	"""
 	The function create first the ROSBridge Camera and then the corresponding viewport.
@@ -581,8 +581,7 @@ def add_ros_components(robot_base_prim_path, n, ros_transform_components, ros_ca
 	component, viewport = add_camera_and_viewport(f"{robot_base_prim_path}{n}/camera_link",
 	                                              config["robot_sensor_size"].get(),
 	                                              old_h_ape, old_v_ape, simulation_context,
-	                                              config["headless"].get(), 0,
-	                                              n, cam_per_robot=2)  # cam index is useful if you want multiple cameras
+	                                              0, n, cam_per_robot=2)  # cam index is useful if you want multiple cameras
 	cam_outputs = control_camera(viewport, simulation_context)
 	ros_camera_list.append([n + 0, component, cam_outputs])
 	viewport_window_list.append(viewport)
@@ -590,8 +589,7 @@ def add_ros_components(robot_base_prim_path, n, ros_transform_components, ros_ca
 	component, viewport = add_camera_and_viewport(f"{robot_base_prim_path}{n}/camera_link",
 	                                              config["robot_sensor_size"].get(),
 	                                              old_h_ape, old_v_ape, simulation_context,
-	                                              config["headless"].get(), 1,
-	                                              n, cam_per_robot=2)  # cam index is useful if you want multiple cameras
+	                                              1, n, cam_per_robot=2)  # cam index is useful if you want multiple cameras
 	cam_outputs = control_camera(viewport, simulation_context)
 	ros_camera_list.append([n + 1, component, cam_outputs])
 	viewport_window_list.append(viewport)
@@ -634,7 +632,6 @@ def add_ros_components(robot_base_prim_path, n, ros_transform_components, ros_ca
 
 	odom_pubs.append(rospy.Publisher(f"{robot_base_prim_path}{n}/odom", Odometry, queue_size=10))
 
-	# add robot to the list of dynamic prims
 	stage = omni.usd.get_context().get_stage()
 	dynamic_prims.append(stage.GetPrimAtPath(f"{robot_base_prim_path}{n}"))
 	sensor = add_lidar(f"{robot_base_prim_path}{n}/yaw_link", [0, 0, -.1], [0, 0, 0], is_3d=True, is_2d=True)
