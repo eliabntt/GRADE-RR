@@ -539,7 +539,7 @@ def robot_collisions(enable):
 	                          prev=None)
 
 
-def move_robot(name: str, pos: [], orientation: [], zlim: float, irotate=False):
+def move_robot(name: str, pos: [], orientation: [], upper_zlim: float, irotate=False, meters_per_unit=0.01, lower_zlim = 3):
 	"""
 	Move the robot to the specified location by acting on the JOINTS.
 
@@ -576,8 +576,8 @@ def move_robot(name: str, pos: [], orientation: [], zlim: float, irotate=False):
 		UsdPhysics.Joint.Get(stage, name + '/base_link/x_joint').GetLocalPos0Attr().Set(Gf.Vec3f(x, 0, 0))
 		UsdPhysics.Joint.Get(stage, name + '/x_link/y_joint').GetLocalPos0Attr().Set(Gf.Vec3f(0, y, 0))
 		UsdPhysics.Joint.Get(stage, name + '/y_link/z_joint').GetLocalPos0Attr().Set(Gf.Vec3f(0, 0, z))
-		stage.GetPrimAtPath(name + '/y_link/z_joint').GetAttribute('physics:lowerLimit').Set(-z + 30)
-		stage.GetPrimAtPath(name + '/y_link/z_joint').GetAttribute('physics:upperLimit').Set(zlim - z)
+		stage.GetPrimAtPath(name + '/y_link/z_joint').GetAttribute('physics:lowerLimit').Set(-z + lower_zlim/meters_per_unit)
+		stage.GetPrimAtPath(name + '/y_link/z_joint').GetAttribute('physics:upperLimit').Set(upper_zlim - z)
 
 		roll = np.rad2deg(roll)
 		quat = (

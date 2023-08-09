@@ -130,7 +130,7 @@ try:
 	# viewport_window_list.append(viewport)
 
 	ros_cameras = 0 # set this to the number of ros cameras that you just added. This is used to set the correct recorder
-	viewport = create_viewport("/my_robot_0/camera_link/Camera", config["headless"].get(), 1,
+	viewport = create_viewport("/my_robot_0/camera_link/Camera_npy", config["headless"].get(), 0,
 	                           exp_info["config"]["npy_sensor_size"].get(), old_h_ape, old_v_ape)
 	viewport_window_list.append(viewport)
 	is_rtx = exp_info["config"]["rtx_mode"].get()
@@ -195,7 +195,7 @@ try:
 	robot_collisions(False)
 	kit.update()
 	simulation_context.stop()
-	move_robot('/my_robot_0', [0, 0, 0], [0,0,0], 300) # todo use the limit of the robot
+	move_robot('/my_robot_0', [0, 0, 0], [0,0,0], 300, lower_zlim = 0) # todo use the limit of the robot
 	kit.update()
 	simulation_context.play()
 	for _ in range(5):
@@ -321,7 +321,7 @@ try:
 				if cnt_tf < len(joint_position) - 1:
 					next_vel = np.array(joint_velocity[cnt_tf + 1])
 				if cnt_tf == 0:
-					pos = np.append(np.array(joint_position[cnt_tf][:3]) / meters_per_unit + init_pos - vel[3:] * 1 / 240,
+					pos = np.append(np.array(joint_position[cnt_tf][:3]) / meters_per_unit + init_pos - vel[:3] * 1 / 240,
 					                joint_position[cnt_tf][3:] + init_rot - vel[3:] * 1 / 240)
 
 					for idx, joint in enumerate(joints):
