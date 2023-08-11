@@ -173,7 +173,7 @@ def preload_all_zebras(config, rng, zebra_files, zebra_info, simulation_context,
 
 		add_semantics(stage.GetPrimAtPath(zebra_path), "zebra")
 		timeslot = max_anim_len - rng.integers(0, zebra_info[zebra_name]["length"])
-		sequencer_drop_controller.sequencer_drop(zebra_path, float(timeslot))
+		sequencer_drop_controller.sequencer_drop(stage.GetPrimAtPath("/World/Sequence"), zebra_path, float(timeslot))
 		prim = stage.GetPrimAtPath(f"/World/Sequence{zebra_path}{zebra_path}_Clip")
 		prim.GetAttribute("startTime").Set(Sdf.TimeCode(timeslot * 1.0))
 		prim.GetAttribute("endTime").Set(

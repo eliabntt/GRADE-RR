@@ -53,7 +53,6 @@ try:
 	from utils.environment_utils import *
 	from utils.human_utils import *
 
-
 	def monitor_movement(msg, args):
 		global second_start
 		global last_check_time
@@ -111,8 +110,6 @@ try:
 			else:
 				old_pose[index] = c_pose[index]
 				set_colliders(env_prim_path, True)
-
-
 	def autostart_exploration(msg, index):
 		global first_start
 		global second_start
@@ -138,8 +135,6 @@ try:
 			default_pose.header.stamp = rospy.Time.now()
 			start_explorer_pubs[index].publish(default_pose)
 			last_pub_time = rospy.Time.now()
-
-
 	def publish_random_goal(msg, args):
 		global last_pub_time
 		global first_start
@@ -181,8 +176,9 @@ try:
 			send_waypoint_pubs[index].publish(my_pose)
 			last_pub_time = rospy.Time.now()
 
-
 	environment_setup()
+	# set timeline of the experiment
+	timeline = setup_timeline(config)
 
 	rospy.init_node("my_isaac_ros_app", anonymous=True, disable_signals=True, log_level=rospy.ERROR)
 	starting_pub = rospy.Publisher('starting_experiment', String)
@@ -256,13 +252,11 @@ try:
 
 	# use rtx while setting up!
 	set_raytracing_settings(config["physics_hz"].get())
+
 	env_prim_path = environment.load_and_center(config["env_prim_path"].get())
 	randomize_and_fix_lights(config["_random_light"].get(), rng, env_prim_path, environment.env_limits[-1] - 0.2,
 	                         meters_per_unit, is_rtx=config["rtx_mode"].get())
 	randomize_roughness(config["_random_roughness"].get(), rng, env_prim_path)
-
-	# set timeline of the experiment
-	timeline = setup_timeline(config)
 
 	ros_camera_list = []
 	ros_transform_components = []  # list of tf and joint components, one (of each) for each robot
@@ -324,6 +318,7 @@ try:
 		c_pose.append([x, y, z])
 		old_pose.append([x, y, z])
 
+		# todo make a comment about this and the number of cameras
 		add_ros_components(robot_base_prim_path, n, ros_transform_components, ros_camera_list, viewport_window_list,
 		                   camera_pose_frames, cam_pose_pubs, imu_pubs, robot_imu_frames,
 		                   robot_odom_frames, odom_pubs, lidars,
@@ -333,7 +328,7 @@ try:
 
 	for n in range(config["num_robots"].get()):
 		add_npy_viewport(viewport_window_list, robot_base_prim_path, n, old_h_ap, old_v_ap, config, simulation_context,
-		                 config["num_robots"].get() * 2)
+		                 config["num_robots"].get())
 		simulation_context.step()
 
 	for _ in range(50):
@@ -460,7 +455,7 @@ try:
 	timeline.set_current_time(0)
 	simulation_step = 0  # this is NOT the frame, this is the "step" (related to physics_hz)
 
-	my_recorder = recorder_setup(config['_recorder_settings'].get(), out_dir_npy, config['record'].get(), ros_cameras=2)
+	my_recorder = recorder_setup(config['_recorder_settings'].get(), out_dir_npy, config['record'].get(), ros_cameras=1)
 
 	simulation_context.stop()
 	timeline.set_current_time(0)  # set to 0 to be sure that the first frame is recorded

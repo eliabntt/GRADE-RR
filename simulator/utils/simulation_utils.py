@@ -36,7 +36,7 @@ def set_common_stage_properties(rate):
 		set_carb_setting(carb.settings.get_settings(), setting_key, desired_value)
 
 
-def environment_setup():
+def environment_setup(need_ros = True):
 	"""
     Enable the necessary extensions that will be used within the simulation
   """
@@ -64,10 +64,10 @@ def environment_setup():
 	if nucleus_server is None:
 		carb.log_error("Could not find nucleus server with /Isaac folder, exiting")
 		exit()
-
-	if not rosgraph.is_master_online():
-		carb.log_error("Please run roscore before executing this script")
-		exit()
+	if need_ros:
+		if not rosgraph.is_master_online():
+			carb.log_error("Please run roscore before executing this script")
+			exit()
 
 
 def set_raytracing_settings(physics_hz):

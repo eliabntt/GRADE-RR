@@ -121,19 +121,19 @@ try:
 	# ros_camera_list.append([0, component, cam_outputs])
 	# viewport_window_list.append(viewport)
 
-	omni.kit.commands.execute('CopyPrim',
-	                          path_from='/my_robot_0/camera_link/Camera_npy',
-	                          path_to='/my_robot_0/camera_link/Camera_npy_stereo',
-	                          exclusive_select=False)
+	# omni.kit.commands.execute('CopyPrim',
+	#                           path_from='/my_robot_0/camera_link/Camera_npy',
+	#                           path_to='/my_robot_0/camera_link/Camera_npy_stereo',
+	#                           exclusive_select=False)
+	#
+	# set_translate(stage.GetPrimAtPath('/my_robot_0/camera_link/Camera_npy_stereo'), [1, 0, 0])
 
-	set_translate(stage.GetPrimAtPath('/my_robot_0/camera_link/Camera_npy_stereo'), [1, 0, 0])
-
-	viewport_npy, _ = create_viewport("/my_robot_0/camera_link/Camera_npy_stereo", config["headless"].get(),
-	                                  0, exp_info["config"]["npy_sensor_size"].get(), old_h_ape, old_v_ape, simulation_context)
-	viewport_window_list.append(viewport_npy)
+	# viewport_npy, _ = create_viewport("/my_robot_0/camera_link/Camera_npy_stereo", config["headless"].get(),
+	#                                   0, exp_info["config"]["npy_sensor_size"].get(), old_h_ape, old_v_ape, simulation_context)
+	# viewport_window_list.append(viewport_npy)
 
 	viewport_npy, _ = create_viewport("/my_robot_0/camera_link/Camera_npy", config["headless"].get(),
-	                                  1, exp_info["config"]["npy_sensor_size"].get(), old_h_ape, old_v_ape, simulation_context)
+	                                  0, exp_info["config"]["npy_sensor_size"].get(), old_h_ape, old_v_ape, simulation_context)
 	viewport_window_list.append(viewport_npy)
 
 	is_rtx = exp_info["config"]["rtx_mode"].get()
@@ -158,8 +158,8 @@ try:
 
 	# add a new sensor
 	lidars = []
-	sensor = add_lidar(f"/my_robot_0/yaw_link", [0, 0, -.1], [0, 0, 0], is_3d=True, is_2d=True)
-	lidars.append(sensor)
+	# sensor = add_lidar(f"/my_robot_0/yaw_link", [0, 0, -.1], [0, 0, 0], is_3d=True, is_2d=False)
+	# lidars.append(sensor)
 	kit.update()
 
 	cnt_tf = -1
@@ -202,7 +202,8 @@ try:
 	init_rot = np.array([init_roll, init_pitch, init_yaw])
 	robot_collisions(False)
 	kit.update()
-	move_robot('/my_robot_0', [0, 0, 0], [0,0,0], 300) # todo use actual limit from simulation
+	# move_robot('/my_robot_0', [0, 0, 0], [0,0,0], 300, lower_zlim=0) # todo use actual limit from simulation
+	move_robot('/my_robot_0', [0, 0, 0], [0,0,0], 300, lower_zlim=0) # todo use actual limit from simulation
 	kit.update()
 	simulation_context.play()
 	for _ in range(5):
@@ -280,19 +281,32 @@ try:
 			timeline.set_current_time(prev_time)
 			simulation_step += 8
 
-			if write:
-				my_recorder._update()
-				my_recorder._enable_record = True
-			if write_flow:
-				my_recorder_flow._update()
-				my_recorder_flow._enable_record = True
-			if write_normals:
-				my_recorder_normals._update()
-				my_recorder_normals._enable_record = True
+			sleeping(simulation_context, viewport_window_list, is_rtx)
+			try:
+				if write:
+					my_recorder._update()
+					my_recorder._enable_record = True
+				if write_flow:
+					my_recorder_flow._update()
+					my_recorder_flow._enable_record = True
+				if write_normals:
+					my_recorder_normals._update()
+					my_recorder_normals._enable_record = True
+			except:
+				sleeping(simulation_context, viewport_window_list, is_rtx)
+				if write:
+					my_recorder._update()
+					my_recorder._enable_record = True
+				if write_flow:
+					my_recorder_flow._update()
+					my_recorder_flow._enable_record = True
+				if write_normals:
+					my_recorder_normals._update()
+					my_recorder_normals._enable_record = True
 
 			simulation_context.render()
 			simulation_context.render()
-
+			timeline.set_current_time(prev_time)
 		if simulation_step < 0:
 			simulation_context.step(render=False)
 			if (simulation_step % ratio_camera == 0):
@@ -402,16 +416,16 @@ try:
 		# using IMU and TF readings
 		# you can access those from the rosbags
 		# note you might need to work with the timeline times if the rate that you want is different
-		if simulation_step % ratio_camera == 0:
-			for lidar in lidars:
-				og.Controller.attribute(lidar+".inputs:step").set(1)
-			ctime = timeline.get_current_time()
-			simulation_context.render()
-			# point_cloud = og.Controller().node("/Render/PostProcess/SDGPipeline/RenderProduct_Replicator_RtxSensorCpuIsaacComputeRTXLidarPointCloud").get_attribute("outputs:pointCloudData").get()
-			# laser_scan = og.Controller().node("/Render/PostProcess/SDGPipeline/RenderProduct_Replicator_RtxSensorCpuIsaacComputeRTXLidarFlatScan").get_attribute("outputs:linearDepthData").get()
-			timeline.set_current_time(ctime)
-			for lidar in lidars:
-				og.Controller.attribute(lidar+".inputs:step").set(0)
+		# if simulation_step % ratio_camera == 0:
+		# 	for lidar in lidars:
+		# 		og.Controller.attribute(lidar + ".inputs:step").set(1)
+		# 	ctime = timeline.get_current_time()
+		# 	simulation_context.render()
+		# 	# point_cloud = og.Controller().node("/Render/PostProcess/SDGPipeline/RenderProduct_Replicator_RtxSensorCpuIsaacComputeRTXLidarPointCloud").get_attribute("outputs:pointCloudData").get()
+		# 	# laser_scan = og.Controller().node("/Render/PostProcess/SDGPipeline/RenderProduct_Replicator_RtxSensorCpuIsaacComputeRTXLidarFlatScan").get_attribute("outputs:linearDepthData").get()
+		# 	timeline.set_current_time(ctime)
+		# 	for lidar in lidars:
+		# 		og.Controller.attribute(lidar+".inputs:step").set(0)
 
 		if simulation_step % ratio_camera == 0 and simulation_step / ratio_camera == experiment_length:
 			print("End of experiment!!!")

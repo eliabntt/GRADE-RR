@@ -581,18 +581,18 @@ def add_ros_components(robot_base_prim_path, n, ros_transform_components, ros_ca
 	component, viewport = add_camera_and_viewport(f"{robot_base_prim_path}{n}/camera_link",
 	                                              config["robot_sensor_size"].get(),
 	                                              old_h_ape, old_v_ape, simulation_context,
-	                                              0, n, cam_per_robot=2)  # cam index is useful if you want multiple cameras
+	                                              0, n, cam_per_robot=1)  # cam index is useful if you want multiple cameras
 	cam_outputs = control_camera(viewport, simulation_context)
 	ros_camera_list.append([n + 0, component, cam_outputs])
 	viewport_window_list.append(viewport)
 
-	component, viewport = add_camera_and_viewport(f"{robot_base_prim_path}{n}/camera_link",
-	                                              config["robot_sensor_size"].get(),
-	                                              old_h_ape, old_v_ape, simulation_context,
-	                                              1, n, cam_per_robot=2)  # cam index is useful if you want multiple cameras
-	cam_outputs = control_camera(viewport, simulation_context)
-	ros_camera_list.append([n + 1, component, cam_outputs])
-	viewport_window_list.append(viewport)
+	# component, viewport = add_camera_and_viewport(f"{robot_base_prim_path}{n}/camera_link",
+	#                                               config["robot_sensor_size"].get(),
+	#                                               old_h_ape, old_v_ape, simulation_context,
+	#                                               1, n, cam_per_robot=2)  # cam index is useful if you want multiple cameras
+	# cam_outputs = control_camera(viewport, simulation_context)
+	# ros_camera_list.append([n + 1, component, cam_outputs])
+	# viewport_window_list.append(viewport)
 
 	omni.kit.app.get_app().update()
 
@@ -677,7 +677,7 @@ def robot_collisions(enable):
 	                          prev=None)
 
 
-def move_robot(name: str, pos: [], orientation: [], zlim: float, irotate=False, meters_per_unit=1):
+def move_robot(name: str, pos: [], orientation: [], upper_zlim: float, irotate=False, meters_per_unit=1, lower_zlim: float=0.3):
 	"""
 	Move the robot to the specified location by acting on the JOINTS.
 
@@ -693,7 +693,7 @@ def move_robot(name: str, pos: [], orientation: [], zlim: float, irotate=False, 
 	name: the name of the robot (e.g. "my_robot_0", the prim path)
 	pos: the position of the robot (x,y,z)
 	orientation: the orientation of the robot (roll,pitch,yaw)
-	zlim: the z limit of the robot (z)
+	upper_zlim: the z limit of the robot (z)
 	irotate: if True, the joints considered are the iRotate ones
 	"""
 	x, y, z = pos
@@ -714,8 +714,8 @@ def move_robot(name: str, pos: [], orientation: [], zlim: float, irotate=False, 
 		UsdPhysics.Joint.Get(stage, name + '/base_link/x_joint').GetLocalPos0Attr().Set(Gf.Vec3f(x, 0, 0))
 		UsdPhysics.Joint.Get(stage, name + '/x_link/y_joint').GetLocalPos0Attr().Set(Gf.Vec3f(0, y, 0))
 		UsdPhysics.Joint.Get(stage, name + '/y_link/z_joint').GetLocalPos0Attr().Set(Gf.Vec3f(0, 0, z))
-		stage.GetPrimAtPath(name + '/y_link/z_joint').GetAttribute('physics:lowerLimit').Set(-z + 0.3 / meters_per_unit)
-		stage.GetPrimAtPath(name + '/y_link/z_joint').GetAttribute('physics:upperLimit').Set(zlim - z)
+		stage.GetPrimAtPath(name + '/y_link/z_joint').GetAttribute('physics:lowerLimit').Set(-z + lower_zlim/meters_per_unit)
+		stage.GetPrimAtPath(name + '/y_link/z_joint').GetAttribute('physics:upperLimit').Set(upper_zlim - z)
 
 		roll = np.rad2deg(roll)
 		quat = (
@@ -941,7 +941,7 @@ def add_lidar(path, translation=[0, 0, 0], orientation=[0, 0, 0], is_2d=True, is
 
 	# drive sim applies 0.5,-0.5,-0.5,w(-0.5), we have to apply the reverse
 	base_or = tf.Rotation.from_quat([0.5, -0.5, -0.5, -0.5])
-	orientation = tf.Rotation.from_euler('xyz', orientation, degrees=degrees)
+	orientation = tf.Rotation.from_euler('XYZ', orientation, degrees=degrees)
 	orientation = (base_or * orientation).as_quat()
 
 	success, sensor = omni.kit.commands.execute(
@@ -969,7 +969,7 @@ def add_lidar(path, translation=[0, 0, 0], orientation=[0, 0, 0], is_2d=True, is
 	if is_2d:
 		writer = rep.writers.get("RtxLidar" + "ROS1PublishLaserScan")
 		writer.initialize(topicName=f"{path}/lidar/laser_scan", frameId=path[1:], rotationRate=100,
-		                  horizontalFov=360, depthRange=[0.1,100], horizontalResolution=0.1)
+		                  horizontalFov=360, depthRange=[0.1,10000], horizontalResolution=0.1)
 		writer.attach([render_product_path])
 
 

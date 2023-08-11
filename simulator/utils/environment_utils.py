@@ -143,7 +143,6 @@ class environment:
 
 			# center the home in the middle of the environment
 			set_translate(stage.GetPrimAtPath(prim_path), list(- np.array(self.shifts) / self.meters_per_unit))
-			set_scale(stage.GetPrimAtPath(prim_path), 1/self.meters_per_unit)
 			for child in stage.GetPrimAtPath(prim_path).GetAllChildren():
 				if "xform" == child.GetTypeName().lower():
 					clear_properties(str(child.GetPath()))
