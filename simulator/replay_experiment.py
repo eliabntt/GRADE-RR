@@ -200,7 +200,7 @@ try:
 	init_x, init_y, init_z, init_roll, init_pitch, init_yaw = get_robot_joint_init_loc('/my_robot_0')
 	init_pos = np.array([init_x, init_y, init_z])
 	init_rot = np.array([init_roll, init_pitch, init_yaw])
-	robot_collisions(False)
+	change_collision_at_path(False,paths=['/my_robot_0/camera_link/Cube.physics:collisionEnabled','/my_robot_0/yaw_link/visuals.physics:collisionEnabled'])
 	kit.update()
 	# move_robot('/my_robot_0', [0, 0, 0], [0,0,0], 300, lower_zlim=0) # todo use actual limit from simulation
 	move_robot('/my_robot_0', [0, 0, 0], [0,0,0], 300, lower_zlim=0) # todo use actual limit from simulation
@@ -274,7 +274,7 @@ try:
 				for joint in joint_order:
 					joints.append(_dc.find_articulation_dof(art, joint))
 
-			robot_collisions(True)
+			change_collision_at_path(True,paths=['/my_robot_0/camera_link/Cube.physics:collisionEnabled','/my_robot_0/yaw_link/visuals.physics:collisionEnabled'])
 			og.Controller.evaluate_sync(_clock_graph)
 			# since the first image generated is at time=1/30, we add 7/240
 			prev_time = timeline.get_current_time() + 7 / 240 * (simulation_step == 0)

@@ -206,6 +206,9 @@ def get_bbox3d(viewport, mode="parsed"):
     rgb_data = sensors.get_rgb(viewport)
 
     bbox_3d_data = sensors.get_bounding_box_3d(viewport, parsed=(mode == "parsed"), return_corners=True)
+    if bbox_3d_data.size == 0:
+        carb.log_info("[omni.syntheticdata.visualize] No 3D bounding boxes found.")
+        return rgb_data
     bbox_3d_corners = bbox_3d_data["corners"]
     projected_corners = helpers.world_to_image(bbox_3d_corners.reshape(-1, 3), viewport).reshape(-1, 8, 3)
 

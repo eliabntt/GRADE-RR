@@ -263,6 +263,27 @@ def get_area(polygon):
   y = polygon[:, 1]
   return .5 * np.absolute(np.dot(x, np.roll(y, 1)) - np.dot(y, np.roll(x, 1)))
 
+def change_prim_collision(enable, prim_path):
+  for j in omni.usd.get_context().get_stage().Traverse():
+    if str(j.GetPath()).startswith(prim_path):
+      if 'physics:collisionEnabled' in j.GetPropertyNames():
+        omni.kit.commands.execute('ChangeProperty',
+                                  prop_path=Sdf.Path(str(j.GetPath())+'.physics:collisionEnabled'),
+                                  value=enable,
+                                  prev=None)
+
+def change_collision_at_path(enable, paths=['/my_robot_0/camera_link/Cube.physics:collisionEnabled','/my_robot_0/yaw_link/visuals.physics:collisionEnabled']):
+  """
+  It enables or disables collisions for the paths
+
+  :param enable: True or False
+  """
+  for path in paths:
+    omni.kit.commands.execute('ChangeProperty',
+                              prop_path=Sdf.Path(path),
+                              value=enable,
+                              prev=None)
+
 
 def add_translate_anim(prim_path: str, pos: Gf.Vec3d, time: float = 0.0):
   """

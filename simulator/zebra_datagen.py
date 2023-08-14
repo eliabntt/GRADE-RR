@@ -171,13 +171,12 @@ try:
 	set_stage_up_axis("Z")
 
 	omni.kit.commands.execute("DeletePrimsCommand", paths=["/World/GroundPlane"])
-	omni.kit.commands.execute("DeletePrimsCommand", paths=["/World/AxisNorth/SkySphere"])
 
 	# do this AFTER loading the world
 	simulation_context = SimulationContext(physics_dt=1.0 / config["physics_hz"].get(),
 	                                       rendering_dt=1.0 / config["render_hz"].get(),
 	                                       stage_units_in_meters=0.01)
-	simulation_context.start_simulation()
+	simulation_context.initialize_physics()
 
 	simulation_context.play()
 	simulation_context.stop()
@@ -216,8 +215,6 @@ try:
 	dynamic_prims = []
 
 	first = True
-
-	simulation_context.play()
 	simulation_context.stop()
 
 	simulation_context.play()
@@ -230,30 +227,17 @@ try:
 	base_robot_path = str(config["base_robot_path"].get())
 	old_h_ap = []
 	old_v_ap = []
-	robot_init_loc = []
-	robot_init_ang = []
+	simulation_context.stop()
+
 	for n in range(config["num_robots"].get()):
-		simulation_context.stop()
 		import_robot(robot_base_prim_path, n, local_file_prefix, base_robot_path)
-		x, y, z = rng.uniform(min_floor_x, max_floor_x), rng.uniform(min_floor_y, max_floor_y), rng.uniform(
-			np.min(floor_points[:,:,2]), np.max(floor_points[:,:,2]))
-		z += 0
-		yaw = 0
-		roll, pitch = 0, 0
-		robot_init_loc.append([x, y, z])
-		robot_init_ang.append([roll, pitch, yaw])
-
-		simulation_context.stop()
-		move_robot(f"{robot_base_prim_path}{n}", [x / meters_per_unit, y / meters_per_unit, z / meters_per_unit],
-		           [roll, pitch, yaw], 1e15)
-
+		change_prim_collision(False, robot_base_prim_path + str(n))
+		move_robot(robot_base_prim_path + str(n), [0, 0, 0], [0, 0, 0], 10e15)
 		kit.update()
-		simulation_context.play()
-		kit.update()
+
 
 	for n in range(config["num_robots"].get()):
-		add_npy_viewport(viewport_window_list, robot_base_prim_path, n, old_h_ap, old_v_ap, config,
-		                 config["num_robots"].get() * 0)
+		add_npy_viewport(viewport_window_list, robot_base_prim_path, n, old_h_ap, old_v_ap, config,simulation_context, tot_num_ros_cam=0)
 	kit.update()
 
 	for _ in range(5):
@@ -336,8 +320,6 @@ try:
 
 	omni.usd.get_context().get_selection().set_selected_prim_paths([], False)
 
-	simulation_context.stop()
-	simulation_context.play()
 	for _ in range(5):
 		simulation_context.step(render=False)
 		sleeping(simulation_context, viewport_window_list, config["rtx_mode"].get())
@@ -357,19 +339,18 @@ try:
 
 	exp_len = config["anim_exp_len"].get()
 
-	omni.kit.commands.execute("RosBridgeUseSimTime", use_sim_time=True)
-	omni.kit.commands.execute("RosBridgeUsePhysicsStepSimTime", use_physics_step_sim_time=True)
-
 	my_recorder._enable_record = False
 	sleeping(simulation_context, viewport_window_list, config["rtx_mode"].get())
 	if config["rtx_mode"].get():
 		my_recorder._update()
 
-	simulation_context.stop()
 	hidden_position = [min_floor_x / meters_per_unit, min_floor_y / meters_per_unit, -10e5]
 	all_zebras = preload_all_zebras(config, rng, zebra_files, zebra_info, simulation_context, sequencer_drop_controller,
 	                         max_anim_length, hidden_position)
 	substep = 3
+
+	simulation_context.play()
+	import ipdb; ipdb.set_trace()
 
 	while kit.is_running():
 		if simulation_step > 0:
@@ -455,7 +436,6 @@ try:
 				# roll minimal -10, 10 degrees
 				roll = rng.uniform(-np.pi / 18, np.pi / 18)
 				rot = Rotation.from_euler('xyz', [roll, pitch, yaw])
-				move_robot(robot_base_prim_path + str(n), [0, 0, 0], [0, 0, 0], 10e15)
 				teleport(robot_base_prim_path + str(n),
 				         [random_x / meters_per_unit, random_y / meters_per_unit, random_z / meters_per_unit],
 				         rot.as_quat())
@@ -464,7 +444,6 @@ try:
 				                                            "rotation": [roll, pitch, yaw]}
 			simulation_context.step(render=False)
 			simulation_context.step(render=False)
-			simulation_context.play()
 
 			for _ in range(3):
 				simulation_context.step(render=False)
@@ -472,6 +451,11 @@ try:
 
 			sleep(0.5)
 			# two frames with the same animation point
+			# todo fix the time
+			import ipdb;
+
+			ipdb.set_trace()
+
 			timeline.set_current_time(max_anim_length / timeline.get_time_codes_per_seconds())
 			if need_sky[env_id]:
 				# with probability 0.9 during day hours
@@ -500,8 +484,9 @@ try:
 				except:
 					print("Error publishing camera")
 					pub_try_cnt += 1
-					simulation_context.stop()
-					simulation_context.play()
+					import ipdb; ipdb.set_trace()
+					# simulation_context.stop()
+					# simulation_context.play()
 					sleep(0.5)
 					simulation_context.render()
 					simulation_context.render()

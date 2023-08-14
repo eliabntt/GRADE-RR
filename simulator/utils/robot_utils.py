@@ -660,22 +660,6 @@ def get_robot_joint_init_loc(name):
 	return x, y, z, roll, pitch, yaw
 
 
-def robot_collisions(enable):
-	"""
-	It enables or disables collisions for the robot's camera and yaw links
-
-	:param enable: True or False
-	"""
-	omni.kit.commands.execute('ChangeProperty',
-	                          prop_path=Sdf.Path('/my_robot_0/camera_link/Cube.physics:collisionEnabled'),
-	                          value=enable,
-	                          prev=None)
-
-	omni.kit.commands.execute('ChangeProperty',
-	                          prop_path=Sdf.Path('/my_robot_0/yaw_link/visuals.physics:collisionEnabled'),
-	                          value=enable,
-	                          prev=None)
-
 
 def move_robot(name: str, pos: [], orientation: [], upper_zlim: float, irotate=False, meters_per_unit=1, lower_zlim: float=0.3):
 	"""

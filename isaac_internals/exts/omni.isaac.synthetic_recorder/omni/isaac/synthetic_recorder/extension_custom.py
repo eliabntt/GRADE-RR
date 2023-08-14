@@ -177,7 +177,6 @@ class MyRecorder():
                 if j.name == real_viewport_name:
                     viewport = j
                     break
-
             try:
                 gt = self.sd_helper.get_groundtruth(gt_list, viewport.viewport_api,
                                                     verify_sensor_init=self.verify[real_viewport_name])
@@ -190,7 +189,6 @@ class MyRecorder():
 
             if self._enable_record == False:
                 continue
-
             mappings = []
             # RGB
             if self._sensor_settings[viewport_name]["rgb"]["enabled"] and gt["state"]["rgb"]:
@@ -210,6 +208,9 @@ class MyRecorder():
 
             # Instance Segmentation
             if self._sensor_settings[viewport_name]["instance"]["enabled"] and gt["state"]["instanceSegmentation"]:
+                import ipdb;
+                ipdb.set_trace()
+
                 instance_data = gt["instanceSegmentation"]
                 groundtruth["DATA"]["INSTANCE"] = instance_data
                 try:
@@ -269,8 +270,7 @@ class MyRecorder():
                 groundtruth["METADATA"]["BBOX3D"]["COLORIZE"] = self._sensor_settings[viewport_name]["bbox_3d"][
                     "colorize"]
                 groundtruth["METADATA"]["BBOX3D"]["NPY"] = self._sensor_settings[viewport_name]["bbox_3d"]["npy"]
-                # if self._sensor_settings[viewport_name]["bbox_3d"]["colorize"]:
-                groundtruth["METADATA"]["BBOX3D_IMAGE"] = visualize.get_bbox3d(viewport.viewport_api)
+                groundtruth["METADATA"]["BBOX3D_IMAGE"] =visualize.get_bbox3d(viewport.viewport_api)
 
             # Motion vector
             if self._sensor_settings[viewport_name]["motion-vector"]["enabled"] and gt["state"]["motion-vector"]:
