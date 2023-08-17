@@ -40,9 +40,9 @@ try:
 	parser.add_argument("--experiment_folder", type=str,
 	                    help="The experiment folder with the USD file and the info file")
 	parser.add_argument("--headless", type=boolean_string, default=False, help="Whether run this headless or not")
-	parser.add_argument("--write", type=boolean_string, default=False, help="Whether to write new cameras results")
-	parser.add_argument("--write_flow", type=boolean_string, default=True, help="Whether to write optical flow")
-	parser.add_argument("--write_normals", type=boolean_string, default=True, help="Whether to write normals")
+	parser.add_argument("--write", type=boolean_string, default=True, help="Whether to write new cameras results")
+	parser.add_argument("--write_flow", type=boolean_string, default=False, help="Whether to write optical flow")
+	parser.add_argument("--write_normals", type=boolean_string, default=False, help="Whether to write normals")
 	parser.add_argument("--use_teleport", type=boolean_string, default=True,
 	                    help="Whether to use teleport or force joint vel, both have adv and disadv")
 	parser.add_argument("--use_reindex", type=boolean_string, default=False, help="Whether to use reindexed bags")
@@ -233,9 +233,9 @@ try:
 
 	if write:
 		_tmp = exp_info['config']['_recorder_settings'].get()
-		_tmp["depth"]["enabled"] = True
+		_tmp["depth"]["enabled"] = False
 		_tmp["rgb"]["enabled"] = True
-		_tmp["depthLinear"]["enabled"] = False
+		_tmp["depthLinear"]["enabled"] = True
 		_tmp["semantic"]["enabled"] = False
 		_tmp["normals"]["enabled"] = False
 		_tmp["bbox_2d_loose"]["enabled"] = False
@@ -255,6 +255,7 @@ try:
 	toggle_dynamic_objects(dynamicprims, False)
 
 	forward = True
+	thediff = []
 	while kit.is_running():
 		simulation_step += 1
 		if simulation_step == 0:
@@ -277,7 +278,6 @@ try:
 			omni.kit.commands.execute("RosBridgeTickComponent", path="/ROS_Clock")  # need to initialize
 			prev_time = timeline.get_current_time() + 7 / 240 * (
 					simulation_step == 0)  # to account for an "issue" during generation
-			simulation_step += 8
 
 			if write:
 				my_recorder._update()
@@ -305,6 +305,8 @@ try:
 				         , tf.Rotation.from_euler('XYZ', joint_position[cnt_tf][3:] + init_rot).as_quat())
 				if (simulation_step % (ratio_tf * 2) == 0):  # odm is published half the rate of the tf
 					myp = _dc.get_rigid_body_pose(handle)
+					thediff.append([np.array(myp.p) / 100 - np.array([robot_pose[int(cnt_tf / 2)][0].x, robot_pose[int(cnt_tf / 2)][0].y, robot_pose[int(cnt_tf / 2)][0].z]),
+					                tf.Rotation.from_quat(myp.r).as_euler('XYZ') - tf.Rotation.from_quat([robot_pose[int(cnt_tf / 2)][1].x, robot_pose[int(cnt_tf / 2)][1].y, robot_pose[int(cnt_tf / 2)][1].z, robot_pose[int(cnt_tf / 2)][1].w]).as_euler('XYZ')])
 					print(
 						f"pose diff {np.array(_dc.get_rigid_body_pose(handle).p) / 100 - np.array([robot_pose[int(cnt_tf / 2)][0].x, robot_pose[int(cnt_tf / 2)][0].y, robot_pose[int(cnt_tf / 2)][0].z])}")
 			else:
@@ -412,6 +414,7 @@ try:
 
 		if simulation_step % ratio_camera == 0 and simulation_step / ratio_camera == experiment_length:
 			print("End of experiment!!!")
+			np.save("./posediffs.npy", np.array(thediff))
 			simulation_context.pause()
 			break
 except:

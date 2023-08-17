@@ -9,6 +9,7 @@ base_robot_path: "/home/ebonetto/.local/share/ov/pkg/isaac_sim-2021.2.1/main_rep
 out_folder: "/media/ebonetto/WindowsData/exp_out2"
 out_folder_npy: "/media/ebonetto/WindowsData/exp_out2"
 fps: 30
+use_npy: True
 num_robots: 1
 anim_exp_len: 450 # after how many frames we should roll back the animations
 physics_hz: 240 # NOTE THAT THIS IS THE RATE OF CLOCK AND IMU
