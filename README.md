@@ -39,11 +39,10 @@ _______
 
 1. All the data we generated (indoor, zebras, additional scenarios), the TUM-RGBD fr3/walking sequence labelled, the networks checkpoints trained as described in the paper, the rosbags used to evaluate the SLAM methods and the results will be available [here](https://github.com/eliabntt/GRADE_data/)
 2. The tools to process the data, add noise to the rosbags or during the simulation, to evaluate the SLAM methods, generate training data can be found [here](https://github.com/robot-perception-group/GRADE_tools)
-3. [here](https://github.com/eliabntt/GRADE-nets) you can find the Mask RCNN and YOLOv5 networks we used to train our data, plus some additional helping script.
-4. The code to convert SMPL-based animations to USD files is [here](https://github.com/eliabntt/animated_human_SMPL_to_USD)
-5. To convert any environment from Blender to USD and generate some accompanying data use [this](https://github.com/eliabntt/Front3D_to_USD). This has a special focus in indoor environmets and Front3D. Based on BlenderProc.
-6. The parent repository which we used to autonomously explore the environments during the data generation is [here](https://github.com/eliabntt/ros_isaac_drone)
-7. The modified version of DynaSLAM working with Python3 and using `detectron2` is [here](https://github.com/eliabntt/DynaSLAM)
+3. The code to convert SMPL-based animations to USD files is [here](https://github.com/eliabntt/animated_human_SMPL_to_USD)
+4. To convert any environment from Blender to USD and generate some accompanying data use [this](https://github.com/eliabntt/Front3D_to_USD). This has a special focus in indoor environmets and Front3D. Based on BlenderProc.
+5. The parent repository which we used to autonomously explore the environments during the data generation is [here](https://github.com/eliabntt/ros_isaac_drone)
+6. The modified version of DynaSLAM working with Python3 and using `detectron2` is [here](https://github.com/eliabntt/DynaSLAM)
 ___________________
 
 ### [Install](https://github.com/eliabntt/GRADE-RR/blob/main/Install.md)
