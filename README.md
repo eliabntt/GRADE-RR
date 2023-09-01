@@ -110,11 +110,15 @@ I worked on this mainly alone so the code is far from perfect, super-modular, or
 
 Thus, we welcome any contribution that you might have. Include coding style, comments, additions, or better strategies that you want to propose (of course after you have published your paper).
 
-### Ways to run the simulation
+### How to run the simulation
 
 We're working on this piece of the documentation. Please bear with us while we upgrade the documents with better instructions.
 
-For now, [here](https://github.com/eliabntt/GRADE-RR/blob/37ee985abccc6239bec7f22241c49da0acc5402c/SAMPLES.md) you will learn what we already tried out, what we tested, what we used to run the simulations. In there, there is also a quick plug-and-play example. [Here](https://github.com/eliabntt/GRADE-RR/blob/37ee985abccc6239bec7f22241c49da0acc5402c/OUR_CODE.md) you can learn about our developed codebase, where you can find useful resources, and how you can edit them, file by file. Also [here](https://github.com/eliabntt/GRADE-RR/blob/37ee985abccc6239bec7f22241c49da0acc5402c/OUR_CODE.md) you can find instructions on how to easily setup your first simulation by following `simulator/simulator_ros.py` code. More informations are also located in each sub-repository of this project.
+A small tutorial can be found [here](https://github.com/eliabntt/GRADE-RR/blob/37ee985abccc6239bec7f22241c49da0acc5402c/OUR_CODE.md#main-code-tutorial-following-roughly-simulator_ros)
+
+[Here](https://github.com/eliabntt/GRADE-RR/blob/37ee985abccc6239bec7f22241c49da0acc5402c/SAMPLES.md) you will learn what we already tried out, what we tested, what we used to run the simulations.
+
+[Here](https://github.com/eliabntt/GRADE-RR/blob/37ee985abccc6239bec7f22241c49da0acc5402c/OUR_CODE.md) you can learn about our developed codebase, where you can find useful resources, and how you can edit them, file by file. 
 
 ### How to postprocess the data
 
