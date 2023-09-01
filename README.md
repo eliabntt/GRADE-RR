@@ -114,7 +114,7 @@ Thus, we welcome any contribution that you might have. Include coding style, com
 
 We're working on this piece of the documentation. Please bear with us while we upgrade the documents with better instructions.
 
-For now, [here](https://github.com/eliabntt/GRADE-RR/blob/v2022/SAMPLES.md) you will learn what we already tried out, what we tested, what we used to run the simulations. In there, there is also a quick plug-and-play example. [Here](https://github.com/eliabntt/GRADE-RR/blob/v2022/OUR_CODE.md) you can learn about our developed codebase, where you can find useful resources, and how you can edit them, file by file. Also [here](https://github.com/eliabntt/GRADE-RR/blob/v2022/OUR_CODE.md) you can find instructions on how to easily setup your first simulation by following `simulator/simulator_ros.py` code. More informations are also located in each sub-repository of this project.
+For now, [here](https://github.com/eliabntt/GRADE-RR/blob/37ee985abccc6239bec7f22241c49da0acc5402c/SAMPLES.md) you will learn what we already tried out, what we tested, what we used to run the simulations. In there, there is also a quick plug-and-play example. [Here](https://github.com/eliabntt/GRADE-RR/blob/37ee985abccc6239bec7f22241c49da0acc5402c/OUR_CODE.md) you can learn about our developed codebase, where you can find useful resources, and how you can edit them, file by file. Also [here](https://github.com/eliabntt/GRADE-RR/blob/37ee985abccc6239bec7f22241c49da0acc5402c/OUR_CODE.md) you can find instructions on how to easily setup your first simulation by following `simulator/simulator_ros.py` code. More informations are also located in each sub-repository of this project.
 
 ### How to postprocess the data
 
@@ -131,20 +131,20 @@ Look [here](https://github.com/eliabntt/GRADE-RR/blob/v2022/simulator/smpl_and_b
 
 ### How to edit directly USD files
 
-Check the tutorial [here](https://github.com/eliabntt/GRADE-RR/blob/v2022/EDIT_USDS.md). This will help you convert USD to txt files for easy file processing.
+Check the tutorial [here](https://github.com/eliabntt/GRADE-RR/blob/37ee985abccc6239bec7f22241c49da0acc5402c/EDIT_USDS.md). This will help you convert USD to txt files for easy file processing.
 
 ### Isaac's edited files
 
 Edited files are inside `isaac_internals`. The edited ones are the one that are copied by the `cp_local..` script. However, as per Isaac requirements, we had to include all the licenses and other files.
 
-- _Shapenet_ minor edits regarding the main script since the dowload website seem down. We suggest to pre-download the dataset, unpack it, and set-up the environment folders as we show [here](https://github.com/eliabntt/GRADE-RR/blob/v2022/OUR_CODE.md) to directly use the pre-downloaded data.
+- _Shapenet_ minor edits regarding the main script since the dowload website seem down. We suggest to pre-download the dataset, unpack it, and set-up the environment folders as we show [here](https://github.com/eliabntt/GRADE-RR/blob/37ee985abccc6239bec7f22241c49da0acc5402c/OUR_CODE.md) to directly use the pre-downloaded data.
 - _synthetic\_recorder_ created a custom extension to save our data, and offset the number of cameras. In that way we can save high-resolution images to the disk, while providing ROS smaller images. We found this faster than resizing images afterwards and caused less "issues".
 - _synthetic\_utils_ we edited the `numpy.py` and the `syntheticdata.py` to save more data and have more flexibility. What is still missing (our bad) is the vertical fov of the camera, which is not directly exposed by Isaac Sim.
 - In `setup_python_env.sh` we had to prevent the loading of `$SCRIPT_DIR/exts/omni.isaac.motion_planning/bin` (you can find it commented at the very end of line 8), to be able to run the system version of `move_base`. That module could be necessary for some of the Isaac extensions or configurations. Please be aware of this.
 
 ### How to move/control the camera/robot
 
-You have several possibilities with and without ROS, with and without physics. Check them out [here](https://github.com/eliabntt/GRADE-RR/blob/v2022/MOVEMENT.md)
+You have several possibilities with and without ROS, with and without physics. Check them out [here](https://github.com/eliabntt/GRADE-RR/blob/37ee985abccc6239bec7f22241c49da0acc5402c/MOVEMENT.md)
 
 ### Possible missing textures/wrong paths
 
