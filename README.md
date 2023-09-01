@@ -1,14 +1,10 @@
 # GRADE-RR or how to Generate Realistic Animated Dynamic Environments for Robotics Research
 
-## Isaac 2022.2.1 branch is updated --- Only for the main paper_simulation script and all the utils scripts.
-
-This repository contains the code of GRADE.
+### Note that while we used the v2021 for the paper, that version is now deprecated. I will work only on v2022+
 
 GRADE is a system I developed to seamlessly manage the Isaac Sim simulation software to Generate Realistic Animated Dynamic Environments for Robotics Research
 
-
 ![prom](https://user-images.githubusercontent.com/19806758/215789830-c6dfd612-0b35-4640-b3fb-b5abbe877dee.png)
-
 
 This will help you in:
 1. managing the simulation
@@ -21,28 +17,26 @@ This will help you in:
 
 Each step of the pipeline can be easily customized, expanded or removed from your workflow.
 
-If you want more information check out my [GTC talk](https://www.nvidia.com/gtc/session-catalog/?search=bonetto&tab.catalogallsessionstab=16566177511100015Kus&search=bonetto#/session/1666623015127001DShI), the [paper](https://arxiv.org/abs/2303.04466) or our [website](https://eliabntt.github.io/grade-rr).
+If you want more information check out the [paper](https://arxiv.org/abs/2303.04466) or our [website](https://eliabntt.github.io/grade-rr).
 
 With this framework in conjuction with our [people generator](https://github.com/eliabntt/animated_human_SMPL_to_USD), [environment exporter](https://github.com/eliabntt/Front3D_to_USD) and [control framework](https://github.com/eliabntt/ros_isaac_drone) (which can control any thanks to our [custom 6DOF joint controller](https://github.com/eliabntt/custom_6dof_joint_controller)), we generated a dataset of indoor animated scenes.
 
-The dataset has been then postprocessed with our set of [tools](https://github.com/robot-perception-group/GRADE-eval), [evaluated](https://github.com/robot-perception-group/GRADE-eval) against popular SLAM libraries and used to test the realism of our synthetic data by [training Yolo and MaskRCNN](https://github.com/eliabntt/GRADE-train).
+The data generated can be post-processed with our set of [tools](https://github.com/robot-perception-group/GRADE-eval), [evaluated](https://github.com/robot-perception-group/GRADE-eval) against popular SLAM libraries, and used to test the realism your synthetic data.
 
-Moreover, we used this project to generate a synthetic Zebra dataset focused on aerial views. Check the [paper](https://arxiv.org/abs/2305.00432) and the [data](https://keeper.mpdl.mpg.de/d/12abb3bb6b12491480d5/). To do so, we used [this](https://github.com/eliabntt/GRADE-RR/blob/main/simulator/zebra_datagen.py) main file.
-
-In this readme I'll give the main installation instructions, and links to other resources that you should read to work with this software.
-
-The main branch (for now) contains code compatible with the 2021.2.1 version of the code.
+We used this project to generate both an **indoor dynamic environment** and a **outdoor synthetic Zebra** datasets. The details for those are in the corresponding [GRADE](https://arxiv.org/abs/2303.04466) and [Zebra](https://arxiv.org/abs/2305.00432) papers. 
 
 _______
 ## List of project-related repositories
 
 1. All the data we generated, the TUM labelled data, the networks checkpoints trained as described in the paper, the rosbags used to evaluate the SLAM methods and the results will be available [here](https://github.com/eliabntt/GRADE_data/)
 2. The tools to process the data, add noise to the rosbags or during the simulation, to evaluate the SLAM methods, generate training data can be found [here](https://github.com/robot-perception-group/GRADE_tools)
-3. [here](https://github.com/eliabntt/GRADE-nets) you can find the Mask RCNN and YOLOv5 networks we used to train our data, plus some additional helping script.
-4. The code to convert SMPL-based animations to USD files is [here](https://github.com/eliabntt/animated_human_SMPL_to_USD)
-5. To convert any environment from Blender to USD and generate some accompanying data use [this](https://github.com/eliabntt/Front3D_to_USD). This has a special focus in indoor environmets and Front3D. Based on BlenderProc.
-6. The parent repository which we used to autonomously explore the environments during the data generation is [here](https://github.com/eliabntt/ros_isaac_drone)
-7. The modified version of DynaSLAM working with Python3 and using `detectron2` is [here](https://github.com/eliabntt/DynaSLAM)
+3. The code to convert SMPL-based animations to USD files is [here](https://github.com/eliabntt/animated_human_SMPL_to_USD)
+4. To convert any environment from Blender to USD and generate some accompanying data use [this](https://github.com/eliabntt/Front3D_to_USD). This has a special focus in indoor environmets and Front3D. Based on BlenderProc.
+5. The parent repository which we used to autonomously explore the environments during the data generation is [here](https://github.com/eliabntt/ros_isaac_drone)
+6. The modified version of DynaSLAM working with Python3 and using `detectron2` is [here](https://github.com/eliabntt/DynaSLAM)
+7. `FUEL`, our chosen autonomous exploration manager to control the drone within the environment. [Link here](https://github.com/eliabntt/FUEL/tree/main)
+8. `custom_6dof_joint_controller` which is the bridge between the position/velocity commands and the joint velocities expected by IsaacSim. This will allow you to control any robot within the simulation environment. [Link here](https://github.com/eliabntt/custom_6dof_joint_controller/tree/main)
+9. `moveit_based_collision_checker_and_placement` our Move-it based placement strategy. [Link here](https://github.com/eliabntt/moveit_based_collision_checker_and_placement/tree/main)
 ___________________
 
 ## Requirements and basic software installation
@@ -50,16 +44,6 @@ ___________________
 Please check the [requirements](https://docs.omniverse.nvidia.com/app_isaacsim/app_isaacsim/requirements.html) on the official page.
 
 Install Nucleus, Cache, and Isaac Sim.
-
-For 2021 version use the following as Nucleus server in the omniverse launcher:
-
-```
-Name: Isaac
-Type: Amazon S3
-Host: d28dzv1nop4bat.cloudfront.net
-Service: s3
-Redirection: https://d28dzv1nop4bat.cloudfront.net
-```
 
 From now on, we will assume that you installed Isaac Sim within a `ISAAC_FOLDER`. Default location is `~/.local/share/ov/pkg/isaac-version/`.
 
@@ -120,11 +104,11 @@ This will copy the edited files from $1 (source) to the $2 (destination). You ca
 ______________
 ## Misc
 
-A general note: every script has been commented and almost each piece of code should be self-explanatory. If you don't find it like that please open an issue.
+A general note: every script has been more or less commented and almost each piece of code should be self-explanatory. If you don't find it like that please **open an issue**.
 
-Also, we welcome any contribution that you might have. Include coding style (I'm no SE), comments, additions, or better strategies that you want to propose (of course after you have published your paper).
+I worked on this mainly alone so the code is far from perfect, super-modular, or anything like that. But together we can make it better. 
 
-Finally, in these readmes we will try to stay general. Please check out each code piece for parameters and understand how it works. 
+Thus, we welcome any contribution that you might have. Include coding style, comments, additions, or better strategies that you want to propose (of course after you have published your paper).
 
 ### Ways to run the simulation
 
@@ -160,23 +144,12 @@ Edited files are inside `isaac_internals`. The edited ones are the one that are 
 
 You have several possibilities with and without ROS, with and without physics. Check them out [here](https://github.com/eliabntt/GRADE-RR/blob/main/MOVEMENT.md)
 
-### Additionally core developed/edited packages related to the project
-
-1. `FUEL`, our chosen autonomous exploration manager to control the drone within the environment. [Link here](https://github.com/eliabntt/FUEL/tree/main)
-2. `custom_6dof_joint_controller` which is the bridge between the position/velocity commands and the joint velocities expected by IsaacSim. This will allow you to control any robot within the simulation environment. [Link here](https://github.com/eliabntt/custom_6dof_joint_controller/tree/main)
-3. `moveit_based_collision_checker_and_placement` our Move-it based placement strategy. [Link here](https://github.com/eliabntt/moveit_based_collision_checker_and_placement/tree/main)
-
 ### Possible missing textures/wrong paths
 
-When loading humans or environments (or anything else) it will be necessar for you to edit the paths of the shaders, especially when moving between Windows and Linux.
-To do that you can use the `change_shader_path` (line: 59, `misc_utils.py`) or the `correct_paths` (line: 123, `misc_utils.py`).
-Please note that you need to tailor this to your own use case.
-The `correct_paths` function is already commented in `human_utils` when loading the human and in `environment_utils` when loading the env. 
+When loading humans or environments (or anything else) it may be necessar for you to edit the paths of the shaders, especially when moving between Windows and Linux.
+To do that you can use the [`change_shader_path`](https://github.com/eliabntt/GRADE-RR/blob/v2022/simulator/utils/misc_utils.py#L62) or the [correct paths](https://github.com/eliabntt/GRADE-RR/tree/v2022/scripts/process_paths) scripts.
 
-Otherwise, you can simply process the text files as explained [here](https://github.com/eliabntt/GRADE-RR/blob/main/EDIT_USDS.md).
-
-### Code explanation
-Most of the functions in the utils libraries are commented and explained. If something is unclear feel free to open an issue.
+Otherwise, you can simply process the text files as explained [here](https://github.com/eliabntt/GRADE-RR/blob/v2022/EDIT_USDS.md).
 
 ### Segmentation <-> instance
 
@@ -185,9 +158,13 @@ Instance segmentation files will save also the mappings between classes. An exam
 _____
 ## Known issues
 1. ros clock might have some delay in publishing. This implies that you need to sleep the simulation every time that component gets triggered. Other component behave consistently based on our tests. Alternatively, you can post-process the data as shown in [here](https://github.com/robot-perception-group/GRADE-eval)
-2. BBOX3D are wrong for moving objects. The script in `scripts/smpl_and_bbox.py` will solve this.
-3. Collisions for dynamic objects are wrong most of the times. This implies that LiDAR (and LRF) will get wrong data when running. This should be addressed by the new LiDAR-RTX of the new Isaac Sim version.
-4. The rendering is not blocking. Multiple calls (especially for path tracing) are necessary. However, this usually disrupt the motion-vector data and motion-blur. A possible workaround is [here](https://github.com/eliabntt/GRADE-RR/blob/main/simulator/replay_experiment.py) on our replay-experiment script.
+2. BBOX3D are wrong for moving objects. The script [here](https://github.com/eliabntt/GRADE-RR/blob/v2022/simulator/correct_data.py#L267) show a way to solve this.
+3. Pose information is wrong for some moving objects. The code [here](https://github.com/eliabntt/GRADE-RR/blob/v2022/simulator/correct_data.py#L224) will solve this.
+4. Collisions for dynamic objects are not computed most of the times due to PhysX limitations. This is addressed by the new LiDAR-RTX of the new Isaac Sim version.
+5. The rendering is not blocking. Multiple calls (especially for path tracing) are necessary. Thus, this usually disrupt the motion-vector data. A possible workaround is to do two rendering steps and save the motion-vector data, and then finish rendering to save the rgb information. See [here](https://github.com/eliabntt/GRADE-RR/blob/v2022/simulator/replay_experiment.py#L390) an example on how to do that.
+6. In the v2022 it is not possible to set indipendent vfov of the cameras
+7. In the v2022 the internal PD control for the joints will NOT work using position setpoints. Also, the maximum velocity set is not considered.
+8. In the v2022 the timeline gets updated automatically even if you do not want it. You need to keep track of the ctime and constantly re-update it to correctly generate the data you want.
 
 ______
 ## Download data
