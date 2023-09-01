@@ -2,11 +2,11 @@
 env_path: "/media/ebonetto/WindowsData/Zebra_envs/Usable"
 use_stl: False # this disable stl loading thus placement AND robot heading
 use_npy: False
-base_env_path: "/media/ebonetto/WindowsData/ov/isaac_sim-2021.2.1/GRADE-RR/usds/base_env_zebra.usd"
+base_env_path: "/media/ebonetto/WindowsData/ov/isaac_sim-2022.2.1/GRADE-RR/usds/env_base.usd"
 zebra_anims_loc: "/media/ebonetto/WindowsData/Zebra_anims"
 randomize_sky: True # only if allowed
 robot_mesh_path: "/media/ebonetto/WindowsData/ov/isaac_sim-2021.2.1/GRADE-RR/meshes/drone.dae"
-base_robot_path: "/media/ebonetto/WindowsData/ov/isaac_sim-2021.2.1/GRADE-RR/usds/drone_savana.usd"
+base_robot_path: "/media/ebonetto/WindowsData/ov/isaac_sim-2022.2.1/GRADE-RR/usds/drone_2022.usd"
 out_folder: "/media/ebonetto/WindowsData/zebra_out_close"
 out_folder_npy: "/media/ebonetto/WindowsData/zebra_out_close"
 fps: 30
@@ -33,4 +33,4 @@ _recorder_settings: {
   "poses": { "enabled": True, "colorize": True, "npy": True },
 }
 min_number_zebras: 2
-max_number_zebras: 250
+max_number_zebras: 5

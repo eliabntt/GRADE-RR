@@ -273,7 +273,7 @@ def boolean_string(s):
 
 parser = argparse.ArgumentParser(description="Colorize data")
 parser.add_argument("--viewport_folder", type=str)
-parser.add_argument("--img_id", type=str, default=-1)
+parser.add_argument("--img_id", type=str, default="-1")
 parser.add_argument("--save_imgs", type=boolean_string, default=True)
 parser.add_argument("--save_video", type=boolean_string, default=False)
 parser.add_argument("--always_update_map", type=boolean_string, default=False)
@@ -289,28 +289,33 @@ config.set_args(args)
 
 minid = 1
 maxid = 1801
-if config["img_id"].get().isdigit():
+isdigit = False
+try:
+  int(config["img_id"].get())
+  isdigit = True
+except:
+  isdigit = False
+
+if isdigit:
   img_id = int(config["img_id"].get())
   if img_id <= -1:
-    print("Processing all images")
-  else:
-    minid = img_id
-    maxid = img_id + 1
-  ids = [i for i in range(minid, maxid)]
+  print("Processing all images")
 else:
-  ids = [config["img_id"].get()]
+  minid = config["img_id"].get()
+  maxid = config["img_id"].get() + 1
+
 
 vertical_aperture = config["vertical_aperture"].get()
 viewport = config["viewport_folder"].get()
 subfolders = os.listdir(config["viewport_folder"].get())
-depthLinear_enabled = "depthLinear" in subfolders
 depth_enabled = "depth" in subfolders
-normals_enabled = False #"normals" in subfolders
-bbox2d_enabled = False#"bbox_2d_tight" in subfolders
-bbox3d_enabled = False#"bbox_3d" in subfolders  # todo these need to be fixed
-instance_enabled = False#"instance" in subfolders
-sem_enabled = False#"instance" in subfolders and config["semantics"].get()
-motion_enabled = False #"motion-vector" in subfolders
+depthLinear_enabled = "depthLinear" in subfolders
+normals_enabled = "normals" in subfolders
+bbox2d_enabled = "bbox_2d_tight" in subfolders
+bbox3d_enabled = "bbox_3d" in subfolders  # todo these need to be fixed
+instance_enabled = "instance" in subfolders
+sem_enabled = "instance" in subfolders and config["semantics"].get()
+motion_enabled = "motion-vector" in subfolders
 always_update_map = config["always_update_map"].get()
 
 save_video = config["save_video"].get()

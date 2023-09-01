@@ -254,6 +254,7 @@ try:
 	set_raytracing_settings(config["physics_hz"].get())
 
 	env_prim_path = environment.load_and_center(config["env_prim_path"].get())
+
 	randomize_and_fix_lights(config["_random_light"].get(), rng, env_prim_path, environment.env_limits[-1] - 0.2,
 	                         meters_per_unit, is_rtx=config["rtx_mode"].get())
 	randomize_roughness(config["_random_roughness"].get(), rng, env_prim_path)
@@ -328,14 +329,13 @@ try:
 
 	for n in range(config["num_robots"].get()):
 		add_npy_viewport(viewport_window_list, robot_base_prim_path, n, old_h_ap, old_v_ap, config, simulation_context,
-		                 config["num_robots"].get())
-		simulation_context.step()
+		                 config["num_robots"].get() * 1) # * number_of_ros_cameras
 
 	for _ in range(50):
 		simulation_context.render()
 	print("Loading robot complete")
 
-	print("WARNING: THIS NO LONGER WORKS, NEEDS TO BE FIXED BY NVIDIA!!!!")
+	print("WARNING: CAMERA APERTURE MANUAL SET NO LONGER WORKS, NEEDS TO BE FIXED BY NVIDIA!!!!")
 	time.sleep(5)
 
 	# # legacy code
@@ -380,7 +380,7 @@ try:
 	human_anim_len = []
 	added_prims = []
 	human_base_prim_path = config["human_base_prim_path"].get()
-	while n < 5: #rng.integers(7, 1 + max(7, config["num_humans"].get())):
+	while n < rng.integers(7, 1 + max(7, config["num_humans"].get())):
 		anim_len = 0
 		# the animation needs to be shorter than config["max_anim_len"].get() and longer than 0/min_len
 		while anim_len < max(config["min_human_anim_len"].get(), 0) or anim_len > config["max_human_anim_len"].get():
@@ -448,6 +448,7 @@ try:
 		set_pathtracing_settings(config["physics_hz"].get())
 
 	omni.usd.get_context().get_selection().clear_selected_prim_paths()
+	omni.usd.get_context().get_selection().set_selected_prim_paths([], False)
 
 	for _ in range(5):
 		simulation_context.step(render=False)

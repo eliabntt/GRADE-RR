@@ -1,13 +1,13 @@
 # GENERAL NOTE the paths need to be ABSOLUTE!
 env_path: "/media/ebonetto/WindowsData/Demo_GRADE"
 use_stl: False # this disable stl loading thus placement AND robot heading
-base_env_path: "/home/ebonetto/.local/share/ov/pkg/isaac_sim-2021.2.1/main_repo/usds/base_env_zebra.usd"
+base_env_path: "/media/ebonetto/WindowsData/ov/isaac_sim-2022.2.1/GRADE-RR/usds/env_base.usd"
 clean_base_env: True
 only_placement: True
-robot_mesh_path: "/home/ebonetto/.local/share/ov/pkg/isaac_sim-2021.2.1/main_repo/meshes/drone.dae"
-base_robot_path: "/home/ebonetto/.local/share/ov/pkg/isaac_sim-2021.2.1/main_repo/usds/drone_paper.usd"
-out_folder: "/media/ebonetto/WindowsData/exp_out2"
-out_folder_npy: "/media/ebonetto/WindowsData/exp_out2"
+robot_mesh_path: "/media/ebonetto/WindowsData/ov/isaac_sim-2022.2.1/GRADE-RR/meshes/drone.dae"
+base_robot_path: "/media/ebonetto/WindowsData/ov/isaac_sim-2022.2.1/GRADE-RR/usds/drone_2022.usd"
+out_folder: "/media/ebonetto/WindowsData/exp_out2022"
+out_folder_npy: "/media/ebonetto/WindowsData/exp_out2022"
 fps: 30
 num_robots: 1
 anim_exp_len: 450 # after how many frames we should roll back the animations
@@ -21,6 +21,8 @@ robot_sensor_size: [ 640, 480 ]
 npy_sensor_size: [ 1920,1080]
 env_prim_path: "/World/home"
 robot_base_prim_path: "/my_robot_"
+use_npy: True
+meters_per_unit: 0.01
 _recorder_settings: {
   "rgb": { "enabled": True },
   "depth": { "enabled": True, "colorize": False, "npy": True },

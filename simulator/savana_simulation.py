@@ -47,6 +47,8 @@ try:
 
 
     environment_setup()
+    # set timeline of the experiment
+    timeline = setup_timeline(config)
 
     rospy.init_node("my_isaac_ros_app", anonymous=True, disable_signals=True, log_level=rospy.ERROR)
     starting_pub = rospy.Publisher('starting_experiment', String)
@@ -57,19 +59,15 @@ try:
     local_file_prefix = ""
 
     # setup environment variables
-    environment = environment(config, rng, local_file_prefix)
+    meters_per_unit = config["meters_per_unit"].get()
+    environment = environment(config, rng, local_file_prefix, meters_per_unit)
 
-    uuid = roslaunch.rlutil.get_or_generate_uuid(None, False)
     out_dir = os.path.join(config['out_folder'].get(), environment.env_name)
     out_dir_npy = os.path.join(config['out_folder_npy'].get(), environment.env_name)
     if not os.path.exists(out_dir):
         os.makedirs(out_dir)
 
     os.environ["ROS_LOG_DIR"] = out_dir
-
-    roslaunch.configure_logging(uuid)
-    launch_files = ros_launchers_setup(roslaunch, environment.env_limits_shifted, config)
-    parent = roslaunch.parent.ROSLaunchParent(uuid, launch_files, force_log=True)
 
     omni.usd.get_context().open_stage(local_file_prefix + config["base_env_path"].get(), None)
 
@@ -92,37 +90,24 @@ try:
     simulation_context = SimulationContext(physics_dt=1.0 / config["physics_hz"].get(),
                                            rendering_dt=1.0 / config["render_hz"].get(),
                                            stage_units_in_meters=0.01)
-    simulation_context.start_simulation()
+    simulation_context.initialize_physics()
+    physx_interface = omni.physx.acquire_physx_interface()
+    physx_interface.start_simulation()
 
-    add_clock()  # add ROS clock
+    _clock_graph = add_clock()  # add ROS clock
 
     simulation_context.play()
-    for _ in range(100):
-        omni.kit.commands.execute("RosBridgeTickComponent", path="/ROS_Clock")
+    for _ in range(10):
         simulation_context.step()
+        og.Controller.evaluate_sync(_clock_graph)
+        last_pub_time = rospy.Time.now()
     simulation_context.stop()
-    
-    # fixme IDK why this is necessary sometimes
-    try:
-        parent.start()
-    except:
-        print("Failed to start roslaunch, retry")
-        try:
-            parent.start()
-        except:
-            print("Failed to start roslaunch, exit")
-            exit(1)
-    print("ros node launched")
 
     kit.update()
-    meters_per_unit = UsdGeom.GetStageMetersPerUnit(stage)
 
     # use rtx while setting up!
     set_raytracing_settings(config["physics_hz"].get())
     env_prim_path = environment.load_and_center(config["env_prim_path"].get(), correct_paths_req=False)
-
-    # set timeline of the experiment
-    timeline = setup_timeline(config)
 
     ros_camera_list = []
     ros_transform_components = []  # list of tf and joint components, one (of each) for each robot
@@ -136,23 +121,18 @@ try:
     odom_pubs = []
     cam_pose_pubs = []
 
-    first = True
-
-    imu_sensor, imu_props = setup_imu_sensor(config)
-
     simulation_context.play()
     for _ in range(100):
-        omni.kit.commands.execute("RosBridgeTickComponent", path="/ROS_Clock")
+        og.Controller.evaluate_sync(_clock_graph)
         simulation_context.step()
-    simulation_context.stop()
-
-    print("Generating map...")
-    simulation_context.play()
-    for _ in range(10):
-        simulation_context.step()
-    _dc = dynamic_control_interface()
 
     print("Loading robots..")
+
+    from omni.isaac.sensor import _sensor
+    _is = _sensor.acquire_imu_sensor_interface()
+
+    _dc = dynamic_control_interface()
+
     robot_base_prim_path = config["robot_base_prim_path"].get()
     base_robot_path = str(config["base_robot_path"].get())
     old_h_ap = []
@@ -160,57 +140,46 @@ try:
     robot_init_loc = []
     robot_init_ang = []
 
+    simulation_context.stop()
     for n in range(config["num_robots"].get()):
-        simulation_context.stop()
         import_robot(robot_base_prim_path, n, local_file_prefix, base_robot_path)
         if config["init_loc"].get()["use"]:
+            # assuming we go here
             x = config["init_loc"].get()["x"][n]
             y = config["init_loc"].get()["y"][n]
             z = config["init_loc"].get()["z"][n]
             yaw = np.deg2rad(config["init_loc"].get()["yaw"][n])
             roll = np.deg2rad(config["init_loc"].get()["roll"][n])
             pitch = np.deg2rad(config["init_loc"].get()["pitch"][n])
-        else:
-            x, y, z, yaw = get_valid_robot_location(environment, first)
-            roll, pitch = 0, 0
         robot_init_loc.append([x,y,z])
         robot_init_ang.append([roll, pitch, yaw])
 
-        simulation_context.stop()
         move_robot(f"{robot_base_prim_path}{n}", [x / meters_per_unit, y / meters_per_unit, z / meters_per_unit], [roll, pitch, yaw],
-                   (environment.env_limits[5]) / meters_per_unit)
+                   (environment.env_limits[5]) / meters_per_unit, meters_per_unit=meters_per_unit)
 
-        kit.update()
-        simulation_context.play()
-        kit.update()
         add_ros_components(robot_base_prim_path, n, ros_transform_components, ros_camera_list, viewport_window_list,
-                           camera_pose_frames, cam_pose_pubs, imus_handle_list, imu_pubs, robot_imu_frames,
-                           robot_odom_frames, odom_pubs,
-                           dynamic_prims, config, imu_sensor, imu_props, old_h_ap, old_v_ap)
+                           camera_pose_frames, cam_pose_pubs, imu_pubs, robot_imu_frames,
+                           robot_odom_frames, odom_pubs, None, #lidars = None
+                           dynamic_prims, config, old_h_ap, old_v_ap, _is, simulation_context, _clock_graph)
 
         kit.update()
         if config["use_robot_traj"].get():
             add_robot_traj(f"{robot_base_prim_path}{n}",config,meters_per_unit,timeline.get_time_codes_per_seconds())
-        first = False
 
     for n in range(config["num_robots"].get()):
-        add_npy_viewport(viewport_window_list, robot_base_prim_path, n, old_h_ap, old_v_ap, config,
-                         config["num_robots"].get() * 1)
-    kit.update()
+        add_npy_viewport(viewport_window_list, robot_base_prim_path, n, old_h_ap, old_v_ap, config, simulation_context,
+                         config["num_robots"].get())
 
     for _ in range(50):
         simulation_context.render()
     print("Loading robot complete")
+
+    print("WARNING: CAMERA APERTURE MANUAL SET NO LONGER WORKS, NEEDS TO BE FIXED BY NVIDIA!!!!")
+    time.sleep(5)
     for index, cam in enumerate(viewport_window_list):
         camera = stage.GetPrimAtPath(cam.get_active_camera())
         camera.GetAttribute("horizontalAperture").Set(old_h_ap[index])
         camera.GetAttribute("verticalAperture").Set(old_v_ap[index])
-    # setup manual ticks for all components (just to be sure)
-    # IMU not necessary as it is NOT a ROS component itself
-    for component in ros_camera_list:
-        omni.kit.commands.execute("RosBridgeTickComponent", path=str(component.GetPath()))
-    for component in ros_transform_components:
-        omni.kit.commands.execute("RosBridgeTickComponent", path=str(component.GetPath()))
 
     # IT IS OF CRUCIAL IMPORTANCE THAT AFTER THIS POINT THE RENDER GETS DONE WITH THE SLEEPING CALL! OTHERWISE PATH TRACING SPP WILL GET RUINED
     if (config["rtx_mode"].get()):
@@ -232,9 +201,6 @@ try:
 
     timeline.set_current_time(0)  # set to 0 to be sure that the first frame is recorded
     timeline.set_auto_update(False)
-
-    omni.kit.commands.execute("RosBridgeUseSimTime", use_sim_time=True)
-    omni.kit.commands.execute("RosBridgeUsePhysicsStepSimTime", use_physics_step_sim_time=True)
 
     # two times, this will ensure that totalSpp is reached
     sleeping(simulation_context, viewport_window_list, config["rtx_mode"].get())
@@ -271,7 +237,7 @@ try:
     while kit.is_running():
         if can_start:
             if config['record'].get():
-                reload_references("/World/home")
+                # reload_references("/World/home")
                 sleeping(simulation_context, viewport_window_list, config["rtx_mode"].get())
                 my_recorder._update()
                 sleeping(simulation_context, viewport_window_list, config["rtx_mode"].get())
@@ -296,18 +262,20 @@ try:
 
         # get the current time in ROS
         print("Clocking...")
-        omni.kit.commands.execute("RosBridgeTickComponent", path="/ROS_Clock")
-        time.sleep(0.1)
+        og.Controller.evaluate_sync(_clock_graph)
+        ctime = timeline.get_current_time()
+        simulation_context.render()
+        timeline.set_current_time(ctime)
 
         # publish IMU
         print("Publishing IMU...")
-        pub_imu(imus_handle_list, imu_sensor, imu_pubs, robot_imu_frames, meters_per_unit)
+        pub_imu(_is, imu_pubs, robot_imu_frames, meters_per_unit)
 
-        # publish joint status (120 Hz)
+        # publish joint status (ca 120 Hz)
         if simulation_step % ratio_tf == 0:
             print("Publishing joint/tf status...")
             for component in ros_transform_components:
-                omni.kit.commands.execute("RosBridgeTickComponent", path=str(component.GetPath()))
+                og.Controller.set(og.Controller.attribute(f"{component}/OnImpulseEvent.state:enableImpulse"), True)
 
         # publish odometry (60 hz)
         if simulation_step % ratio_odom == 0:
@@ -340,12 +308,13 @@ try:
 
         # publish camera (30 hz)
         if simulation_step % ratio_camera == 0:
+            ctime = timeline.get_current_time()
             print("Publishing cameras...")
-            # getting skel pose for each joint
-            # get_skeleton_info(meters_per_unit, body_origins, body_list)
 
-            pub_and_write_images(my_recorder, simulation_context, viewport_window_list, True, ros_camera_list,
-                                 config["rtx_mode"].get())
+            pub_and_write_images(my_recorder, simulation_context, viewport_window_list,
+                                 True, ros_camera_list, config["rtx_mode"].get())
+            timeline.set_current_time(ctime)
+
 except:
     extype, value, tb = sys.exc_info()
     traceback.print_exc()

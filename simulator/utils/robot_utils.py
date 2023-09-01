@@ -634,8 +634,11 @@ def add_ros_components(robot_base_prim_path, n, ros_transform_components, ros_ca
 
 	stage = omni.usd.get_context().get_stage()
 	dynamic_prims.append(stage.GetPrimAtPath(f"{robot_base_prim_path}{n}"))
-	sensor = add_lidar(f"{robot_base_prim_path}{n}/yaw_link", [0, 0, -.1], [0, 0, 0], is_3d=True, is_2d=True)
-	lidars.append(sensor)
+	if lidars:
+		stage = omni.usd.get_context().get_stage()
+		dynamic_prims.append(stage.GetPrimAtPath(f"{robot_base_prim_path}{n}"))
+		sensor = add_lidar(f"{robot_base_prim_path}{n}/yaw_link", [0, 0, -.1], [0, 0, 0], is_3d=True, is_2d=True)
+		lidars.append(sensor)
 
 def get_robot_joint_init_loc(name):
 	"""
