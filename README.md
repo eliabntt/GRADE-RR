@@ -28,7 +28,7 @@ We used this project to generate both an **indoor dynamic environment** and a **
 _______
 ## List of project-related repositories
 
-1. All the data we generated, the TUM labelled data, the networks checkpoints trained as described in the paper, the rosbags used to evaluate the SLAM methods and the results will be available [here](https://github.com/eliabntt/GRADE_data/)
+1. All the data we generated is or will be available [here](https://github.com/eliabntt/GRADE_data/)
 2. The tools to process the data, add noise to the rosbags or during the simulation, to evaluate the SLAM methods, generate training data can be found [here](https://github.com/robot-perception-group/GRADE_tools)
 3. The code to convert SMPL-based animations to USD files is [here](https://github.com/eliabntt/animated_human_SMPL_to_USD)
 4. To convert any environment from Blender to USD and generate some accompanying data use [this](https://github.com/eliabntt/Front3D_to_USD). This has a special focus in indoor environmets and Front3D. Based on BlenderProc.
