@@ -123,11 +123,11 @@ Please check our dedicated repository [here](https://github.com/robot-perception
 ### How to colorize the saved data
 
 Simply run `python scripts/colorize.py --viewport_folder main_folder_with_npy_files`.
-Check our code [here](https://github.com/eliabntt/GRADE-RR/blob/v2022/scripts/colorize.py), you can save images, images and videos, and decide which kind of data you want.
+Check our code [here](https://github.com/eliabntt/GRADE-RR/blob/main/scripts/colorize.py), you can save images, images and videos, and decide which kind of data you want.
 
 ### How to get skeletal, vertices, and SMPL information while correcting bounding boxes
 
-Look [here](https://github.com/eliabntt/GRADE-RR/blob/v2022/simulator/smpl_and_bbox.py). This is mainly tuned for our data. However, it can be easily expanded to your own dataset.
+Look [here](https://github.com/eliabntt/GRADE-RR/blob/main/simulator/smpl_and_bbox.py). This is mainly tuned for our data. However, it can be easily expanded to your own dataset.
 
 ### How to edit directly USD files
 
@@ -149,9 +149,9 @@ You have several possibilities with and without ROS, with and without physics. C
 ### Possible missing textures/wrong paths
 
 When loading humans or environments (or anything else) it may be necessar for you to edit the paths of the shaders, especially when moving between Windows and Linux.
-To do that you can use the [`change_shader_path`](https://github.com/eliabntt/GRADE-RR/blob/v2022/simulator/utils/misc_utils.py#L62) or the [correct paths](https://github.com/eliabntt/GRADE-RR/tree/v2022/scripts/process_paths) scripts.
+To do that you can use the [`change_shader_path`](https://github.com/eliabntt/GRADE-RR/blob/main/simulator/utils/misc_utils.py#L62) or the [correct paths](https://github.com/eliabntt/GRADE-RR/tree/main/scripts/process_paths) scripts.
 
-Otherwise, you can simply process the text files as explained [here](https://github.com/eliabntt/GRADE-RR/blob/v2022/EDIT_USDS.md).
+Otherwise, you can simply process the text files as explained [here](https://github.com/eliabntt/GRADE-RR/blob/main/EDIT_USDS.md).
 
 ### Segmentation <-> instance
 
@@ -160,10 +160,10 @@ Instance segmentation files will save also the mappings between classes. An exam
 _____
 ## Known issues
 1. ros clock might have some delay in publishing. This implies that you need to sleep the simulation every time that component gets triggered. Other component behave consistently based on our tests. Alternatively, you can post-process the data as shown in [here](https://github.com/robot-perception-group/GRADE-eval)
-2. BBOX3D are wrong for moving objects. The script [here](https://github.com/eliabntt/GRADE-RR/blob/v2022/simulator/correct_data.py#L267) show a way to solve this.
-3. Pose information is wrong for some moving objects. The code [here](https://github.com/eliabntt/GRADE-RR/blob/v2022/simulator/correct_data.py#L224) will solve this.
+2. BBOX3D are wrong for moving objects. The script [here](https://github.com/eliabntt/GRADE-RR/blob/main/simulator/correct_data.py#L267) show a way to solve this.
+3. Pose information is wrong for some moving objects. The code [here](https://github.com/eliabntt/GRADE-RR/blob/main/simulator/correct_data.py#L224) will solve this.
 4. Collisions for dynamic objects are not computed most of the times due to PhysX limitations. This is addressed by the new LiDAR-RTX of the new Isaac Sim version.
-5. The rendering is not blocking. Multiple calls (especially for path tracing) are necessary. Thus, this usually disrupt the motion-vector data. A possible workaround is to do two rendering steps and save the motion-vector data, and then finish rendering to save the rgb information. See [here](https://github.com/eliabntt/GRADE-RR/blob/v2022/simulator/replay_experiment.py#L390) an example on how to do that.
+5. The rendering is not blocking. Multiple calls (especially for path tracing) are necessary. Thus, this usually disrupt the motion-vector data. A possible workaround is to do two rendering steps and save the motion-vector data, and then finish rendering to save the rgb information. See [here](https://github.com/eliabntt/GRADE-RR/blob/main/simulator/replay_experiment.py#L390) an example on how to do that.
 6. In the v2022 it is not possible to set indipendent vfov of the cameras
 7. In the v2022 the internal PD control for the joints will NOT work using position setpoints. Also, the maximum velocity set is not considered.
 8. In the v2022 the timeline gets updated automatically even if you do not want it. You need to keep track of the ctime and constantly re-update it to correctly generate the data you want.
