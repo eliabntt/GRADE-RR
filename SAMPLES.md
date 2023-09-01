@@ -3,14 +3,27 @@
 We have several showcase examples (all located in the simulator folder).
 To run the code the general process is `./python.sh python_script args`. Each one of the python files has its own configuration yaml file. More details will be given below for each file
 
-1. `paper_simulation` this is the code that we used to generate the dataset. This requires ROS, some other package to manage the autonomous exploration. This will show you how to control your ROS modules from Isaac, how you can tick components, how you can trigger other modules, how you can save data, how you can load objects and humans. Note that this is a quite complex file (which should be probably re-written).
-2. `simulator_ros` a simpler version of 1.. This is practically the same thing, without the tie to FUEL and other software. Some other option is included.  
-3. `irotate_simulation` this is the code that we used to simulate [iRotate](https://github.com/eliabntt/irotate_active_slam), our active SLAM method, with Isaac Sim. This is very similar to 1 and 2, despite using an initial location but shwos how you can manage different robot with practically the same code. 
-3. `multi_robot_sim` simulate multi robots, a bit hardcoded but generalizable. This simulate two drones and a ground robot. The two drones will be controlled independently with two FUEL sessions, while the ground robot is controlled with iRotate.
-4. `savana_simulation` to show how we created the Savana with the Zebras. Animated animals are pre-positioned within the environment. The robot is controlled through joint waypoints.
-5. `replay_experiment` how one can exactly replay the experiment to expand it. You can see how teleport works, how internal joint commands can work and how you can reload a USD file of an experiment, its configuration, and while modifying the robot or the environment, replay it.
+To follow these tutorials, we suggest that either you download one of our example environments [here]() and human animations [here]() or you use our code [SMPL to USD](https://github.com/eliabntt/animated_human_SMPL_to_USD) and [Blender to USD](https://github.com/eliabntt/Front3D_to_USD) to create your own assets.
+
+We also suggest that you pre-install the [drone](https://github.com/eliabntt/ros_isaac_drone) control and placement repository. 
+This is necessary to be able to use our placement strategy, control the drone with our custom 6DOF controller, or use FUEL with IsaacSim.
 
 Each simulation file will power up the environment, load the assets and manage the saving based on the loaded configuration file.
+
+The scripts are the following:
+
+0. `startup_your_own` starting with GRADE. Load a basic scene, a robot, add the sensors, publish the data.
+1. `insert_people` add people into the simulation, including placement.
+2. `w_objects` add flying objects into the simulation, including their animation.
+3. `simulator_ros`. Combine 0,1,2 into a single loop to generate data.
+4. `irotate_simulation` this is the code that we used to simulate [iRotate](https://github.com/eliabntt/irotate_active_slam), our active SLAM method, with Isaac Sim. This is very similar to 1 and 2, despite using an initial location but shwos how you can manage different robot with practically the same code.
+5. `multi_robot_sim` simulate multi robots, a bit hardcoded but generalizable. This simulate two drones and a ground robot. The two drones will be controlled independently with two FUEL sessions, while the ground robot is controlled with iRotate.
+6. `savana_simulation` to show how we created the Savana with the Zebras. Animated animals are pre-positioned within the environment. The robot is controlled through joint waypoints. **THIS DOES NOT WORK in v2022.2.1 DUE TO ISAACSIM BUGS**
+7. `replay_experiment` how one can exactly replay the experiment to expand it. You can see how teleport works, how internal joint commands can work and how you can reload a USD file of an experiment, its configuration, and while modifying the robot or the environment, replay it.
+8. `correct_data` and `smpl_and_bbox` show how to access low-level information of the meshes and how it is possible to correct the 3DBbox incorrect information.
+9. `FUEL_indoor_simulation` this is the code that we used to generate the dataset.
+10. `zebra_datagen` this is the code that we used to generate the data for the Zebra paper.
+
 
 **Each config needs to be updated with your own paths**
 
