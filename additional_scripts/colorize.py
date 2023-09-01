@@ -1,3 +1,11 @@
+"""
+Use this code to colorize the generated data.
+
+The code is thought to colorize all the data, create videos, and fix the vertical fov issue.
+Please check the arguments to understand how to use it.
+Please set the corresponding data_enabled to False if you do not want to colorize some kind of data (eg. depth_enabled)
+"""
+
 import math
 import argparse
 import colorsys
@@ -281,6 +289,7 @@ parser.add_argument("--semantics", type=boolean_string, default=False)
 parser.add_argument("--convert_depth", type=boolean_string, default=True) # used to better visualize inverse depth
 parser.add_argument("--corrected_bbox_folder", type=str, default="")
 parser.add_argument("--vertical_aperture", type=float, default=2.32)
+parser.add_argument("--change_aperture", type=boolean_string, default=False)
 parser.add_argument("--output_dir", type=str)
 args, unknown = parser.parse_known_args()
 
@@ -299,13 +308,16 @@ except:
 if isdigit:
   img_id = int(config["img_id"].get())
   if img_id <= -1:
-  print("Processing all images")
+    print("Processing all images")
+  else:
+    minid = img_id
+    maxid = img_id + 1
+  ids = [i for i in range(minid, maxid)]
 else:
-  minid = config["img_id"].get()
-  maxid = config["img_id"].get() + 1
-
+  ids = [config["img_id"].get()]
 
 vertical_aperture = config["vertical_aperture"].get()
+change_aperture = config["change_aperture"].get()
 viewport = config["viewport_folder"].get()
 subfolders = os.listdir(config["viewport_folder"].get())
 depth_enabled = "depth" in subfolders
@@ -382,12 +394,12 @@ for i in ids:
     view_mat = viewport_mat.item()["view_projection_matrix"]
 
     pose_mat = viewport_mat.item()["pose"]
-    viewproj_mat = np.dot(pose_mat, view_mat)
-    # 2 * math.atan(view_params["horizontal_aperture"] / (2 * view_params["focal_length"]))
-    vertical_aperture = vertical_aperture
-    vfov = 2 * math.atan(vertical_aperture / (2 * viewport_mat.item()["focal_length"]))
-    viewproj_mat[1,1] = 1 / math.tan(vfov / 2)
-    viewproj_mat = np.dot(np.linalg.inv(pose_mat), viewproj_mat)
+    if change_aperture:
+      viewproj_mat = np.dot(pose_mat, view_mat)
+      vertical_aperture = vertical_aperture
+      vfov = 2 * math.atan(vertical_aperture / (2 * viewport_mat.item()["focal_length"]))
+      viewproj_mat[1,1] = 1 / math.tan(vfov / 2)
+      viewproj_mat = np.dot(np.linalg.inv(pose_mat), viewproj_mat)
     corners = project_pinhole(bbox3d["corners"].reshape(-1, 3), viewproj_mat)
     corners = corners.reshape(-1, 8, 3)
     rgb_data = copy.deepcopy(rgb)

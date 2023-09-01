@@ -1,4 +1,7 @@
 #!/bin/zsh
+### Code used to correct all the data in the folders
+### This include the bboxes, the poses
+### The code will also save the humans skeletal and vertices (decimated) information
 set -e
 
 # set input folder from arguments

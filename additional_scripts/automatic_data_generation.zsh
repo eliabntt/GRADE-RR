@@ -1,4 +1,12 @@
 #!/bin/zsh
+# this sh file can be used as blueprint to generate data automatically
+# please note that it is custom to our use-case
+# first you need to launch the roscore using the sim time true
+# then you can spawn, using screen, the rosbag record, any catkin package, and the main simulation code
+# the code works with a main sleep counter, that is used to check if the simulation is still running
+# if the time exceed this sleep, the system is reset automatically. Otherwise, the loop continues once the simulation is finished.
+
+set -e
 echo "Output folder: $1"
 echo "Environment folder: $2"
 echo "Tmp out folder: $3"
@@ -10,6 +18,7 @@ folder=${2%}/
 availenv=($folder*)
 folderlen=${#folder}
 availenv=("${availenv[@]:$4:$5}")
+# launch rostrue --- rostrue is an alias that launches roscore and set the sim time to true
 screen -d -m -S ROSMASTER zsh -i -c "rostrue"
 
 echo "WARNING! TMP OUT FOLDER WILL BE CLEARED FOR EACH EXPERIMENT"

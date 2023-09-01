@@ -58,6 +58,30 @@ def add_semantics(prim: Prim, semantic_label: str):
   sem.GetSemanticTypeAttr().Set("class")
   sem.GetSemanticDataAttr().Set(str(semantic_label))
 
+def correct_paths(parent_name: str, label: str = None):
+  """
+  Helper function to correct the paths of the world's materials (as they come from Windows).
+  It adds also the semantic info so that it can be rendered in the viewer.
+  If NO label is given, it will search for a specific attribute (see process_semantics) otherwise set it to the label given
+  It will remove double sided attribute (useful for collisions)
+
+  parent_name: the prim path of the father.
+  label: the eventual label to give to the set of assets
+  """
+  stage = omni.usd.get_context().get_stage()
+
+  for prim in stage.Traverse():
+    shader_path = prim.GetPath()
+    if parent_name.lower() in str(shader_path).lower():
+      if prim.GetTypeName().lower() == "mesh":
+        prim.GetProperty('doubleSided').Set(False)
+      if prim.GetTypeName().lower() == "shader":
+        try:
+          change_shader_path(shader_path)
+        except:
+          print(f"Error changing shader of in {shader_path}")
+          time.sleep(5)
+  process_semantics(parent_name, label)
 
 def change_shader_path(shader_path: str):
     """
@@ -102,7 +126,6 @@ def change_shader_path(shader_path: str):
               "@", "")
       shader.GetAttribute('inputs:reflectionroughness_texture').Set(new_path)
 
-
 def set_colliders(path_main_asset: str, value: bool):
   """
   It takes a path to a main asset, and a boolean value, and sets the physics:collisionEnabled attribute to the boolean
@@ -121,7 +144,6 @@ def set_colliders(path_main_asset: str, value: bool):
           continue
         i.GetProperty("physics:collisionEnabled").Set(value)
 
-
 def add_colliders(path_main_asset: str):
   """
   Adds the colliders to the main asset. This allows the object to have collisions or not (if supported).
@@ -139,33 +161,6 @@ def add_colliders(path_main_asset: str):
         res, _ = SetStaticColliderCommand.execute(str(prim.GetPath()))
         fres = res and fres
   return fres
-
-
-def correct_paths(parent_name: str, label: str = None):
-  """
-  Helper function to correct the paths of the world's materials (as they come from Windows).
-  It adds also the semantic info so that it can be rendered in the viewer.
-  If NO label is given, it will search for a specific attribute (see process_semantics) otherwise set it to the label given
-  It will remove double sided attribute (useful for collisions)
-
-  parent_name: the prim path of the father.
-  label: the eventual label to give to the set of assets
-  """
-  stage = omni.usd.get_context().get_stage()
-
-  for prim in stage.Traverse():
-    shader_path = prim.GetPath()
-    if parent_name.lower() in str(shader_path).lower():
-      if prim.GetTypeName().lower() == "mesh":
-        prim.GetProperty('doubleSided').Set(False)
-      if prim.GetTypeName().lower() == "shader":
-        try:
-          change_shader_path(shader_path)
-        except:
-          print(f"Error changing shader of in {shader_path}")
-          time.sleep(5)
-  process_semantics(parent_name, label)
-
 
 def process_semantics(parent_name: str, name_to_label: str = None):
   """
@@ -187,7 +182,6 @@ def process_semantics(parent_name: str, name_to_label: str = None):
             add_semantics(prim, str(tmp.Get()))
         else:
           add_semantics(prim, name_to_label)
-
 
 def randomize_and_fix_lights(config: dict, rng: np.random.default_rng, parent_name: str, z_lim, meters_per_unit,
                              is_rtx: bool = False):
@@ -231,7 +225,6 @@ def randomize_and_fix_lights(config: dict, rng: np.random.default_rng, parent_na
           prim.GetAttribute('xformOp:translate').Set(p_lamp)
         # move the light if it is too high
 
-
 def randomize_roughness(config: dict, rng: np.random.default_rng, parent_name: str):
   """
   Randomize the roughness (reflectivity) of assets within an environment
@@ -253,7 +246,6 @@ def randomize_roughness(config: dict, rng: np.random.default_rng, parent_name: s
           val = rng.uniform(low=min_int, high=max_int)
           prim.GetAttribute('inputs:RoughnessMin').Set(val)
           prim.GetAttribute('inputs:RoughnessMax').Set(val)
-
 
 def get_area(polygon):
   """
@@ -284,7 +276,6 @@ def change_collision_at_path(enable, paths=['/my_robot_0/camera_link/Cube.physic
                               value=enable,
                               prev=None)
 
-
 def add_translate_anim(prim_path: str, pos: Gf.Vec3d, time: float = 0.0):
   """
   Add a goal location at a given timecode. The object will EVENTUALLY move there with a smooth movement.
@@ -299,7 +290,6 @@ def add_translate_anim(prim_path: str, pos: Gf.Vec3d, time: float = 0.0):
                             prev=Gf.Vec3d(0, 0, 0),
                             type_to_create_if_not_exist=UsdGeom.XformOp.TypeTranslate,
                             timecode=Usd.TimeCode(time))
-
 
 def add_rotation_anim(prim_path: str, rot: list, time: float = 0.0, use_double=False):
   """
@@ -324,7 +314,6 @@ def add_rotation_anim(prim_path: str, rot: list, time: float = 0.0, use_double=F
                             type_to_create_if_not_exist=UsdGeom.XformOp.TypeOrient,
                             timecode=Usd.TimeCode(time))
 
-
 def inf_helper(y: np.array):
   """Helper to handle indices and logical indices of NaNs.
   Input:
@@ -335,7 +324,6 @@ def inf_helper(y: np.array):
               to convert logical indices of NaNs to 'equivalent' indices
   """
   return np.isinf(y), lambda z: z.nonzero()[0]
-
 
 def position_object(environment, type: int, objects: list = [], ob_stl_paths: list = [], reset: bool = False,
                     max_collisions: int = 200):
@@ -394,7 +382,6 @@ def position_object(environment, type: int, objects: list = [], ob_stl_paths: li
     print("Service call failed: %s" % e)
     return [-1] * len(objects), [-1] * len(objects), [-1] * len(objects), [0] * len(objects)
 
-
 def set_scale(prim: Prim, scale: float = 1.0):
   """
   Set the scale of a Prim
@@ -410,7 +397,6 @@ def set_scale(prim: Prim, scale: float = 1.0):
     xform_op_scale = UsdGeom.XformOp(prim.GetAttribute("xformOp:scale"))
   xform_op_scale.Set(Gf.Vec3d([scale, scale, scale]))
 
-
 def clear_properties(path: str):
   """
   The function clears all the POSE properties of the given prim.
@@ -419,7 +405,6 @@ def clear_properties(path: str):
   This should be called with ALL loaded objects so that we have consistent xformOp:trans/Orient
   """
   current_position, current_orientation = XFormPrim(path).get_world_pose()
-
 
 def set_translate(prim: Prim, new_loc: list):
   """
@@ -439,7 +424,6 @@ def set_translate(prim: Prim, new_loc: list):
     xform = UsdGeom.Xformable(prim)
     xform_op = xform.AddXformOp(UsdGeom.XformOp.TypeTranslate, UsdGeom.XformOp.PrecisionDouble, "")
     xform_op.Set(Gf.Vec3d(new_loc))
-
 
 def set_rotate(prim: XFormPrim, rot: list):
   """
@@ -462,7 +446,6 @@ def set_rotate(prim: XFormPrim, rot: list):
     xform = UsdGeom.Xformable(prim)
     xform_op = xform.AddXformOp(UsdGeom.XformOp.TypeOrient, UsdGeom.XformOp.PrecisionDouble, "")
     xform_op.Set(Gf.Quatd(quat.GetQuat()))
-
 
 def dynamic_control_interface():
   """
@@ -493,7 +476,6 @@ def reload_references(path):
   for l in layers:
     l.Reload(force=True)
 
-
 def teleport(path, loc, rot):
   """
   It teleports the object at the given path to the given location and rotation
@@ -508,7 +490,6 @@ def teleport(path, loc, rot):
     translation=(loc[0], loc[1], loc[2]),
     rotation=(rot[0], rot[1], rot[2], rot[3]),
   )
-
 
 def toggle_dynamic_objects(dynamic_prims: list, status: bool):
   """

@@ -1,3 +1,9 @@
+"""
+Use this class to load the environment and the relative information.
+The init function should be used to load the environment.
+It will get the environment from a given folder and create the necessary support variables.
+"""
+
 from omni.isaac.occupancy_map import _occupancy_map
 from omni.isaac.occupancy_map.scripts.utils import update_location, compute_coordinates, generate_image
 
@@ -15,7 +21,11 @@ class environment:
 
 	def get_environment(self, config, rng: np.random.default_rng, local_file_prefix: str):
 		"""
-		Used to load and process the environment.
+		If the name is not specified the environment will be taken at random using the rng.
+		Based on the config one can decide if
+		1. loading the stl of the environment
+		2. loading the environment limits with the npy file [note that this is preferable, otherwise default values will be used]
+		3. Using the limits the system will compute the necessary translations to center the environment in 0,0,0
 
 		config: the configuration processed by the main algorithm
 		rng: global rng
@@ -111,7 +121,7 @@ class environment:
 
 	# disable_extension('omni.isaac.occupancy_map')
 
-	def load_and_center(self, prim_path: str = "/World/home", correct_paths_req: bool = True):
+	def load_and_center(self, prim_path: str = "/World/home", correct_paths_req: bool = True, push_in_floor: bool = False):
 		"""
 		Load the environment from the usd path env_path
 		Center it wrt the world coordinate frames
@@ -119,6 +129,8 @@ class environment:
 		The environment is loaded at prim_path
 
 		prim_path: path that the environment should have in the prim tree
+		correct_paths_req: if True, corrects the paths of the assets in the environment
+		push_in_floor: if True, pushes the environment in the floor a bit. Useful for thin meshes that sometimes are not correctly visualized (flickering)
 		"""
 		stage = omni.usd.get_context().get_stage()
 
@@ -133,20 +145,22 @@ class environment:
 		                                   instanceable=True)
 		if res:
 			clear_properties(prim_path)
-			print("Correcting paths...")
 			if correct_paths_req:
+				print("Correcting paths... --- note that you might want to change utils/misc_utils.py:correct_paths")
 				try:
 					correct_paths(prim_path)
 				except:
 					print("Failed to correct paths for {}".format(prim_path))
 					time.sleep(10)
+			else:
+				print("Not correcting paths --- check that all textures are visibile and the reflection maps are correct")
 
 			# center the home in the middle of the environment
 			set_translate(stage.GetPrimAtPath(prim_path), list(- np.array(self.shifts) / self.meters_per_unit))
 			for child in stage.GetPrimAtPath(prim_path).GetAllChildren():
 				if "xform" == child.GetTypeName().lower():
 					clear_properties(str(child.GetPath()))
-					if "floor" not in str(child.GetPath()).lower():
+					if push_in_floor and "floor" not in str(child.GetPath()).lower():
 						myold = child.GetProperty('xformOp:translate').Get()
 						myold = [myold[0], myold[1], myold[2] - 0.04]
 						set_translate(child, list(np.array(myold)))

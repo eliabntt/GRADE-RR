@@ -44,7 +44,7 @@ def move_humans_to_ground(my_humans_heights: list, body_lists: list, frame: floa
 			set_translate(stage.GetPrimAtPath(body_lists[index]), loc)
 
 
-def load_human(human_base_prim_path, n, asset_path, dynamic_prims=[], added_prims=[]):
+def load_human(human_base_prim_path, n, asset_path, dynamic_prims=[], added_prims=[], correct_texture_paths=False):
 	"""
 	Load the human based on the usd path and add it to the dynamic prims list
 	Follow prim naming convention /human_base_prim_path+n
@@ -54,6 +54,8 @@ def load_human(human_base_prim_path, n, asset_path, dynamic_prims=[], added_prim
 	n: the number of the human
 	asset_path: the path of the ussd of the human
 	dynamic_prims: the list of dynamic prims in the world. Only the body, and the clothes will be added (not the armature) as separate objects
+	added_prims: the list of the number of prims added to the world
+	correct_texture_paths: if True, correct the texture paths to the correct path
 	"""
 	stage = omni.usd.get_context().get_stage()
 	res, _ = omni.kit.commands.execute("CreateReferenceCommand",
@@ -71,6 +73,10 @@ def load_human(human_base_prim_path, n, asset_path, dynamic_prims=[], added_prim
 						cnt += 1
 		added_prims.append(cnt)
 		clear_properties(f"{human_base_prim_path}{n}")
-		correct_paths(f"{human_base_prim_path}{n}", "human")
+		if correct_texture_paths:
+			print("Correcting texture paths, you might want to change utils/misc_utils.py:correct_paths")
+			correct_paths(f"{human_base_prim_path}{n}", "human")
+		else:
+			print("Not correcting texture paths, you might want to check the textures")
 	else:
 		raise Exception(f"Failed to load human {n} from {asset_path}")

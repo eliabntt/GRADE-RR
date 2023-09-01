@@ -1,3 +1,11 @@
+"""
+This is the code used to get the average acc speed and dynamic frames for the GRADE paper.
+You need some experiment folders.
+This code will use the bags files in those folder.
+Please change the folders as desired (first loop in the code, first two lines).
+We also suppose that you have the instance images to compute the percentage of dynamic frames.
+"""
+
 import rosbag
 import sys
 import numpy as np
@@ -38,7 +46,7 @@ for folder in folders:
 	for bagname in bags:
 		print(bagname)
 		# open the bag
-		bag = rosbag.Bag(folder + "/reindex_bags/" + bagname)
+		bag = rosbag.Bag(os.path.join(bag_folder, bagname))
 		old_t = None
 		# loop through all the topics
 		for topic, msg, t in bag.read_messages(topics=['/my_robot_0/odom']):

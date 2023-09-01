@@ -329,7 +329,7 @@ try:
 
 	for n in range(config["num_robots"].get()):
 		add_npy_viewport(viewport_window_list, robot_base_prim_path, n, old_h_ap, old_v_ap, config, simulation_context,
-		                 config["num_robots"].get() * 1) # * number_of_ros_cameras
+		                 config["num_robots"].get() * 1)
 
 	for _ in range(50):
 		simulation_context.render()

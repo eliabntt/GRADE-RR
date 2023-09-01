@@ -1,3 +1,6 @@
+"""
+Use this to check if all the files/folders are there
+"""
 import os
 import ipdb
 
