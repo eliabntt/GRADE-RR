@@ -96,7 +96,7 @@ The system, contrary to Gazebo, is not straightforward. This is the price you ha
 
 
 _____
-## Edited files details
+## Isaac's edited files details
 
 <details closed>
 <summary>We had to edit some of the files to have more flexibility and solve some bugs. Here are reported details</summary>
