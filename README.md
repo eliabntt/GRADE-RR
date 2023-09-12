@@ -22,17 +22,16 @@ Each step of the pipeline can be easily customized, expanded or removed from you
 If you want more information check out the [paper](https://arxiv.org/abs/2303.04466) or our [website](https://eliabntt.github.io/grade-rr).
 
 _______
-## List of project-related repositories
+## List of related repositories
 
-1. All the data we generated is or will be available [here](https://github.com/eliabntt/GRADE_data/)
-2. The tools to process the data, add noise to the rosbags or during the simulation, to evaluate the SLAM methods, generate training data can be found [here](https://github.com/robot-perception-group/GRADE_tools)
-3. The code to convert SMPL-based animations to USD files is [here](https://github.com/eliabntt/animated_human_SMPL_to_USD)
-4. To convert any environment from Blender to USD and generate some accompanying data use [this](https://github.com/eliabntt/Front3D_to_USD). This has a special focus in indoor environmets and Front3D. Based on BlenderProc.
-5. The parent repository which we used to autonomously explore the environments during the data generation is [here](https://github.com/eliabntt/ros_isaac_drone)
-6. The modified version of DynaSLAM working with Python3 and using `detectron2` is [here](https://github.com/eliabntt/DynaSLAM)
-7. `FUEL`, our chosen autonomous exploration manager to control the drone within the environment. [Link here](https://github.com/eliabntt/FUEL/tree/main)
-8. `custom_6dof_joint_controller` which is the bridge between the position/velocity commands and the joint velocities expected by IsaacSim. This will allow you to control any robot within the simulation environment. [Link here](https://github.com/eliabntt/custom_6dof_joint_controller/tree/main)
-9. `moveit_based_collision_checker_and_placement` our Move-it based placement strategy. [Link here](https://github.com/eliabntt/moveit_based_collision_checker_and_placement/tree/main)
+1. The tools to process the data, add noise to the rosbags or during the simulation, to evaluate the SLAM methods, generate training data can be found [here](https://github.com/robot-perception-group/GRADE_tools)
+2. The code to convert SMPL-based animations to USD files is [here](https://github.com/eliabntt/animated_human_SMPL_to_USD)
+3. To convert any environment from Blender to USD and generate some accompanying data use [this](https://github.com/eliabntt/Front3D_to_USD). This has a special focus in indoor environmets and Front3D. Based on BlenderProc.
+4. The parent repository which we used to autonomously explore the environments during the data generation is [here](https://github.com/eliabntt/ros_isaac_drone)
+5. The modified version of DynaSLAM working with Python3 and using `detectron2` is [here](https://github.com/eliabntt/DynaSLAM)
+6. `FUEL`, our chosen autonomous exploration manager to control the drone within the environment. [Link here](https://github.com/eliabntt/FUEL/tree/main)
+7. `custom_6dof_joint_controller` which is the bridge between the position/velocity commands and the joint velocities expected by IsaacSim. This will allow you to control any robot within the simulation environment. [Link here](https://github.com/eliabntt/custom_6dof_joint_controller/tree/main)
+8. `moveit_based_collision_checker_and_placement` our Move-it based placement strategy. [Link here](https://github.com/eliabntt/moveit_based_collision_checker_and_placement/tree/main)
 
 ______
 ## Our projects
@@ -50,6 +49,8 @@ With those tests we showed how many of these methods cannot recover from failure
 We used the teleport capabilities of the system to generate both an **outdoor synthetic Zebra** datasets. The details are in the corresponding [Zebra](https://arxiv.org/abs/2305.00432) paper. The goal was to try to bridge the gap between simulation and reality and demonstrate that we can avoid tedious tasks such as precise data annotation.
 
 Using a variety of environments from Unreal Engine and a freely available zebra model we were able to generate data realistic enough to obtain models trained from *scratch* that reached >90% accuracy on real world data.
+
+_______
 
 ### Folder structure
 
@@ -84,7 +85,8 @@ Using a variety of environments from Unreal Engine and a freely available zebra 
 </details closed>
 
 ___________________
-## HowToS, Requirements, Installation and Known issues
+
+## HowToS, Installation, Tips, and Known issues
 
 Please follow [this](https://github.com/eliabntt/GRADE-RR/blob/main/HOWTO.md) link.
 
@@ -99,6 +101,8 @@ Edited files are inside `isaac_internals`. The edited ones are the one that are 
 - _synthetic\_recorder_ created a custom extension to save our data, and offset the number of cameras. In that way we can save high-resolution images to the disk, while providing ROS smaller images. We found this faster than resizing images afterwards and caused less "issues".
 - _synthetic\_utils_ we edited the `numpy.py` and the `syntheticdata.py` to save more data and have more flexibility. What is still missing (our bad) is the vertical fov of the camera, which is not directly exposed by Isaac Sim.
 - In `setup_python_env.sh` we had to prevent the loading of `$SCRIPT_DIR/exts/omni.isaac.motion_planning/bin` (you can find it commented at the very end of line 8), to be able to run the system version of `move_base`. That module could be necessary for some of the Isaac extensions or configurations. Please be aware of this.
+- `apps/omni.isaac.sim.python.kit` will load a couple of additional necessary extensions
+- `isaac_internals/kit/extscore/omni.syntheticdata` will simply solve some bugs related to out of bounds and processing errors
 
 </details closed>
 
