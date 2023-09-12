@@ -88,6 +88,20 @@ ___________________
 
 Please follow [this](https://github.com/eliabntt/GRADE-RR/blob/main/HOWTO.md) link.
 
+_____
+## Edited files details
+
+<details closed>
+<summary>We had to edit some of the files to have more flexibility and solve some bugs. Here are reported details</summary>
+
+Edited files are inside `isaac_internals`. The edited ones are the one that are copied by the `cp_local..` script. As per Isaac requirements, we had to include all the licenses and other files. Note that these might be outdated w.r.t. your current installation.
+
+- _synthetic\_recorder_ created a custom extension to save our data, and offset the number of cameras. In that way we can save high-resolution images to the disk, while providing ROS smaller images. We found this faster than resizing images afterwards and caused less "issues".
+- _synthetic\_utils_ we edited the `numpy.py` and the `syntheticdata.py` to save more data and have more flexibility. What is still missing (our bad) is the vertical fov of the camera, which is not directly exposed by Isaac Sim.
+- In `setup_python_env.sh` we had to prevent the loading of `$SCRIPT_DIR/exts/omni.isaac.motion_planning/bin` (you can find it commented at the very end of line 8), to be able to run the system version of `move_base`. That module could be necessary for some of the Isaac extensions or configurations. Please be aware of this.
+
+</details closed>
+
 ______
 ## Download data
 

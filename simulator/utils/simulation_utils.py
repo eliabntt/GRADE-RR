@@ -147,7 +147,7 @@ def pub_and_write_images(my_recorder, simulation_context, viewport_window_list, 
 
 
 def sleeping(simulation_context, viewport_window_list, raytracing, totalSpp=64, spp=1):
-	"""
+"""
   Sleeps the simulation to be sure that the whole frame has been rendered and updated.
   First we render a couple of frames.
   In rtx mode we need to wait the fps of the viewport to be reached.
@@ -156,7 +156,7 @@ def sleeping(simulation_context, viewport_window_list, raytracing, totalSpp=64, 
   e.g.
   carb.settings.get_settings().get("/rtx/pathtracing/totalSpp")
   carb.settings.get_settings().get("/rtx/pathtracing/spp")
-  """
+"""
 	# todo is there a better way? I don"t think so, this is variable
 	# fixme making sure timeline does not advance
 	timeline = omni.timeline.get_timeline_interface()
@@ -187,13 +187,13 @@ def sleeping(simulation_context, viewport_window_list, raytracing, totalSpp=64, 
 	time.sleep(0.2)
 
 
-def recorder_setup(_recorder_settings, out_path, enabled, ros_cameras=1):
+def recorder_setup(_recorder_settings, out_path, enabled, skip_cameras=1):
 	my_recorder = extension_custom.MyRecorder()
 	my_recorder.on_startup()
 	my_recorder.set_single_settings(_recorder_settings)
 	my_recorder._dir_name = os.path.join(out_path)
 	my_recorder._enable_record = enabled
-	my_recorder.ros_cameras = ros_cameras
+	my_recorder.skip_cameras = skip_cameras
 	return my_recorder
 
 
@@ -207,10 +207,15 @@ def setup_timeline(config):
 	"""
 	timeline = omni.timeline.get_timeline_interface()
 	timeline.set_start_time(0.0)
+	if "fps" not in config:
+		fps = 30
+	else:
+		fps = config['fps'].get()
+
 	if "experiment_length" in config:
-		timeline.set_end_time(config["experiment_length"].get() * 2 / config["fps"].get())  # *2 to have room
+		timeline.set_end_time(config["experiment_length"].get() * 2 / fps)  # *2 to have room
 	else:
 		print("No experiment length found, setting it to 3600")
-		timeline.set_end_time(3600 / config["fps"].get())
-	timeline.set_time_codes_per_second(config["fps"].get())
+		timeline.set_end_time(3600 / fps)
+	timeline.set_time_codes_per_second(fps)
 	return timeline

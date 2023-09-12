@@ -77,7 +77,7 @@ class MyRecorder():
         self._num_threads = 10
         self._max_queue_size = 500
         self.verify = {}
-        self.ros_cameras = 0
+        self.skip_cameras = 0
 
     def get_default_settings(self):
         return self.sensor_settings_default
@@ -87,8 +87,8 @@ class MyRecorder():
 
     def set_settings(self, settings):
         for index, viewport_name in enumerate(self._viewport_names):
-            if index >= self.ros_cameras:
-                viewport_name = viewport_name.split(" ")[0] + str(int(index - self.ros_cameras))
+            if index >= self.skip_cameras:
+                viewport_name = viewport_name.split(" ")[0] + str(int(index - self.skip_cameras))
                 self._sensor_settings[viewport_name] = copy.deepcopy(settings)
             else:
                 continue
@@ -124,10 +124,10 @@ class MyRecorder():
             self.data_writer.start_threads()
         self._render_mode = str(self._settings.get("/rtx/rendermode"))
         for index, viewport_name in enumerate(self._viewport_names):
-            if index < self.ros_cameras:
+            if index < self.skip_cameras:
                 continue
             real_viewport_name = viewport_name
-            viewport_name = viewport_name.split(" ")[0] + str(int(index - self.ros_cameras))
+            viewport_name = viewport_name.split(" ")[0] + str(int(index - self.skip_cameras))
 
             groundtruth = {
                 "METADATA": {

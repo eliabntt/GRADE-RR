@@ -1,7 +1,8 @@
-# HOW TO RUN THE SIMULATION - SAMPLES AND TUTORIAL
+# Our Samples
 
 We have several showcase examples (all located in the simulator folder).
-To run the code the general process is `./python.sh python_script args`. Each one of the python files has its own configuration yaml file. More details will be given below for each file
+
+Each one of the python files has its own configuration yaml file. More details will be given below for each file
 
 To follow these tutorials, we suggest that either you download one of our example environments [here]() and human animations [here]() or you use our code [SMPL to USD](https://github.com/eliabntt/animated_human_SMPL_to_USD) and [Blender to USD](https://github.com/eliabntt/Front3D_to_USD) to create your own assets.
 

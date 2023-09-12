@@ -456,7 +456,7 @@ try:
 	timeline.set_current_time(0)
 	simulation_step = 0  # this is NOT the frame, this is the "step" (related to physics_hz)
 
-	my_recorder = recorder_setup(config['_recorder_settings'].get(), out_dir_npy, config['record'].get(), ros_cameras=1)
+	my_recorder = recorder_setup(config['_recorder_settings'].get(), out_dir_npy, config['record'].get(), skip_cameras=1)
 
 	simulation_context.stop()
 	timeline.set_current_time(0)  # set to 0 to be sure that the first frame is recorded
