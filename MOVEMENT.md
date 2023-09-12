@@ -8,50 +8,19 @@ In general, including ROS implies having physics.
 
 With "With ROS" we mean that ROS is involved in the input. Clearly, you can always publish ROS information from the simulation.
 
-With ROS:
-1. Directly publish `joint_commands`. This is doable even directly within the main simulation loop as it is setted up to already be a node. This is what we did in our `paper_simulation` and `iRotate` code.
+When using joints, the system will essentially always use physics in some way. Clearly, as in Gazebo, you can disable gravity, collisions etc to your convenience. 
 
-2. Use an embedded controller provided by IssacSim and publish `cmd_vel` or `moveit` commands dependending on your use case.
+An important thing to remember is that by being physics enabled implies that joints will be affected by the mass of the object to which those are attached. Clearly, even with teleport this might be true. In practice, not being physically enabled requires you to disable gravity of the object and collisions. To disable gravity, do so by changing the property (if exists) of the asset, similarly to what we do for the collision [here](https://github.com/eliabntt/GRADE-RR/blob/7d9cb9a3d75d57628adacb9b9f969909d7663f3d/simulator/utils/misc_utils.py#L106).  With the exception of options 2 and 4 (which are pretty much equivalent) of the _Without ROS_ case. 
 
-3. Use ROS to publish setpoints and fall back to the "without ROS" section.
+### With ROS
+1. Attach a joint publisher/listener to the robot ([link](https://github.com/eliabntt/GRADE-RR/blob/7d9cb9a3d75d57628adacb9b9f969909d7663f3d/simulator/utils/robot_utils.py#L233)) and directly publish a `joint_commands` ROS message either on your own [link](https://docs.ros.org/en/melodic/api/control_msgs/html/msg/JointJog.html), using our 6DOF joint controller [link](https://github.com/eliabntt/custom_6dof_joint_controller), through MoveIt (see the [tutorial](https://docs.omniverse.nvidia.com/isaacsim/latest/tutorial_ros_moveit.html)).
+2. Use an embedded controller provided by IsaacSim and publish `cmd_vel` commands dependending on your use case.
+3. Use ROS to publish setpoints in some ways, listen to the topic within the simulation loop, and fall back to the "without ROS" section.
 
-Without ROS:
+### Without ROS 
+1. Move the robot by sending _joint_ position/velocity setpoints directly from IsaacSim. This will output physics and will abide the settings that you use for your joints (mass, force...). The implementations within IsaacSim is through a PD control. An example of this has been implemented [here](https://github.com/eliabntt/GRADE-RR/blob/7d9cb9a3d75d57628adacb9b9f969909d7663f3d/simulator/utils/robot_utils.py#L760). Although the implementation there is different (it assume a set of predefined checkpoints) the concept is the same. To learn about stiffness and damping, please check [this](https://forums.developer.nvidia.com/t/stiffness-damping-setting-in-joint-drive/213916) or [this](https://docs.omniverse.nvidia.com/isaacsim/latest/ext_omni_isaac_motion_generation.html). Note that this has some issues in the 2022.2.1 version of the engine. Clearly, using this you can write your own controller. 
 
-1. Move the robot by sending joint position/velocity setpoints directly from IsaacSim. An example of this has been implemented in `savana_simulation`. This will output physics and will abide the settings that you use for your joints (mass, force...). *WITH PHYSICS*
-
-2. Use a strategy like the one we use for the [flying objects](https://github.com/eliabntt/isaac_sim_manager/blob/main/simulator/objects_utils.py#L166). However, this does NOT include physics, collision or anything similar whatsoever. In this case the trajectory is followed blindly and interpolated based on your settings. *WITHOUT PHYSICS*
-
-3. Use teleporting. For this see [replay experiment](https://github.com/eliabntt/GRADE-RR/blob/main/simulator/replay_experiment.py) code. *WITHOUT PHYSICS*
-
-4. Create the environment beforehand and set keypoints (essentially manually doing 2.) *WITHOUT PHYSICS*
-
-5. Directly set joint status as done in [replay experiment](https://github.com/eliabntt/GRADE-RR/blob/main/simulator/replay_experiment.py) from within the simulation itself. *WITH PHYSICS*
-
-_______
-## More details and examples
-
-An important thing to remember is that by being physics enabled implies that joints will be affected by the mass of the object to which those are attached. 
-The comprehension is easier than Gazebo in this case. Please test it manually before loading the robot in your simulation.
-
-An important aspect, that we missed, is the mass of the robot. The robot may behave correctly while having an incorrect mass. This implies that acceleration might be off (physically plausible, but not what you want).
-
-The robot can be either created manually or using the available URDF importer.
-
-### Autonomous exploration (paper version)
-
-By using our paper code you will experience our full system. 
-The trajectory will be created by FUEL, passed to a NMPC, which will compute a plausible robot trajectory, then to our customized 6DOF joint PID controller, and published as joint commands. You find all the packages and the descriptions [here](https://github.com/eliabntt/ros_isaac_drone).
-
-Once the simulation is launched you do not need to do anything at all. 
-
-### Autonomous exploration (iRotate)
-We slightly edited the iRotate package to conform to our topic structure. Basically every robot publish in a `my_robot_id/` namespace. The edited code can be found [here](https://github.com/eliabntt/irotate_active_slam/tree/isaac). We still use our `custom_6dof` controller. The behaviour is the same of the case above.
-
-### With joints and pose setpoints
-
-Assuming the joint you want to control is at path `/World/robot/.../PrismaticJoint`
-
-To control the robot within isaac sim you can launch an interactive session and use the following to control joint speeds
+<details closed>
 
 ```python
 import omni.kit.commands
@@ -60,39 +29,25 @@ from pxr import Sdf
 omni.kit.commands.execute('ChangeProperty',
 	prop_path=Sdf.Path('/World/robot/.../PrismaticJoint.drive:linear:physics:targetPosition'),
 	value=10,
-	prev=prev_value)
-```
+	prev=0)
 
-Or joint positions
+
+```
 ```python
 import omni.kit.commands
 from pxr import Sdf
 
 omni.kit.commands.execute('ChangeProperty',
 	prop_path=Sdf.Path('/World/Cone/PrismaticJoint.drive:linear:physics:targetVelocity'),
-	value=19.30000028759241,
+	value=10,
 	prev=0.0)
 ```
+</details closed>
 
-For the latter, you may need to modify the stiffness of the joint with the following
+2. Use a strategy like the one we use for the [flying objects](https://github.com/eliabntt/GRADE-RR/blob/7d9cb9a3d75d57628adacb9b9f969909d7663f3d/simulator/utils/objects_utils.py#L191) adding [translation](https://github.com/eliabntt/GRADE-RR/blob/7d9cb9a3d75d57628adacb9b9f969909d7663f3d/simulator/utils/misc_utils.py#L288) and [rotation](https://github.com/eliabntt/GRADE-RR/blob/7d9cb9a3d75d57628adacb9b9f969909d7663f3d/simulator/utils/misc_utils.py#304) animations (also scale is possible). However, this does NOT include physics, collision or anything similar whatsoever. In this case the trajectory is followed blindly and interpolated based on your settings. 
 
-```python
-import omni.kit.commands
-from pxr import Sdf
+3. Use [teleporting](https://github.com/eliabntt/GRADE-RR/blob/7d9cb9a3d75d57628adacb9b9f969909d7663f3d/simulator/utils/misc_utils.py#L497). For this see [replay experiment](https://github.com/eliabntt/GRADE-RR/blob/main/simulator/replay_experiment.py) code. Note that running the physics steps will imply that the robot will be affected by physics (e.g. collisions, gravity etc)
 
-omni.kit.commands.execute('ChangeProperty',
-	prop_path=Sdf.Path('/World/Cone/PrismaticJoint.drive:linear:physics:stiffness'),
-	value=1000,
-	prev=0.0)
-```
+4. Create a spline, animation sequence, or whatever and saving that to the USD file itself. Once loaded, the robot will behave as an animated object. Again, this won't follow physics low. It will still be affected by physics (accel, velocities) but not to collisions, gravity, etc. See [here](https://docs.omniverse.nvidia.com/extensions/latest/ext_animation-timeline.html) and related resources. Similar to #2.
 
-At this point, you can create custom trajectories easily and run them within the main simulation loop. We did that in `savana_simulation` to control our robot. The joint parameters may require some tuning, especially in the maximum force and the stiffness. I suggest you test with long shot trajectories manually in simulation before generating data.
-
-_NOTE_ you cannot have a separate program running giving these commands since it needs to be bound to the main simulation environment to access the prim itself.
-ROS is a simple way to go around this limitation. However, you can have some FSM that publishes setpoints and the main loop that uses the commands above to modify the joints.
-
-### Without joints
-
-You can animate the camera by hand/programmatically, using keypoints such as the one used for the flying objects. Note that this will let the robot pass through any obstacle and won't have physics.
-
-Alternatively, you could use teleporting.
+5. Directly set joint status as done in [replay experiment](https://github.com/eliabntt/GRADE-RR/blob/7d9cb9a3d75d57628adacb9b9f969909d7663f3d/simulator/replay_experiment.py#L348) from within the simulation itself, although this is quite similar to do #1. 

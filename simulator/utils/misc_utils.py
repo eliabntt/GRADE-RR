@@ -106,7 +106,7 @@ def change_shader_path(shader_path: str):
 def set_colliders(path_main_asset: str, value: bool):
   """
   It takes a path to a main asset, and a boolean value, and sets the physics:collisionEnabled attribute to the boolean
-  value for all children of the main asset
+  value for all children of the main asset. This effectively enable or disable collisions.
 
   :param path_main_asset: The path to the main asset in the USD file
   :type path_main_asset: str
@@ -124,7 +124,7 @@ def set_colliders(path_main_asset: str, value: bool):
 
 def add_colliders(path_main_asset: str):
   """
-  Adds the colliders to the main asset.
+  Adds the colliders to the main asset. This allows the object to have collisions or not (if supported).
   Return True if the colliders were added, False otherwise.
 
   path_main_asset: the path of the prim asset whose childs need to be processed

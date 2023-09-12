@@ -2,14 +2,16 @@
 
 Please check the [requirements](https://docs.omniverse.nvidia.com/app_isaacsim/app_isaacsim/requirements.html) on the official page.
 
-Install Nucleus, Cache, and Isaac Sim.
+Then download the omniverse launcher and install Nucleus, Cache, and Isaac Sim.
 
 From now on, we will assume that you installed Isaac Sim within a `ISAAC_FOLDER`. Default location is `~/.local/share/ov/pkg/isaac-version/`.
 
 Clone this repository. You can clone this wherever you prefer. For simplicity, we usually download it within the `isaac` folder.
+
 However, by using global paths you should be able to run this code anywhere in your PC.
 
 _Note_ Isaac will have its own python installation, if you need packages and you run software within the Isaac python executable remember that. To do so, you usually do something like
+
 ```
 cd $ISAAC_FOLDER
 ./python.sh -m pip install ...
@@ -42,6 +44,25 @@ To control the simulation with your own code the general process is `./python.sh
 
 The functions that we use in our scripts are all contained in the `simulator/utils` folder. An explanation of each one of the function is given in their comment, while a brief overview is given [here](https://github.com/eliabntt/GRADE-RR/blob/main/simulator/utils/UTILS.md).
 
+## Main concept
+
+Our programs all follow the same structure.
+- load the basic kit and start the initial simulation
+- load a basic environment with some settings pre-applied (some config changes cannot be made with the code itself)
+- load libraries and settings
+- load your main environment
+- edit the environment
+- load the robots
+- attach sensors to the robot
+- correct the camera fov (bug in Isaac that changes it)
+- [optional] load and place humans, objects and animate objects
+- setup information recorder
+- loop the simulation and publish/write the information when necessary
+
+Every aspect can be personalized or adapted. The basic environment could be your final one, the humans/animations can be present or placed in a different way, robot can have your set of sensors or your own publishing rate.
+
+Our code is thought in such a way that each robot is loaded pre-fixed with the `my_robot_` name, and this applies to each topic that is published from that robot. The exception lies in the `tf` topic, for which we will have a publisher for each robot. Data can be published in ROS and saved as npy files. If you want both, with the former using a lowres camera and the latter an high res camera you should first load all the robots, and then call `add_npy_cameras` adjusting the skipped camera of your `recorder`. See the [tips](https://github.com/eliabntt/GRADE-RR/blob/mainTipsAndTricks.md) readme for more insights.
+
 ## Your first code
 
 [Here](https://github.com/eliabntt/GRADE-RR/blob/main/simulator/first_run.py) is a first example showing how to launch the simulation, load a basic environment, and perform some basic actions.
@@ -50,148 +71,36 @@ The workflow will always be the same. Import general modules, create the `Simula
 
 ## Advanced scripts
 
-A small tutorial can be found [here](https://github.com/eliabntt/GRADE-RR/blob/37ee985abccc6239bec7f22241c49da0acc5402c/OUR_CODE.md#main-code-tutorial-following-roughly-simulator_ros)
+Before adventuring here, please be sure to download our sample [world]() and [animated assets](). Those scripts will be incremental (i.e. based on the previous one). Please open all the downloaded USDs once at least to be sure that textures and everything else is correctly loaded.
 
-[Here](https://github.com/eliabntt/GRADE-RR/blob/37ee985abccc6239bec7f22241c49da0acc5402c/SAMPLES.md) you will learn what we already tried out, what we tested, what we used to run the simulations.
+We marked _Optional_ what can be skipped in future iterations of your code, but still, please go through them.
 
-[Here](https://github.com/eliabntt/GRADE-RR/blob/37ee985abccc6239bec7f22241c49da0acc5402c/OUR_CODE.md) you can learn about our developed codebase, where you can find useful resources, and how you can edit them, file by file. 
+**Beore launching any simulation you need to start `roscore` if using ROS preferably with sim time set to true (`rosparam set use_sim_time true`)**
 
+- Adding your own "world", and a robot [here](). The world can be either empty (thus you can skip loading), just with static objects, or with pre-placed animated objects (as in the zebra case).
+- [Optional] Add some ROS components to the robot itself [here](). You can also create some custom "add all sensors" functions as we have done [here](https://github.com/eliabntt/GRADE-RR/blob/7d9cb9a3d75d57628adacb9b9f969909d7663f3d/simulator/utils/robot_utils.py#L557).
+- [Optional] Add animated people, additional objects, and animate those [here]().
+- [Optional] Launch your own SIL, either manually or from within your own simulation script [link]()
+- Loop, [optional] publish ROS messages, and save data [here]().
 
-## Tips and tricks
+## Additional scripts
 
-### Viewports vs Cameras
-Each rendering component will have a viewport associated to that.
+### Replay experiment
 
-In our testing we found out that switching cameras related to a viewport (to reduce memory consumption) may lead to memory leakage and other problems.
+[This](https://github.com/eliabntt/GRADE-RR/blob/7d9cb9a3d75d57628adacb9b9f969909d7663f3d/simulator/replay_experiment.py) is a very useful piece of code. You can use this to replay any previously recorded experiment, modify the robot (or the scene conditions) and record new data. You can replay the experiment in two modalities, namely using teleport or by physically interpolating the trajectory. Note that the latter is subject to some drift due to the interpolation of the data itself. 
 
-What we suggest is to have one viewport for every thing that you want to render, be that a full-res camera or a ROS-camera.
-
-If you want both high-res and low-res images, we suggest to have two viewports. It will slow down things (as rendering will be slower), but it will be easier to manage.
-
-
-### Time
-
-For robotics applications the time is goverened by the physics time. On the other hand, the default step of the simulation in Isaac is governed by the rendering. 
-
-The time of the animations is goverened by the timeline. You can access that using
-```
-timeline = setup_timeline(config) # config containing some additional options
-# or
-timeline = omni.timeline.get_timeline_interface()
-```
-
-And perform various operations such as
-```
-timeline.set_current_time(0)
-timeline.get_current_time()
-timeline.forward/backward_one_frame()
-```
-
-`timeline.set_auto_update(False)` is used to stop the timeline advancing every rendering call. However, this is apparently not working in the current version of Isaac Sim. Thus, in the `sleeping()` function we constantly reset the time to the current time so that the rendering is correct.
-
-### Rendering, manual interaction, and UI
-
-The simulation app UI will be refreshed ONLY when you do a rendering call. 
-
-For stepping the physics and rendering you have different options:
-1. `kit.update()` will step both the physics and the rendering
-2. `simulation_context.render()` will do only a SINGLE rendering step
-3. `simulation_context.step()` will do both a rendering and physics step. Not always working
-4. `simulation_context.step(render=False)` will do a physics step
-
-My suggestion is to always work with a combination of `simulation_context.render()/step(render=False)` and to stick to that.
-
-If needed, you will be able to interact with the application only when fast enough rendering calls are made. Sometimes, it is necessary to also step the physics to see the effects of your actions. A quick way to do this is to:
-1. enter debug mode in python
-2. run a loop such as
-    ```
-    for _ in range(1000):
-        simulation_context.step(render=False)
-        simulation_context.render()
-    ```
-
-#### *The rendering calls are NOT blocking. This means that every time you render it will do that for either 1) a fixed amount of time in case of RTX rendering, or 2) a single step for path tracing rendering. This has been solved by us through the `sleeping` function in the `simulation_utils.py`.*
-
-### Save the GT information
-
-The process is to either save stuff from the main simulation loop, or to use the synthetic recorder extension.
-
-In the latter case you can use directly what we provide in `isaac_internals/exts/omni.isaac.synthetic_recorder/omni/isaac/synthetic_recorder/extension_custom.py` and expand it alongside with `isaac_internals/exts/omni.isaac.synthetic_utils/omni/isaac/synthetic_utils/writers/numpy.py` and `isaac_internals/exts/omni.isaac.synthetic_utils/omni/isaac/synthetic_utils/syntheticdata.py` code. 
-
-Then you can create a recorder directly in your code using:
+<details closed>
+Please run
 
 ```
-from omni.isaac.synthetic_recorder import extension_custom
-
-my_recorder = extension_custom.MyRecorder()
-my_recorder.on_startup() # necessary call
-
-_settings = my_recorder.get_default_settings()
-_settings["rgb"]["enabled"] = True # inspect and extend this dictionary
-
-my_recorder.set_single_settings(_settings)
-my_recorder._dir_name = os.path.join(out_path)
-my_recorder._enable_record = True # set to false to disable
-my_recorder.skip_cameras = 0 # number of viewports to skip
-
-# do stuff
-
-my_recorder._update() # write data if enabled
+./python.sh GRADE-RR/simulator/replay_experiment.py --experiment_folder FOLDER
 ```
+to do so.
 
-This will create the desired data for EACH viewport.
+In our code we show how to create a new stereo camera, save previously unsaved data, save motion-vector, and create a LiDAR sensor.
 
-A shorter version is by using 
-```
-recorder = recorder_setup(recorder_setup(_recorder_settings, out_path, enabled, skip_cameras)
-recorder._update()
-```
-
-All data can be also accessed in the main simulation loop. Some examples are the vertices, or the lidar information (see the replay experiment script).
-
-Potentially, you could also get as output of the recorder `_update()` call all the information, edit, and publish them as ROS messages.
-
-### Save the motion vector
-This is not possible during rendering itself. To save it you need to manually render twice and then save the motion vector itself. See the repeating experiment tool for an example on how to do that. Indeed, the motion vector can be only visualized by the default Isaac installation and not saved (see [here](https://docs.omniverse.nvidia.com/py/isaacsim/source/extensions/omni.isaac.sensor/docs/index.html#module-omni.isaac.sensor.scripts.camera))
-
-### Postprocess the data
-
-Please check our dedicated repository [here](https://github.com/robot-perception-group/GRADE_tools).
-
-### Colorize the saved data
-
-Simply run `python scripts/colorize.py --viewport_folder main_folder_with_npy_files`.
-Check our code [here](https://github.com/eliabntt/GRADE-RR/blob/main/scripts/colorize.py), you can save images, images and videos, and decide which kind of data you want.
-
-### How to get skeletal, vertices, and SMPL information while correcting bounding boxes
-
-Look [here](https://github.com/eliabntt/GRADE-RR/blob/main/simulator/smpl_and_bbox.py). This is mainly tuned for our data. However, it can be easily expanded to your own dataset.
-
-### How to edit directly USD files
-
-Check the tutorial [here](https://github.com/eliabntt/GRADE-RR/blob/37ee985abccc6239bec7f22241c49da0acc5402c/EDIT_USDS.md). This will help you convert USD to txt files for easy file processing.
-
-### Shapenet, Google Scanned Objects
-
-_ShapeNet_ We suggest to pre-download the dataset, unpack it, and set-up the environment folders as we show [here](https://github.com/eliabntt/GRADE-RR/blob/37ee985abccc6239bec7f22241c49da0acc5402c/OUR_CODE.md) to directly use the pre-downloaded data.
-
-_GoogleScannedObjects_ Again, please download the dataset beforehand.
-
-### How to move/control the camera/robot
-
-You have several possibilities with and without ROS, with and without physics. Check them out [here](https://github.com/eliabntt/GRADE-RR/blob/37ee985abccc6239bec7f22241c49da0acc5402c/MOVEMENT.md)
-
-### Possible missing textures/wrong paths
-
-When loading humans or environments (or anything else) it may be necessar for you to edit the paths of the shaders, especially when moving between Windows and Linux.
-To do that you can use the [`change_shader_path`](https://github.com/eliabntt/GRADE-RR/blob/main/simulator/utils/misc_utils.py#L62) or the [correct paths](https://github.com/eliabntt/GRADE-RR/tree/main/scripts/process_paths) scripts.
-
-Otherwise, you can simply process the text files as explained [here](https://github.com/eliabntt/GRADE-RR/blob/main/EDIT_USDS.md).
-
-### Segmentation <-> instance
-
-Instance segmentation files will save also the mappings between classes. An example on how to do the mapping and process those file is [here](https://github.com/robot-perception-group/GRADE-eval/blob/main/mapping_and_visualization/convert_classes.py).
-
+You need some information to be able to repeat an experiment. Namely, the joint positions. We load those [from the rosbags](https://github.com/eliabntt/GRADE-RR/blob/7d9cb9a3d75d57628adacb9b9f969909d7663f3d/simulator/replay_experiment.py#L177), although you can access them from the GT pose arrays.
+</details closed>
 
 ## Known issues
 

@@ -60,7 +60,7 @@ If you remove something from the config file please be sure that is not used in 
 - `out_folder`: path of the output folder in which we will save the ROS logs, and the map
 - `out_folder_npy`: path of the output folder in which we will save the groundtruth from the simulator code (not the rosbags)
 - `num_robots`: number of robots
-- `_recorder_settings`: what to save or what not to save. Note that some things are not implemented. I strongly suggest to NOT save colorize data. Motion-vectors can be saved with the strategy shown in replay experiment (more info on the main readme, on `samples.md` and on `our_code.md`)
+- `_recorder_settings`: what to save or what not to save. Note that some things are not implemented. I strongly suggest to NOT save colorize data. Motion-vectors can be saved with the strategy shown in replay experiment
 - `fps` the fps of the simulation
 - `physics_hz`: NOTE THAT THIS IS THE RATE OF CLOCK AND IMU
 - `render_hz`: LEAVE IT EQUAL TO PHYSICS HZ

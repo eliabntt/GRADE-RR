@@ -1,5 +1,8 @@
 # Our Samples
 
+Still WIP.
+
+
 We have several showcase examples (all located in the simulator folder).
 
 Each one of the python files has its own configuration yaml file. More details will be given below for each file
@@ -13,16 +16,12 @@ Each simulation file will power up the environment, load the assets and manage t
 
 The scripts are the following:
 
-0. `startup_your_own` starting with GRADE. Load a basic scene, a robot, add the sensors, publish the data.
-1. `insert_people` add people into the simulation, including placement.
-2. `w_objects` add flying objects into the simulation, including their animation.
-3. `simulator_ros`. Combine 0,1,2 into a single loop to generate data.
+1. `FUEL_indoor_simulation` this is the code that we used to generate the dataset.
 4. `irotate_simulation` this is the code that we used to simulate [iRotate](https://github.com/eliabntt/irotate_active_slam), our active SLAM method, with Isaac Sim. This is very similar to 1 and 2, despite using an initial location but shwos how you can manage different robot with practically the same code.
 5. `multi_robot_sim` simulate multi robots, a bit hardcoded but generalizable. This simulate two drones and a ground robot. The two drones will be controlled independently with two FUEL sessions, while the ground robot is controlled with iRotate.
 6. `savana_simulation` to show how we created the Savana with the Zebras. Animated animals are pre-positioned within the environment. The robot is controlled through joint waypoints. **THIS DOES NOT WORK in v2022.2.1 DUE TO ISAACSIM BUGS**
 7. `replay_experiment` how one can exactly replay the experiment to expand it. You can see how teleport works, how internal joint commands can work and how you can reload a USD file of an experiment, its configuration, and while modifying the robot or the environment, replay it.
 8. `correct_data` and `smpl_and_bbox` show how to access low-level information of the meshes and how it is possible to correct the 3DBbox incorrect information.
-9. `FUEL_indoor_simulation` this is the code that we used to generate the dataset.
 10. `zebra_datagen` this is the code that we used to generate the data for the Zebra paper.
 
 
@@ -33,32 +32,6 @@ The scripts are the following:
 The main things dependent on ROS in our work are:
 1. The placement procedure (look for `position_object`, you can override/edit it how you like). We use MoveIt FCL library to check for collision. A similar procedure can be used with Trimesh package. Or you can implement your own.
 2. The ROS components attached to the robot/camera. Depending on which level of independence you want you might disable everything or keep the joint and tf publishers. Note that every viewport is a burden on the system. Also, every time you publish camera data through ROS there is some overhead since GPU data need to be first transferred to CPU and then published. Writing data is asynchronous so no slowdown there.
-
-### Main concepts
-
-The programs all follow the same structure.
-- load the basic kit and start the initial simulation
-- load a basic environment with some settings pre-applied (some config changes cannot be made with the code itself)
-- load libraries and settings
-- load your main environment
-- edit the environment
-- load the robots
-- attach sensors to the robot
-- correct the camera fov (bug in Isaac that changes it)
-- [optional] load and place humans
-- [optional] load and place and animate objects
-- setup information recorder
-- loop the simulation and publish/write the information when necessary
-
-Every aspect can be personalized or adapted. The basic environment could be your final one, the humans/animations can be present or placed in a different way, robot can have your set of sensors or your own publishing rate.
-
-All this can be specified in the code or in the yaml configuration file.
-
-A detailed analysis of the code can be found [here](https://github.com/eliabntt/GRADE-RR/blob/main/OUR_CODE.md) while the parameters are explained [here](https://github.com/eliabntt/GRADE-RR/blob/main/PARAMS.md)
-
-**Beore launching any simulation you need to start `roscore` preferably with sim time set to true (`rosparam set use_sim_time true`)**
-
-In general, each robot is loaded pre-fixed with the `my_robot_` name, and this applies to each topic that is published from that robot. The exception lies in the `tf` topic, for which we will have a publisher for each robot. Data will be published in ROS and saved as npy files. The npy files, although of a different image ratio, have the same vertical and horizontal aperture. You can disable this behaviour by removing the npy cameras commenting `add_npy_cameras` and lowering the number of camera offset of `_my_recorder`.
 
 ___
 
@@ -148,22 +121,9 @@ To run the main simulation
 This piece of code show you how multiple robots can be loaded and controlled, how the configuration file can be expanded (e.g. only iRotate's robot has an initial location) and how everything can be customized.
 
 _______
-## Savana
+## Savana - not working on 2022
 
 Is another simple scenario since everything is managed internally. The animations are already placed within the environment and the robot has pre-defined waypoints. The FSM is internal to the main source code which can be launched with
 ```
 ./python.sh GRADE-RR/simulator/savana_simulation.py --config="/GLOBAL/GRADE-RR/simulator/configs/config_savana.yaml" 
 ```
-_______
-## Replay experiment
-
-This is a very useful piece of code. You can use this to replay any previously recorded experiment, modify the robot (or the scene conditions) and record new data.
-
-Please run
-
-```
-./python.sh GRADE-RR/simulator/replay_experiment.py --experiment_folder FOLDER
-```
-to do so.
-
-In our code we show how to create a new stereo camera, save previously unsaved data, save motion-vector, and create a LiDAR sensor.

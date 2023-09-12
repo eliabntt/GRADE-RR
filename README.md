@@ -88,7 +88,12 @@ ___________________
 
 ## HowToS, Installation, Tips, and Known issues
 
-Please follow [this](https://github.com/eliabntt/GRADE-RR/blob/main/HOWTO.md) link.
+The system, contrary to Gazebo, is not straightforward. This is the price you have to pay to be able to access low level APIs and have more control. We highly encourage thorugh readings of the documentation, of the tips section, and for you to get acquainted to the utils that we have organized (perhaps badly, open a pull request please).
+
+[Install, StartUp, Issues](https://github.com/eliabntt/GRADE-RR/blob/main/HOWTO.md)
+
+[Tips](https://github.com/eliabntt/GRADE-RR/blob/main/TipsAndTricks.md) --- highly encouraged reading!
+
 
 _____
 ## Edited files details
