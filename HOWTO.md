@@ -73,7 +73,7 @@ The workflow will always be the same. Import general modules, create the `Simula
 
 Before adventuring here, please be sure to download our sample [world]() and [animated assets](). Those scripts will be incremental (i.e. based on the previous one). Please open all the downloaded USDs once at least to be sure that textures and everything else is correctly loaded.
 
-We marked _Optional_ what can be skipped in future iterations of your code, but still, please go through them.
+We marked _Optional_ what can be skipped in future iterations of _your_ code, but still, please go through them. They will go step by step from the general environment to the animated house.
 
 **Beore launching any simulation you need to start `roscore` if using ROS preferably with sim time set to true (`rosparam set use_sim_time true`)**
 
@@ -90,7 +90,7 @@ In these codes, we consider our provided sampled world, the animated assets, and
         - `stl` file with the 3D occupancy of the environment
     If you do NOT have those, just disable the flags in the config file (see last point of this list). Otherwise, they will be used as shown [here](https://github.com/eliabntt/GRADE-RR/blob/455891d5021009695a5da13c4feda0ceb258d476/simulator/utils/environment_utils.py).
     - You will also see how to add colliders to the environment, how to generate a 2D occupancy map, how to use the meters per unit, how to move the robot before starting the simulation (by moving the joints).
-    - Launch this with `./python.sh simulator/world_and_robot.py --config="/your_full_path/simulator/world_and_robot.yaml" --fix_env=Something`. `--config` is mandatory, `--fix_env` will tell to the system to select the `Something` world from the `world` environments folder
+    - Launch this with `./python.sh simulator/world_and_robot.py --config="/your_full_path/simulator/world_and_robot.yaml" --fix_env=Something`. `--config` is mandatory, `--fix_env` will tell to the system to select the `Something` world from the `world` environments folder, e.g. `Sample_house`
     </details closed>
 
 - [Optional] Fix the rendering engine, add and publish some ROS components to the robot itself [here](https://github.com/eliabntt/GRADE-RR/blob/main/simulator/robot_with_ros.py).  
@@ -101,10 +101,19 @@ In these codes, we consider our provided sampled world, the animated assets, and
     - We will show both how to add single components, or a batch of them, i.e. through custom "add all sensors" functions as we have done [here](https://github.com/eliabntt/GRADE-RR/blob/7d9cb9a3d75d57628adacb9b9f969909d7663f3d/simulator/utils/robot_utils.py#L557).
     - How to publish data (either manually with ROS messages or using the internal Isaac Components)
     - You can then fix the rendering engine (path vs raytracing), and get to know the `sleeping` function
-
-simulator/configs/robot_with_ros.yaml
+    - Place a breakpoint somewhere and try to manually render the environment while the timeline is playing (not using sleeping). Note how the rendering will advance the timeline of more than what you want. This does not affect the physics, but will affect the animations. Keep this in mind. See [here](https://github.com/eliabntt/GRADE-RR/blob/6e42652201509ed7ad95624d9a551e24fe5ce03c/TipsAndTricks.md#L38) for more details. 
+    - Launch this with `./python.sh simulator/robot_with_ros.py --config="/your_full_path/simulator/robot_with_ros.yaml" --fix_env=Something`. `--config` is mandatory, `--fix_env` will tell to the system to select the `Something` world from the `world` environments folder, e.g. `Sample_house`
     </details closed>
-- [Optional] Add animated people, additional objects, and animate those [here]().
+- [Optional] Add animated people, additional objects, and animate those while solving the timeline problem [here](). 
+    <details closed>
+
+    <!-- todo add links -->
+    - You can get a sample human from [here](). Soon, we will upload our collection. Since then, you can follow our other repository [here](https://github.com/eliabntt/animated_human_SMPL_to_USD) to convert your SMPL models to USD.
+    - You can either place the models manually into your world beforehand, use pre-fixed locations, or use a placement technique. Our placement technique will be explored in the additional scripts since it requires setting up the catkin workspace as well.
+    - For the objects please download at least some assets from ShapeNetv2 or GSO websites. If not, please comment out that part of the code, or adapt it to your own assets. We think the GSO part can be made general quite easily.
+    - The animation will use the timeline interface.
+    </details closed>
+
 - [Optional] Launch your own SIL, either manually or from within your own simulation script [link]()
 - Save GT data [here]().
 

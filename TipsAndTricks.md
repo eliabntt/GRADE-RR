@@ -81,6 +81,8 @@ If needed, you will be able to interact with the application only when fast enou
 
 #### *The rendering calls are NOT blocking. This means that every time you render it will do that for either 1) a fixed amount of time in case of RTX rendering, or 2) a single step for path tracing rendering. This has been solved by us through the `sleeping` function in the `simulation_utils.py`.*
 
+#### *The visual information on the application is updated after the SECOND render call.*
+
 ### Save the GT information
 
 The process is to either save stuff from the main simulation loop, or to use the synthetic recorder extension.
@@ -124,7 +126,7 @@ All data can be also accessed in the main simulation loop. Some examples are the
 Potentially, you could also get as output of the recorder `_update()` call all the information, edit, and publish them as ROS messages.
 
 ### Save the motion vector
-This is not possible during rendering itself. To save it you need to manually render, wait for the data to be produced, and then save the motion vector itself. See the repeating experiment tool for an example on how to do that [here](https://github.com/eliabntt/GRADE-RR/blob/7d9cb9a3d75d57628adacb9b9f969909d7663f3d/simulator/replay_experiment.py#L391-L392). Note that the motion vector can be only visualized by the default Isaac installation and not saved (see [here](https://docs.omniverse.nvidia.com/py/isaacsim/source/extensions/omni.isaac.sensor/docs/index.html#module-omni.isaac.sensor.scripts.camera)). Thus, we cannot ensure correctness.
+This is not possible during rendering itself. To save it you need to manually render (for the second time), wait for the data to be produced, and then save the motion vector itself. See the repeating experiment tool for an example on how to do that [here](https://github.com/eliabntt/GRADE-RR/blob/7d9cb9a3d75d57628adacb9b9f969909d7663f3d/simulator/replay_experiment.py#L391-L392). Note that the motion vector can be only visualized by the default Isaac installation and not saved (see [here](https://docs.omniverse.nvidia.com/py/isaacsim/source/extensions/omni.isaac.sensor/docs/index.html#module-omni.isaac.sensor.scripts.camera)). Thus, we cannot ensure correctness.
 
 ### Traverse the stage
 To traverse all the prims in the stage you can simply run `for prim in stage.Traverse(): ...`

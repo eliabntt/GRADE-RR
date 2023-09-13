@@ -22,23 +22,22 @@ Each step of the pipeline can be easily customized, expanded or removed from you
 If you want more information check out the [paper](https://arxiv.org/abs/2303.04466) or our [website](https://eliabntt.github.io/grade-rr).
 
 _______
-## List of related repositories
+## Useful related repositories (that couldn't fit this page)
 
 1. The tools to process the data, add noise to the rosbags or during the simulation, to evaluate the SLAM methods, generate training data can be found [here](https://github.com/robot-perception-group/GRADE_tools)
-2. The code to convert SMPL-based animations to USD files is [here](https://github.com/eliabntt/animated_human_SMPL_to_USD)
-3. To convert any environment from Blender to USD and generate some accompanying data use [this](https://github.com/eliabntt/Front3D_to_USD). This has a special focus in indoor environmets and Front3D. Based on BlenderProc.
-4. The parent repository which we used to autonomously explore the environments during the data generation is [here](https://github.com/eliabntt/ros_isaac_drone)
+2. The code to convert SMPL-based animations to USD files is [here](https://github.com/eliabntt/animated_human_SMPL_to_USD). Use this if you want to convert AMASS animated SMPL models, the Cloth3D dataset, or any other dataset that you might have that contains skeletal animations. If you use something different than SMPL (or some of its variations), you will need to extend this code.
+3. To convert any environment from Blender to USD and generate some accompanying data use [this](https://github.com/eliabntt/Front3D_to_USD). This has a special focus in indoor environmets and Front3D. Based on BlenderProc. You can use this tool also to convert ANY fbx or other file.
+4. The tools we used to autonomously explore the environments during the data generation is [here](https://github.com/eliabntt/ros_isaac_drone), using RotorS, FUEL, our custom 6DOF controller, etc.
 5. The modified version of DynaSLAM working with Python3 and using `detectron2` is [here](https://github.com/eliabntt/DynaSLAM)
-6. `FUEL`, our chosen autonomous exploration manager to control the drone within the environment. [Link here](https://github.com/eliabntt/FUEL/tree/main)
-7. `custom_6dof_joint_controller` which is the bridge between the position/velocity commands and the joint velocities expected by IsaacSim. This will allow you to control any robot within the simulation environment. [Link here](https://github.com/eliabntt/custom_6dof_joint_controller/tree/main)
-8. `moveit_based_collision_checker_and_placement` our Move-it based placement strategy. [Link here](https://github.com/eliabntt/moveit_based_collision_checker_and_placement/tree/main)
+6. `custom_6dof_joint_controller` is the bridge between the position/velocity commands and the joint velocities expected by IsaacSim. This will allow you to control any robot within the simulation environment. [Link here](https://github.com/eliabntt/custom_6dof_joint_controller/tree/main). 
+7. `moveit_based_collision_checker_and_placement` our Move-it based placement strategy. [Link here](https://github.com/eliabntt/moveit_based_collision_checker_and_placement/tree/main)
 
 ______
 ## Our projects
 
 ### Active SLAM, indoor scenes data collection, and dynamic SLAM
 
-With this framework in conjuction with our [people generator](https://github.com/eliabntt/animated_human_SMPL_to_USD), [environment exporter](https://github.com/eliabntt/Front3D_to_USD) and [control framework](https://github.com/eliabntt/ros_isaac_drone) (which can control any thanks to our [custom 6DOF joint controller](https://github.com/eliabntt/custom_6dof_joint_controller)), we generated an extensive dataset of indoor animated scenes.
+With this framework in conjuction with our [people generator](https://github.com/eliabntt/animated_human_SMPL_to_USD), [environment exporter](https://github.com/eliabntt/Front3D_to_USD) and [control framework](https://github.com/eliabntt/ros_isaac_drone) (which can control virtually anything thanks to our expandable [custom 6DOF joint controller](https://github.com/eliabntt/custom_6dof_joint_controller)), we generated an extensive dataset of indoor animated scenes.
 
 The data generated has been then post-processed and evaluated with our set of [tools](https://github.com/robot-perception-group/GRADE_tools) against popular SLAM libraries, and used to test the realism your synthetic data.
 
@@ -94,6 +93,7 @@ The system, contrary to Gazebo, is not straightforward. This is the price you ha
 
 [Tips](https://github.com/eliabntt/GRADE-RR/blob/main/TipsAndTricks.md) --- highly encouraged reading!
 
+To [generate people based on SMPL](https://github.com/eliabntt/animated_human_SMPL_to_USD), [convert environments/objects from Front3D or other files beforehand](https://github.com/eliabntt/Front3D_to_USD) and see a possible [control framework](https://github.com/eliabntt/ros_isaac_drone) (which can act thanks to our [custom 6DOF joint controller](https://github.com/eliabntt/custom_6dof_joint_controller)), please check our other repositories. 
 
 _____
 ## Isaac's edited files details
