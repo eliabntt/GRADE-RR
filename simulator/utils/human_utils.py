@@ -44,7 +44,7 @@ def move_humans_to_ground(my_humans_heights: list, body_lists: list, frame: floa
 			set_translate(stage.GetPrimAtPath(body_lists[index]), loc)
 
 
-def load_human(human_base_prim_path, n, asset_path, dynamic_prims, added_prims):
+def load_human(human_base_prim_path, n, asset_path, dynamic_prims=[], added_prims=[]):
 	"""
 	Load the human based on the usd path and add it to the dynamic prims list
 	Follow prim naming convention /human_base_prim_path+n

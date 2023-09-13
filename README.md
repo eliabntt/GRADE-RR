@@ -95,6 +95,10 @@ The system, contrary to Gazebo, is not straightforward. This is the price you ha
 
 To [generate people based on SMPL](https://github.com/eliabntt/animated_human_SMPL_to_USD), [convert environments/objects from Front3D or other files beforehand](https://github.com/eliabntt/Front3D_to_USD) and see a possible [control framework](https://github.com/eliabntt/ros_isaac_drone) (which can act thanks to our [custom 6DOF joint controller](https://github.com/eliabntt/custom_6dof_joint_controller)), please check our other repositories. 
 
+Additional scripts are provided [here](https://github.com/eliabntt/GRADE-RR/blob/main/scripts). Those can be used to process paths, get statistics of the rosbags, colorize the data filter and compress rosbags, transform the pixels to world coordinates etc.
+
+A brief description of the utils libraries used in our code is [here](https://github.com/eliabntt/GRADE-RR/blob/main/simulator/utils/UTILS.md).
+
 _____
 ## Isaac's edited files details
 

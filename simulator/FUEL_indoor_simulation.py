@@ -438,7 +438,6 @@ try:
 			human_anim_len.pop(n)
 		omni.kit.commands.execute("DeletePrimsCommand", paths=[f"{human_base_prim_path}{n}" for n in to_be_removed])
 	print("Loading human complete")
-	print("between this and the next there's a hidden reset")
 	google_ob_used, shapenet_ob_used = load_objects(config, environment, rng, dynamic_prims, 1/meters_per_unit)
 
 	# IT IS OF CRUCIAL IMPORTANCE THAT AFTER THIS POINT THE RENDER GETS DONE WITH THE SLEEPING CALL! OTHERWISE PATH TRACING SPP WILL GET RUINED

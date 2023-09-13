@@ -1,0 +1,40 @@
+# GENERAL NOTE the paths need to be ABSOLUTE!
+physics_hz: 240 # the size of a single physics step
+render_hz: 240 # not influencing anything for now
+
+base_env_path: "" # the base environment, e.g. GRADE-RR/usds/env_base.usd
+
+env_path: "" # the parent folder that contains your environments, in subfolders
+use_stl: True #
+use_npy: True #
+
+meters_per_unit: 0.01 # how many meters are in one single unit in the simulation. In this case x=1 will be 1 cm.
+
+usd_robot_path: "" # the usd path of the robot, e.g. GRADE-RR/usds/drone_2022.usd
+num_robots: 1 # how many robots we want to load
+robot_sensor_size: [640,480]
+ratio_joints: 2
+ratio_tf: 2 # physics_hz/ratio_tf = tf publish hz
+ratio_odom: 4 # physics_hz/ratio_odom = odom publish hz
+ratio_camera: 8 # physics_hz/ratio_cam = imgs publish hz
+
+# prefixes where to load the prims 
+env_prim_path: "/World/home"
+robot_base_prim_path: "/my_robot_" # 0, 1, 2 ... num_robots
+
+obstacles: {
+  "shapenet": 0, # 5, 10
+  "google": 1
+}
+
+human_base_prim_path: "/my_human_"
+max_human_anim_len: 500 # max human anim length to be considered in frames
+min_human_anim_len: 50 # min human anim length to be loaded in frames
+
+google_obj_folder: "" # the main folder of the google_scanned_objects models
+google_obj_shortlist: "" # check out here https://github.com/eliabntt/GRADE-RR/blob/064c1b888727c6faa191f88519184dc272a8b950/simulator/utils/objects_utils.py#L55
+shapenet_local_dir: "" # the main folder of the shapenet predownloaded models
+shapenet_username: "" # leave empty, or find a way to download from the website dynamically
+shapenet_password: ""
+synsetId: "random" # check out here https://github.com/eliabntt/GRADE-RR/blob/064c1b888727c6faa191f88519184dc272a8b950/simulator/utils/objects_utils.py#L22
+modelId: "random"

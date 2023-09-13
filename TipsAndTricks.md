@@ -169,3 +169,6 @@ Otherwise, you can simply process the text files as explained [here](https://git
 ### Segmentation <-> instance
 
 Instance segmentation files will save also the mappings between classes. An example on how to do the mapping and process those file is [here](https://github.com/robot-perception-group/GRADE-eval/blob/main/mapping_and_visualization/convert_classes.py).
+
+### Shapenet and GSO
+For the objects please download at least some assets from ShapeNetv2 or GSO websites. Paths should be `../gso/folders_of_the_objects` and `../shapenet/synsetIds/...`. For ShapeNet please also add `../shapenet/v1_csv/all_of_the_synset_csvs`. Our code will convert locally in `../gso/exported_usd` and `../shapenet/local-converted-USD`. Clearly, you can pre-process everything and use only the USDs afterwards (to save space). All the code is on `simulator/utils/object_utils.py`.

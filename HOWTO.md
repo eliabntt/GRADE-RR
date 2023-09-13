@@ -75,11 +75,11 @@ Before adventuring here, please be sure to download our sample [world]() and [an
 
 We marked _Optional_ what can be skipped in future iterations of _your_ code, but still, please go through them. They will go step by step from the general environment to the animated house.
 
-**Beore launching any simulation you need to start `roscore` if using ROS preferably with sim time set to true (`rosparam set use_sim_time true`)**
+**Beore launching any simulation that need ros you need to start `roscore` if using ROS preferably with sim time set to true (`rosparam set use_sim_time true`)**
 
-In these codes, we consider our provided sampled world, the animated assets, and the drone provided with this repository. 
+In these codes, we consider our provided sampled world, the animated assets, and the drone provided with this repository. For the objects, you will find a note in the corresponding tutorial details. Additional samples (our used code, adapted from v2021), will be added in the next section.
 
-##### Still WIP.
+##### Still WIP, need to add links and make sure that the code works. But most of it should work rn.
 
 - Using a config file, adding your own "world", and a robot [here](https://github.com/eliabntt/GRADE-RR/blob/main/simulator/world_and_robot.py). 
     <details closed>
@@ -107,15 +107,15 @@ In these codes, we consider our provided sampled world, the animated assets, and
 - [Optional] Add animated people, additional objects, and animate those while solving the timeline problem [here](). 
     <details closed>
 
-    <!-- todo add links -->
-    - You can get a sample human from [here](). Soon, we will upload our collection. Since then, you can follow our other repository [here](https://github.com/eliabntt/animated_human_SMPL_to_USD) to convert your SMPL models to USD.
-    - You can either place the models manually into your world beforehand, use pre-fixed locations, or use a placement technique. Our placement technique will be explored in the additional scripts since it requires setting up the catkin workspace as well.
-    - For the objects please download at least some assets from ShapeNetv2 or GSO websites. If not, please comment out that part of the code, or adapt it to your own assets. We think the GSO part can be made general quite easily.
-    - The animation will use the timeline interface.
+    - You can get a sample human from [here](). Soon, we will upload our collection. Since then, you can follow our other repository [here](https://github.com/eliabntt/animated_human_SMPL_to_USD) to convert your SMPL models to USD. The preferred folder structure is `main/dataset/ID`, you will provide the `main` folder to allow the randomizer to work.
+    - You can either place the models manually into your world beforehand (see the zebra case), use pre-fixed (or random) locations, or use a placement technique. Our placement technique will be explored in the additional scripts since it requires setting up the catkin workspace as well.
+    - For the objects please download at least some assets from ShapeNetv2 or GSO websites. If not, please comment out that part of the code, or adapt it to your own assets. We think the GSO part can be made general quite easily. Paths should be `../gso/folders_of_the_objects` and `../shapenet/synsetIds/...`. For ShapeNet please also add `../shapenet/v1_csv/all_of_the_synset_csvs`. In the config add the `gso` and the `shapenet` folders. Additional options are there.
+    - The animation will use the timeline interface see [here](https://github.com/eliabntt/GRADE-RR/blob/064c1b888727c6faa191f88519184dc272a8b950/simulator/utils/objects_utils.py#L135).
+    - The objects loading code is [here](https://github.com/eliabntt/GRADE-RR/blob/064c1b888727c6faa191f88519184dc272a8b950/simulator/utils/objects_utils.py), for both shapenet and google scanned objects. You can see how the conversion works [here](https://github.com/eliabntt/GRADE-RR/blob/064c1b888727c6faa191f88519184dc272a8b950/simulator/utils/objects_utils.py#L65). The system will automatically save the converted USD for backup and to avoid re-conversion.
+     - Launch this with `./python.sh simulator/people_and_objects.py --config="/your_full_path/simulator/humans_and_objects.yaml" --fix_env=Something`. `--config` is mandatory, `--fix_env` will tell to the system to select the `Something` world from the `world` environments folder, e.g. `Sample_house`
     </details closed>
 
-- [Optional] Launch your own SIL, either manually or from within your own simulation script [link]()
-- Save GT data [here]().
+- [Optional] Launch your own SIL from within your own simulation script, add some randomization (e.g. lights, textures etc) and save GT data [link]()
 
 ## Additional scripts
 
@@ -146,13 +146,17 @@ In our code we show how to create a new stereo camera, save previously unsaved d
 You need some information to be able to repeat an experiment. Namely, the joint positions. We load those [from the rosbags](https://github.com/eliabntt/GRADE-RR/blob/7d9cb9a3d75d57628adacb9b9f969909d7663f3d/simulator/replay_experiment.py#L177), although you can access them from the GT pose arrays.
 </details closed>
 
+### Paper autonomous indoor exploration (humans, objects, SIL, active SLAM etc)
+
+### Multi robot management
+
 ## Known issues
 
 1. ros clock might have some delay in publishing. This implies that you need to sleep the simulation every time that component gets triggered. Other component behave consistently based on our tests. Alternatively, you can post-process the data as shown in [here](https://github.com/robot-perception-group/GRADE-eval)
 2. BBOX3D are wrong for moving objects. The script [here](https://github.com/eliabntt/GRADE-RR/blob/main/simulator/correct_data.py#L267) show a way to solve this.
 3. Pose information is wrong for some moving objects. The code [here](https://github.com/eliabntt/GRADE-RR/blob/main/simulator/correct_data.py#L224) will solve this.
-4. Collisions for dynamic objects are not computed most of the times due to PhysX limitations. This is addressed by the new LiDAR-RTX of the new Isaac Sim version.
-5. The rendering is not blocking. Multiple calls (especially for path tracing) are necessary. Thus, this usually disrupt the motion-vector data. A possible workaround is to do two rendering steps and save the motion-vector data, and then finish rendering to save the rgb information. See [here](https://github.com/eliabntt/GRADE-RR/blob/main/simulator/replay_experiment.py#L390) an example on how to do that.
+4. Collisions for dynamic objects are not computed most of the times due to PhysX limitations. This is addressed by the new LiDAR-RTX of the new Isaac Sim version. However, its management is not intuitive.
+5. The rendering is not blocking. Multiple calls (especially for path tracing) are necessary. Thus, this usually disrupt the motion-vector data. A possible workaround is to do two rendering steps and save the motion-vector data, and then finish rendering to save the rgb information. See [here](https://github.com/eliabntt/GRADE-RR/blob/main/simulator/replay_experiment.py#L390) an example on how to do that. Note that a rendering call is done just after the clocking.
 6. In the v2022 it is not possible to set indipendent vfov of the cameras. It will take the hfov and use the AR to have a "correct" vfov.
 7. In the v2022 the internal PD control for the joints will NOT work using position setpoints. Also, the maximum velocity set is not considered.
 8. In the v2022 the timeline gets updated automatically even if you do not want it. You need to keep track of the ctime and constantly re-update it to correctly generate the data you want.

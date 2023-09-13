@@ -46,10 +46,10 @@ physx_interface = omni.physx.acquire_physx_interface()
 physx_interface.start_simulation()
 
 print("Adding ROS clock, you can check with rostopic echo /clock")
-_clock_graph = add_clock()  # add ROS clock
+_clock_graph = add_clock()
 simulation_context.play()
 for _ in range(10):
-	simulation_context.step() # remember that this step also the physics
+	simulation_context.step()
 	og.Controller.evaluate_sync(_clock_graph)
 simulation_context.stop()
 
@@ -57,6 +57,8 @@ import utils.misc_utils
 from utils.misc_utils import *
 from utils.robot_utils import *
 from utils.simulation_utils import *
+from utils.objects_utils import *
+from utils.human_utils import *
 
 simulation_environment_setup(need_ros = True) 
 if base_world_path != "":
@@ -79,9 +81,7 @@ if base_world_path != "":
 
 simulation_context.stop()
 
-# prepare some containers
-joint_states = [] 
-tf_trees = []
+ros_transform_components = []
 camera_list = []
 viewport_list = []
 camera_pose, camera_pose_pub = [], []
@@ -89,16 +89,11 @@ imus,imu_pubs = [], []
 lidars = []
 odoms, odom_pubs = [], []
 
-# get the interface to add imu sensors
 from omni.isaac.sensor import _sensor
 _is = _sensor.acquire_imu_sensor_interface()
 
-# these are kept because the aperture is resetted based on the h aperture by IsaacSim. 
-# In v2021 this could have been reverted. In v2022 not.
 old_h_ape, old_v_ape = [], [] 
 
-
-# get the interface to access dynamics of the assets
 _dc = dynamic_control_interface()
 
 print("Loading robots..")
@@ -115,41 +110,45 @@ for n in range(config["num_robots"].get()):
 				)
 
 	print("Adding ROS components")
-	joint_states.append(add_joint_state(f"{robot_base_prim_path}{n}"))
-	tf_trees.append(add_pose_tree(f"{robot_base_prim_path}{n}"))
+	add_ros_components(robot_base_prim_path, n, ros_transform_components, camera_list, viewport_list,
+                        camera_pose, camera_pose_pub, imu_pubs, imus,
+                        odoms, odom_pubs, lidars,
+                        [], config, old_h_ape, old_v_ape, _is, simulation_context, _clock, irotate=False)
+	kit.update()
 
-	# create the viewport, the camera component
-	component, viewport = add_camera_and_viewport(f"{robot_base_prim_path}{n}/camera_link",
-	                                              config["robot_sensor_size"].get(),
-	                                              old_h_ape, old_v_ape, simulation_context,
-	                                              0, n, cam_per_robot=1)  # cam index is useful if you want multiple cameras
-	cam_outputs = control_camera(viewport, simulation_context)
-	camera_list.append([n + 0, component, cam_outputs])
-	viewport_list.append(viewport)
-	omni.kit.app.get_app().update()
+timeline = setup_timeline(config) # setup the timeline before adding anything animated
 
-	camera_pose.append(f"{robot_base_prim_path}{n}/camera_link")
-	camera_pose_pub.append(rospy.Publisher(f"{robot_base_prim_path}{n}/camera/pose", PoseStamped, queue_size=10))
+print("Loading people")
+n = 0
+human_base_prim_path = config["human_base_prim_path"].get()
+while n < config["num_humans"].get():
+	folder = rng.choice(human_folders)
+	random_name = rng.choice(os.listdir(os.path.join(human_export_folder, folder)))
+	asset_path = os.path.join(human_export_folder, folder, random_name, random_name + ".usd")
 
-	setup_imu_sensor(_is, config, f"{robot_base_prim_path}{n}/imu_link")
-	imu_pubs.append(rospy.Publisher(f"{robot_base_prim_path}{n}/imu_body", Imu, queue_size=10))
-	imus.append(f"{robot_base_prim_path}{n}/imu_link")
+	print("Loading human {} from {}".format(random_name, folder))
 
-	odoms.append(f"{robot_base_prim_path}{n}/yaw_link")
-	odom_pubs.append(rospy.Publisher(f"{robot_base_prim_path}{n}/odom", Odometry, queue_size=10))
+	tmp_pkl = pkl.load(open(os.path.join(human_export_folder, folder, random_name, random_name + ".pkl"), 'rb'))
+	used_ob_stl_paths.append(os.path.join(human_export_folder, folder, random_name, random_name + ".stl"))
+
+	load_human(human_base_prim_path, n, asset_path)
+	stl_path = os.path.join(human_export_folder, folder, random_name, random_name + ".stl")
 	
-	sensor = add_lidar(f"{robot_base_prim_path}{n}/yaw_link", [0, 0, -.1], [0, 0, 0], is_3d=True, is_2d=True)
-	lidars.append(sensor)
+	x = np.random.randint(environment.env_limits_shifted[0], environment.env_limits_shifted[3])
+	y = np.random.randint(environment.env_limits_shifted[1], environment.env_limits_shifted[4])
+	z = 0
+	yaw = np.random.randint(0,360)
+	# position the mesh
+	set_translate(stage.GetPrimAtPath(f"{human_base_prim_path}{n}"),
+			              [x / meters_per_unit, y / meters_per_unit, z / meters_per_unit])
+	set_scale(stage.GetPrimAtPath(f"{human_base_prim_path}{n}"), 1 / meters_per_unit)
+	set_rotate(stage.GetPrimAtPath(f"{human_base_prim_path}{n}"), [0, 0, np.deg2rad(yaw)])
+	
+	n += 1
+	
+print("Load objects")
+google_ob_used, shapenet_ob_used = load_objects(config, environment, np.random.default_rng(), [], 1/meters_per_unit)
 
-	# alternatively 
-	# add_ros_components(robot_base_prim_path, n, ros_transform_components, camera_list, viewport_list,
-    #                    camera_pose, camera_pose_pub, imu_pubs, imus,
-    #                    odoms, odom_pubs, lidars,
-    #                    [], config, old_h_ape, old_v_ape, _is, simulation_context, _clock, irotate=False):
-
-print("Loading robots done")
-
-# set some settings for the rendering
 if (config["rtx_mode"].get()):
 	set_raytracing_settings(config["physics_hz"].get())
 else:
@@ -164,6 +163,13 @@ for i in range(100):
 omni.usd.get_context().get_selection().clear_selected_prim_paths()
 omni.usd.get_context().get_selection().set_selected_prim_paths([], False)
 
+
+timeline.set_current_time(0)
+timeline.set_auto_update(False) # this no longer works as expected.
+# Theoretically, once this is set and the timeline plays, rendering will not advance the timeline
+# this is no longer the case. Thus, keep track of the ctime (as we do within sleeping function)
+# the simulation context can be kept stopped, but that will prevent physics and time to advance.
+# https://forums.developer.nvidia.com/t/the-timeline-set-auto-update-false-no-longer-works/253504/10
 simulation_context.play()
 for i in range(2000):
 	simulation_context.step(render=False)
@@ -196,6 +202,7 @@ for i in range(2000):
 			og.Controller.attribute(lidar+".inputs:step").set(0)
 
 		pub_and_write_images(simulation_context, viewport_list, ros_camera_list, raytracing) # clearly not writing anything here
+		timeline.forward_one_frame() # advancing the timeline
 simulation_context.stop()
 
 try:
