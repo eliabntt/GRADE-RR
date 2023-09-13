@@ -105,7 +105,7 @@ try:
 			pose.append((str(prim_path), m[2], str(m[3]), np.array(prim_tf)))
 		return pose
 
-	environment_setup(need_ros=False)
+	simulation_environment_setup(need_ros=False)
 	local_file_prefix = "my-computer://"
 	omni.usd.get_context().open_stage(local_file_prefix + config["experiment_folder"].get() + "/loaded_stage.usd", None)
 	kit.update()

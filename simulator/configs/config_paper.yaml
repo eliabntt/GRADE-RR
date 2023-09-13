@@ -10,7 +10,7 @@ generate_map: True
 clean_base_env: False
 only_placement: False
 robot_mesh_path: "/media/ebonetto/WindowsData/ov/isaac_sim-2022.2.1/GRADE-RR/meshes/drone.dae"
-base_robot_path: "/media/ebonetto/WindowsData/ov/isaac_sim-2022.2.1/GRADE-RR/usds/drone_2022.usd"
+usd_robot_path: "/media/ebonetto/WindowsData/ov/isaac_sim-2022.2.1/GRADE-RR/usds/drone_2022.usd"
 out_folder: "/media/ebonetto/WindowsData/exp_out2/"
 out_folder_npy: "/media/ebonetto/WindowsData/exp_out2/"
 fps: 30

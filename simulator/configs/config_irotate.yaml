@@ -5,7 +5,7 @@ base_env_path: "/home/ebonetto/Desktop/empty.usd"
 clean_base_env: False
 only_placement: False
 robot_mesh_path: "/home/ebonetto/.local/share/ov/pkg/isaac_sim-2021.2.1/main_repo/meshes/robotino.dae"
-base_robot_path: "/home/ebonetto/.local/share/ov/pkg/isaac_sim-2021.2.1/main_repo/usds/robotino.usd"
+usd_robot_path: "/home/ebonetto/.local/share/ov/pkg/isaac_sim-2021.2.1/main_repo/usds/robotino.usd"
 out_folder: "/media/ebonetto/WindowsData/exp_out2/"
 out_folder_npy: "/media/ebonetto/WindowsData/exp_out2/"
 fps: 30

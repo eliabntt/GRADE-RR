@@ -7,7 +7,7 @@ clean_base_env: False
 only_placement: False
 robot_mesh_path: ["/home/ebonetto/.local/share/ov/pkg/isaac_sim-2021.2.1/isaac_sim_manager/meshes/robotino.dae",
 "/home/ebonetto/.local/share/ov/pkg/isaac_sim-2021.2.1/isaac_sim_manager/meshes/drone.dae","/home/ebonetto/.local/share/ov/pkg/isaac_sim-2021.2.1/isaac_sim_manager/meshes/drone.dae"]
-base_robot_path: ["/home/ebonetto/.local/share/ov/pkg/isaac_sim-2021.2.1/multi_robot/usds/robotino.usd",
+usd_robot_path: ["/home/ebonetto/.local/share/ov/pkg/isaac_sim-2021.2.1/multi_robot/usds/robotino.usd",
                     "/home/ebonetto/.local/share/ov/pkg/isaac_sim-2021.2.1/isaac_sim_manager/usds/drone_paper.usd",
                    "/home/ebonetto/.local/share/ov/pkg/isaac_sim-2021.2.1/isaac_sim_manager/usds/drone_paper.usd"]
 out_folder: "/media/ebonetto/WindowsData/exp_out2"

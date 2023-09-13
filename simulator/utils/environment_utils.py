@@ -6,7 +6,7 @@ from utils.misc_utils import *
 
 
 class environment:
-	def __init__(self, config, rng, local_file_prefix, meters_per_unit=0.01):
+	def __init__(self, config, rng = np.random.default_rng(), local_file_prefix = '', meters_per_unit=0.01):
 		self.get_environment(config, rng, local_file_prefix)
 		self.meters_per_unit = meters_per_unit
 

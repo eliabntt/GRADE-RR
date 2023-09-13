@@ -176,7 +176,7 @@ try:
 			send_waypoint_pubs[index].publish(my_pose)
 			last_pub_time = rospy.Time.now()
 
-	environment_setup()
+	simulation_environment_setup()
 	# set timeline of the experiment
 	timeline = setup_timeline(config)
 
@@ -302,7 +302,7 @@ try:
 	_is = _sensor.acquire_imu_sensor_interface()
 
 	robot_base_prim_path = config["robot_base_prim_path"].get()
-	base_robot_path = str(config["base_robot_path"].get())
+	usd_robot_path = str(config["usd_robot_path"].get())
 	c_pose = []
 	old_pose = []
 	old_h_ap = []
@@ -310,11 +310,11 @@ try:
 	lidars = []
 	simulation_context.stop()
 	for n in range(config["num_robots"].get()):
-		import_robot(robot_base_prim_path, n, local_file_prefix, base_robot_path)
+		import_robot(robot_base_prim_path, n, usd_robot_path, local_file_prefix)
 		x, y, z, yaw = get_valid_robot_location(environment, first)
 
-		move_robot(f"{robot_base_prim_path}{n}", [x / meters_per_unit, y / meters_per_unit, z / meters_per_unit], [0,0,yaw],
-		           (environment.env_limits[5]) / meters_per_unit, config["is_iRotate"].get(), meters_per_unit=meters_per_unit)
+		set_drone_joints_init_loc(f"{robot_base_prim_path}{n}", [x / meters_per_unit, y / meters_per_unit, z / meters_per_unit], [0,0,yaw],
+		           (environment.env_limits[5]) / meters_per_unit, 0.3/meters_per_unit, irotate=config["is_iRotate"].get())
 
 		c_pose.append([x, y, z])
 		old_pose.append([x, y, z])
@@ -548,6 +548,7 @@ try:
 		# get the current time in ROS
 		print("Clocking...")
 		og.Controller.evaluate_sync(_clock_graph)
+		time.sleep(0.1)
 		ctime = timeline.get_current_time()
 		simulation_context.render()
 		timeline.set_current_time(ctime)
@@ -603,8 +604,7 @@ try:
 			print("Publishing cameras...")
 
 			# FIRST ONE WRITTEN IS AT 1/30 on the timeline
-			pub_and_write_images(my_recorder, simulation_context, viewport_window_list,
-			                     second_start, ros_camera_list, config["rtx_mode"].get())
+			pub_and_write_images(simulation_context, viewport_window_list, ros_camera_list, config["rtx_mode"].get(), my_recorder, second_start)
 			timeline.set_current_time(ctime)
 
 		if simulation_step % ratio_camera == 0 and simulation_step / ratio_camera == experiment_length \

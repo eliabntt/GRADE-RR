@@ -6,12 +6,15 @@ The simulation has various components.
 1. `kit` or `SimulationApp` used to access the engine itself. Essentially, the base engine over which everything works [link](https://docs.omniverse.nvidia.com/py/isaacsim/source/extensions/omni.isaac.kit/docs/index.html). You can't do much with this. It's always the first call, prior to loading isaac/omni components (even python import calls).
 2. The simulation context. This class provide functions that take care of many time-related events such as perform a physics or a render step for instance. It also includes an instance of PhysicsContext which takes care of many physics related settings such as setting physics dt, solver type..etc [link](https://docs.omniverse.nvidia.com/py/isaacsim/source/extensions/omni.isaac.core/docs/index.html?highlight=context#module-omni.isaac.core.simulation_context).
 3. The `stage` object. Accessed with `omni.usd.get_context().get_stage()`. Used to access all the simulations objects and their properties, e.g. through `prim = stage.GetPrimAtPath('/whatever')`. 
+4. `omni` is generally available, independently in which piece of code you are. Thus using 3. or `omni.kit.app.get_app()` you should be able to access everything you need without passing objects around.
 
 You'll work mainly with 2 and 3. All functions have autocomplete capabilities, just place a breakpoint and walk your way through them. 
 
 If you hover over some properties in the UI sometimes a helper dialog will give you the name of the property. Otherwise, the `prim.GetPropertyNames()` will give you the available properties. 
 
 In general, the prims and their properties are accessed through a prim tree. Sometimes, some properties, are accessible only if the prim is accessed as a specific kind (e.g. a mesh [link](https://github.com/eliabntt/GRADE-RR/blob/7d9cb9a3d75d57628adacb9b9f969909d7663f3d/simulator/smpl_and_bbox.py#L206)) or under specific additional keywords (e.g. the physics collision [link](https://github.com/eliabntt/GRADE-RR/blob/7d9cb9a3d75d57628adacb9b9f969909d7663f3d/simulator/utils/misc_utils.py#L275)). Unfortunately, there is no easy way to figure this out due to the symbiosys between Isaac and USD.
+
+NOTE that some functions are highly customized (e.g. `set_drone_joints_init_loc`)! This is thought to help you out set up your _custom_ simulation, and not an off the shelf solution!
 
 ### Clear properties
 
@@ -63,6 +66,7 @@ For stepping the physics and rendering you have different options:
 2. `simulation_context.render()` will do only a SINGLE rendering step
 3. `simulation_context.step()` will do both a rendering and physics step. Not always working
 4. `simulation_context.step(render=False)` will do a physics step
+5. `omni.kit.app.get_app().update()` as `kit.update()`, but accessible if you do not have access to the kit object itself.
 
 My suggestion is to always work with a combination of `simulation_context.render()/step(render=False)` and to stick to that.
 

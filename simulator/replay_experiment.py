@@ -73,7 +73,7 @@ try:
 	from utils.environment_utils import *
 	from utils.human_utils import *
 
-	environment_setup()
+	simulation_environment_setup()
 	rospy.init_node("new_sensor_publisher", anonymous=True, disable_signals=True, log_level=rospy.ERROR)
 	local_file_prefix = "my-computer://"
 	omni.usd.get_context().open_stage(local_file_prefix + config["experiment_folder"].get() + "/loaded_stage.usd", None)
@@ -202,8 +202,7 @@ try:
 	init_rot = np.array([init_roll, init_pitch, init_yaw])
 	change_collision_at_path(False,paths=['/my_robot_0/camera_link/Cube.physics:collisionEnabled','/my_robot_0/yaw_link/visuals.physics:collisionEnabled'])
 	kit.update()
-	# move_robot('/my_robot_0', [0, 0, 0], [0,0,0], 300, lower_zlim=0) # todo use actual limit from simulation
-	move_robot('/my_robot_0', [0, 0, 0], [0,0,0], 300, lower_zlim=0) # todo use actual limit from simulation
+	set_drone_joints_init_loc('/my_robot_0', [0, 0, 0], [0,0,0], 300, lower_zlim=0) # todo use actual limit from simulation
 	kit.update()
 	simulation_context.play()
 	for _ in range(5):
@@ -400,7 +399,7 @@ try:
 			# if write:
 			# 	if my_recorder._enable_record:
 			# 		my_recorder._counter += 1
-			# pub_and_write_images(my_recorder, simulation_context, viewport_window_list, True, ros_camera_list, is_rtx)
+			# pub_and_write_images(simulation_context, viewport_window_list, ros_camera_list, is_rtx, my_recorder)
 
 			if write:
 				if my_recorder._enable_record:

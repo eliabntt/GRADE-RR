@@ -1,0 +1,18 @@
+# GENERAL NOTE the paths need to be ABSOLUTE!
+physics_hz: 240 # the size of a single physics step
+render_hz: 240 # not influencing anything for now
+
+base_env_path: "" # the base environment, e.g. GRADE-RR/usds/env_base.usd
+
+env_path: "" # the parent folder that contains your environments, in subfolders
+use_stl: True #
+use_npy: True #
+
+meters_per_unit: 0.01 # how many meters are in one single unit in the simulation. In this case x=1 will be 1 cm.
+
+usd_robot_path: "" # the usd path of the robot, e.g. GRADE-RR/usds/drone_2022.usd
+num_robots: 1 # how many robots we want to load
+
+# prefixes where to load the prims 
+env_prim_path: "/World/home"
+robot_base_prim_path: "/my_robot_" # 0, 1, 2 ... num_robots

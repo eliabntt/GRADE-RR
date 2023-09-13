@@ -61,15 +61,15 @@ Our programs all follow the same structure.
 
 Every aspect can be personalized or adapted. The basic environment could be your final one, the humans/animations can be present or placed in a different way, robot can have your set of sensors or your own publishing rate.
 
-Our code is thought in such a way that each robot is loaded pre-fixed with the `my_robot_` name, and this applies to each topic that is published from that robot. The exception lies in the `tf` topic, for which we will have a publisher for each robot. Data can be published in ROS and saved as npy files. If you want both, with the former using a lowres camera and the latter an high res camera you should first load all the robots, and then call `add_npy_cameras` adjusting the skipped camera of your `recorder`. See the [tips](https://github.com/eliabntt/GRADE-RR/blob/mainTipsAndTricks.md) readme for more insights.
+Our code is thought in such a way that each robot is loaded pre-fixed with the `my_robot_` name, and this applies to each topic that is published from that robot. The exception lies in the `tf` topic, for which we will have a publisher for each robot. Data can be published in ROS and saved as npy files. If you want both, with the former using a lowres camera and the latter an high res camera you should first load all the robots, and then call `add_npy_cameras` adjusting the skipped camera of your `recorder`. See the [tips](https://github.com/eliabntt/GRADE-RR/blob/main/TipsAndTricks.md) readme for more insights.
 
 ## Your first code
 
 [Here](https://github.com/eliabntt/GRADE-RR/blob/main/simulator/first_run.py) is a first example showing how to launch the simulation, load a basic environment, and perform some basic actions.
 
-The workflow will always be the same. Import general modules, create the `SimulationApp`, import the IsaacSim related stuff, and proceed.
+The workflow will always be the same. Import general modules, create the `SimulationApp`, import the IsaacSim related stuff, and proceed. Please, look at the comments in the code directly. Brief explanations are also given below.
 
-## Advanced scripts
+## Going past your first code
 
 Before adventuring here, please be sure to download our sample [world]() and [animated assets](). Those scripts will be incremental (i.e. based on the previous one). Please open all the downloaded USDs once at least to be sure that textures and everything else is correctly loaded.
 
@@ -77,13 +77,48 @@ We marked _Optional_ what can be skipped in future iterations of your code, but 
 
 **Beore launching any simulation you need to start `roscore` if using ROS preferably with sim time set to true (`rosparam set use_sim_time true`)**
 
-- Adding your own "world", and a robot [here](). The world can be either empty (thus you can skip loading), just with static objects, or with pre-placed animated objects (as in the zebra case).
-- [Optional] Add some ROS components to the robot itself [here](). You can also create some custom "add all sensors" functions as we have done [here](https://github.com/eliabntt/GRADE-RR/blob/7d9cb9a3d75d57628adacb9b9f969909d7663f3d/simulator/utils/robot_utils.py#L557).
+In these codes, we consider our provided sampled world, the animated assets, and the drone provided with this repository. 
+
+##### Still WIP.
+
+- Using a config file, adding your own "world", and a robot [here](https://github.com/eliabntt/GRADE-RR/blob/main/simulator/world_and_robot.py). 
+    <details closed>
+
+    - To create a robot you can either import our `usds/drone_2022.usd` or `usds/robotino.usd`, use your own URDF [link](https://docs.omniverse.nvidia.com/isaacsim/latest/ext_omni_isaac_urdf.html), create your own USD (add a mesh and attach some joints to it, [link](https://docs.omniverse.nvidia.com/isaacsim/latest/tutorial_gui_simple_robot.html)), or use one of the already available models. For now, the USD file is enough.
+    - The world can be either empty (thus you can skip loading), just with static objects, or with pre-placed animated objects (as in the zebra case). The world needs to be placed into a subfolder, e.g. `worlds/Savana/...`. Inside, you could (not mandatory) have:
+        - `npy` file with the limits of the environment
+        - `stl` file with the 3D occupancy of the environment
+    If you do NOT have those, just disable the flags in the config file (see last point of this list). Otherwise, they will be used as shown [here](https://github.com/eliabntt/GRADE-RR/blob/455891d5021009695a5da13c4feda0ceb258d476/simulator/utils/environment_utils.py).
+    - You will also see how to add colliders to the environment, how to generate a 2D occupancy map, how to use the meters per unit, how to move the robot before starting the simulation (by moving the joints).
+    - Launch this with `./python.sh simulator/world_and_robot.py --config="/your_full_path/simulator/world_and_robot.yaml" --fix_env=Something`. `--config` is mandatory, `--fix_env` will tell to the system to select the `Something` world from the `world` environments folder
+    </details closed>
+
+- [Optional] Fix the rendering engine, add and publish some ROS components to the robot itself [here](https://github.com/eliabntt/GRADE-RR/blob/main/simulator/robot_with_ros.py).  
+    <details closed>
+
+    - You will see how to add the clock to the simulation. Thanks to how we define it [here](https://github.com/eliabntt/GRADE-RR/blob/455891d5021009695a5da13c4feda0ceb258d476/simulator/utils/robot_utils.py#L274) the clock will tick with pysics steps, but will need to be manually published.
+    - Our phylosophy is to manually publish ROS messages for better flexibility
+    - We will show both how to add single components, or a batch of them, i.e. through custom "add all sensors" functions as we have done [here](https://github.com/eliabntt/GRADE-RR/blob/7d9cb9a3d75d57628adacb9b9f969909d7663f3d/simulator/utils/robot_utils.py#L557).
+    - How to publish data (either manually with ROS messages or using the internal Isaac Components)
+    - You can then fix the rendering engine (path vs raytracing), and get to know the `sleeping` function
+
+simulator/configs/robot_with_ros.yaml
+    </details closed>
 - [Optional] Add animated people, additional objects, and animate those [here]().
 - [Optional] Launch your own SIL, either manually or from within your own simulation script [link]()
-- Loop, [optional] publish ROS messages, and save data [here]().
+- Save GT data [here]().
 
 ## Additional scripts
+
+
+### Correct data and smpl_and_bbox
+
+[This](https://github.com/eliabntt/GRADE-RR/blob/7d9cb9a3d75d57628adacb9b9f969909d7663f3d/simulator/smpl_and_bbox.py) and [this](https://github.com/eliabntt/GRADE-RR/blob/7d9cb9a3d75d57628adacb9b9f969909d7663f3d/simulator/correct_data.py) show how to access low-level information of the meshes, how it is possible to correct the 3DBbox and pose incorrect information.
+
+### Zebra data generation and Animation Sequences
+
+[This](https://github.com/eliabntt/GRADE-RR/blob/7d9cb9a3d75d57628adacb9b9f969909d7663f3d/simulator/zebra_datagen.py) is the code that we used to generate the data for the Zebra paper. Unfortunately, we cannot share the USDs of the environments, whith the exception of the Savanna one, due to licensing limitations.
+You can however explore how to access low level animation sequences [link](https://github.com/eliabntt/GRADE-RR/blob/455891d5021009695a5da13c4feda0ceb258d476/simulator/utils/zebra_utils.py#L136) and how we managed to generate our data for the [Synthetic Data-based Detection of Zebras in Drone Imagery paper](https://arxiv.org/abs/2305.00432). Run it with `./python.sh GRADE-RR/simulator/zebra_datagen.py --/renderer/enabled='rtx,iray'  --config='configs/config_zebra_datagen.yaml' --headless=False --fix_env=Savana`
 
 ### Replay experiment
 

@@ -36,7 +36,7 @@ def set_common_stage_properties(rate):
 		set_carb_setting(carb.settings.get_settings(), setting_key, desired_value)
 
 
-def environment_setup(need_ros = True):
+def simulation_environment_setup(need_ros = True):
 	"""
     Enable the necessary extensions that will be used within the simulation
   """
@@ -127,8 +127,7 @@ def compute_timeline_ratio(human_anim_len, reverse_strategy, experiment_length):
 		return 1
 
 
-def pub_and_write_images(my_recorder, simulation_context, viewport_window_list, second_start,
-                         ros_camera_list, raytracing):
+def pub_and_write_images(simulation_context, viewport_window_list, ros_camera_list, raytracing, my_recorder=None, enable_recorder=True):
 	sleeping(simulation_context, viewport_window_list, raytracing)
 	ctime = omni.timeline.get_timeline_interface().get_current_time()
 	for i, cam, outs in ros_camera_list:
@@ -140,8 +139,8 @@ def pub_and_write_images(my_recorder, simulation_context, viewport_window_list, 
 		for output in outs:
 			og.Controller.attribute(output+ ".inputs:step").set(0)
 	omni.timeline.get_timeline_interface().set_current_time(ctime)
-
-	if my_recorder._enable_record and second_start:
+	
+	if my_recorder and my_recorder._enable_record and enable_recorder:
 		my_recorder._update()
 		print("Writing")
 

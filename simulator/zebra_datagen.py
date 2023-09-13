@@ -132,7 +132,7 @@ try:
 	from utils.environment_utils import *
 	from pxr import UsdGeom, UsdLux, Gf, Vt, UsdPhysics, PhysxSchema, Usd, UsdShade, Sdf, UsdSkel
 
-	environment_setup(need_ros=False)
+	simulation_environment_setup(need_ros=False)
 
 	all_env_names = ["Bliss", "Forest", "Grasslands", "Iceland", "L_Terrain", "Meadow",
 	                 "Moorlands", "Nature_1", 'Nature_2', "Savana", "Windmills", "Woodland"]
@@ -224,15 +224,15 @@ try:
 
 	print("Loading robots..")
 	robot_base_prim_path = config["robot_base_prim_path"].get()
-	base_robot_path = str(config["base_robot_path"].get())
+	usd_robot_path = str(config["usd_robot_path"].get())
 	old_h_ap = []
 	old_v_ap = []
 	simulation_context.stop()
 
 	for n in range(config["num_robots"].get()):
-		import_robot(robot_base_prim_path, n, local_file_prefix, base_robot_path)
+		import_robot(robot_base_prim_path, n, usd_robot_path, local_file_prefix)
 		change_prim_collision(False, robot_base_prim_path + str(n))
-		move_robot(robot_base_prim_path + str(n), [0, 0, 0], [0, 0, 0], 10e15)
+		set_drone_joints_init_loc(robot_base_prim_path + str(n), [0, 0, 0], [0, 0, 0], 10e15)
 		kit.update()
 
 
@@ -478,8 +478,8 @@ try:
 			success_pub = False
 			while not success_pub and pub_try_cnt < 3:
 				try:
-					pub_and_write_images(my_recorder, simulation_context, viewport_window_list, True, [],
-					                     config["rtx_mode"].get())
+					pub_and_write_images(simulation_context, viewport_window_list, [],
+					                     config["rtx_mode"].get(), my_recorder)
 					success_pub = True
 				except:
 					print("Error publishing camera")

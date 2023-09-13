@@ -2,7 +2,6 @@
 
 Still WIP.
 
-
 We have several showcase examples (all located in the simulator folder).
 
 Each one of the python files has its own configuration yaml file. More details will be given below for each file
@@ -20,18 +19,8 @@ The scripts are the following:
 4. `irotate_simulation` this is the code that we used to simulate [iRotate](https://github.com/eliabntt/irotate_active_slam), our active SLAM method, with Isaac Sim. This is very similar to 1 and 2, despite using an initial location but shwos how you can manage different robot with practically the same code.
 5. `multi_robot_sim` simulate multi robots, a bit hardcoded but generalizable. This simulate two drones and a ground robot. The two drones will be controlled independently with two FUEL sessions, while the ground robot is controlled with iRotate.
 6. `savana_simulation` to show how we created the Savana with the Zebras. Animated animals are pre-positioned within the environment. The robot is controlled through joint waypoints. **THIS DOES NOT WORK in v2022.2.1 DUE TO ISAACSIM BUGS**
-7. `replay_experiment` how one can exactly replay the experiment to expand it. You can see how teleport works, how internal joint commands can work and how you can reload a USD file of an experiment, its configuration, and while modifying the robot or the environment, replay it.
-8. `correct_data` and `smpl_and_bbox` show how to access low-level information of the meshes and how it is possible to correct the 3DBbox incorrect information.
-10. `zebra_datagen` this is the code that we used to generate the data for the Zebra paper.
-
 
 **Each config needs to be updated with your own paths**
-
-### ROS-independence
-
-The main things dependent on ROS in our work are:
-1. The placement procedure (look for `position_object`, you can override/edit it how you like). We use MoveIt FCL library to check for collision. A similar procedure can be used with Trimesh package. Or you can implement your own.
-2. The ROS components attached to the robot/camera. Depending on which level of independence you want you might disable everything or keep the joint and tf publishers. Note that every viewport is a burden on the system. Also, every time you publish camera data through ROS there is some overhead since GPU data need to be first transferred to CPU and then published. Writing data is asynchronous so no slowdown there.
 
 ___
 

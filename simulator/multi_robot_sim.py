@@ -182,7 +182,7 @@ try:
       last_pub_time = rospy.Time.now()
 
 
-  environment_setup()
+  simulation_environment_setup()
 
   rospy.init_node("my_isaac_ros_app", anonymous=True, disable_signals=True, log_level=rospy.ERROR)
   starting_pub = rospy.Publisher('starting_experiment', String)
@@ -306,7 +306,7 @@ try:
 
   print("Loading robots..")
   robot_base_prim_path = config["robot_base_prim_path"].get()
-  base_robot_path = [str(i) for i in config["base_robot_path"].get()]
+  usd_robot_path = [str(i) for i in config["usd_robot_path"].get()]
   c_pose = []
   old_pose = []
   old_h_ap = []
@@ -314,16 +314,16 @@ try:
   is_irotate = np.array(config["is_iRotate"].get())
   for n in range(config["num_robots"].get()):
     simulation_context.stop()
-    import_robot(robot_base_prim_path, n, local_file_prefix, base_robot_path[n])
+    import_robot(robot_base_prim_path, n, usd_robot_path[n], local_file_prefix)
     if is_irotate[n]:
       x, y, z, yaw = 0, 0, 0, 0
     else:
       x, y, z, yaw = get_valid_robot_location(environment, first)
     simulation_context.stop()
 
-    move_robot(f"{robot_base_prim_path}{n}", [x / meters_per_unit, y / meters_per_unit, z / meters_per_unit],
+    set_drone_joints_init_loc(f"{robot_base_prim_path}{n}", [x / meters_per_unit, y / meters_per_unit, z / meters_per_unit],
                [0, 0, yaw],
-               (environment.env_limits[5]) / meters_per_unit, is_irotate[n])
+               (environment.env_limits[5]) / meters_per_unit, 0.3/meters_per_unit, is_irotate[n])
 
     c_pose.append([x, y, z])
     old_pose.append([x, y, z])
@@ -603,8 +603,9 @@ try:
       # getting skel pose for each joint
       # get_skeleton_info(meters_per_unit, body_origins, body_list)
       # FIRST ONE WRITTEN IS AT 1/30 on the timeline
-      pub_and_write_images(my_recorder, simulation_context, viewport_window_list,
-                           second_start, ros_camera_list, config["rtx_mode"].get())
+      pub_and_write_images(simulation_context, viewport_window_list,
+                           ros_camera_list, config["rtx_mode"].get(),
+                           my_recorder, second_start)
 
     if simulation_step % ratio_camera == 0 and simulation_step / ratio_camera == experiment_length \
         and not config["neverending"].get():

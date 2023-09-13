@@ -55,7 +55,7 @@ If you remove something from the config file please be sure that is not used in 
 - `env_path`: folder containing the subfolders of the environments (`env_path/env1, env_path/env2, ...`). You can randomly chose or use `fix_env` to specify an environment. 
 - `human_path`: folder that contains the subfolders of the human animated assets, separated in the various datasets (`human_path/dataset1/animationX`,`human_path/dataset2/animationX`)
 - `base_env_path`: global path of the basic environment (the background). NOTE: some configs cannot be changed from the code
-- `base_robot_path`: global path of the USD of the robot. Can be an array as for multi_robot case
+- `usd_robot_path`: global path of the USD of the robot. Can be an array as for multi_robot case
 - `robot_mesh_path`: global path of the mesh of the robot. Can be an array as for multi_robot case
 - `out_folder`: path of the output folder in which we will save the ROS logs, and the map
 - `out_folder_npy`: path of the output folder in which we will save the groundtruth from the simulator code (not the rosbags)

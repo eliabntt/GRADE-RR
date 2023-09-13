@@ -101,7 +101,7 @@ try:
 	from utils.environment_utils import *
 	from utils.human_utils import *
 
-	environment_setup()
+	simulation_environment_setup()
 	local_file_prefix = "my-computer://"
 	omni.usd.get_context().open_stage(local_file_prefix + config["experiment_folder"].get() + "/loaded_stage.usd", None)
 	kit.update()

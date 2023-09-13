@@ -6,7 +6,7 @@ base_env_path: "/media/ebonetto/WindowsData/ov/isaac_sim-2022.2.1/GRADE-RR/usds/
 zebra_anims_loc: "/media/ebonetto/WindowsData/Zebra_anims"
 randomize_sky: True # only if allowed
 robot_mesh_path: "/media/ebonetto/WindowsData/ov/isaac_sim-2021.2.1/GRADE-RR/meshes/drone.dae"
-base_robot_path: "/media/ebonetto/WindowsData/ov/isaac_sim-2022.2.1/GRADE-RR/usds/drone_2022.usd"
+usd_robot_path: "/media/ebonetto/WindowsData/ov/isaac_sim-2022.2.1/GRADE-RR/usds/drone_2022.usd"
 out_folder: "/media/ebonetto/WindowsData/zebra_out_close"
 out_folder_npy: "/media/ebonetto/WindowsData/zebra_out_close"
 fps: 30

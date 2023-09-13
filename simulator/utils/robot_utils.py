@@ -100,7 +100,7 @@ def create_camera_pose_message(_dc, camera_body_ptr, handle, meters_per_unit):
 	return camera_pose
 
 
-def add_pose_tree(path: str, irotate: bool):
+def add_pose_tree(path: str, irotate: bool=False):
 	"""
 	Add the tf publisher to the desired path.
 	This path should be the robot itself.
@@ -490,7 +490,7 @@ def pub_odom(robot_odom_frames, odom_pubs, _dc, meters_per_unit, diff_odom_frame
 	return odoms, angles
 
 
-def import_robot(robot_base_prim_path, n, local_file_prefix, base_robot_path):
+def import_robot(robot_base_prim_path, n, usd_robot_path, local_file_prefix=''):
 	"""
 	Add the robot to the stage.
 	Add semantics.
@@ -499,7 +499,7 @@ def import_robot(robot_base_prim_path, n, local_file_prefix, base_robot_path):
 	res, _ = omni.kit.commands.execute("CreateReferenceCommand",
 	                                   usd_context=omni.usd.get_context(),
 	                                   path_to=f"{robot_base_prim_path}{n}",
-	                                   asset_path=local_file_prefix + base_robot_path,
+	                                   asset_path=local_file_prefix + usd_robot_path,
 	                                   instanceable=False)
 	if res:
 		clear_properties(f"{robot_base_prim_path}{n}")
@@ -664,9 +664,9 @@ def get_robot_joint_init_loc(name):
 
 
 
-def move_robot(name: str, pos: [], orientation: [], upper_zlim: float, irotate=False, meters_per_unit=1, lower_zlim: float=0.3):
+def set_drone_joints_init_loc(name: str, pos: [], orientation: [], upper_zlim: float=100, lower_zlim: float=0, irotate=False):
 	"""
-	Move the robot to the specified location by acting on the JOINTS.
+	Move the drone to the specified location by acting on the JOINTS.
 
 	PLEASE NOTE: the intial joint position published by joint_states will be 0,0,0 strangely. #IsaacBug
 	The joints should be named as follows:
@@ -679,11 +679,12 @@ def move_robot(name: str, pos: [], orientation: [], upper_zlim: float, irotate=F
 
 	name: the name of the robot (e.g. "my_robot_0", the prim path)
 	pos: the position of the robot (x,y,z)
-	orientation: the orientation of the robot (roll,pitch,yaw)
+	orientation: the orientation of the robot (roll,pitch,yaw), in rad
 	upper_zlim: the z limit of the robot (z)
 	irotate: if True, the joints considered are the iRotate ones
 	"""
 	x, y, z = pos
+	upper_zlim = max(upper_zlim, z)
 	roll, pitch, yaw = orientation
 	stage = omni.usd.get_context().get_stage()
 	if irotate:
@@ -701,7 +702,7 @@ def move_robot(name: str, pos: [], orientation: [], upper_zlim: float, irotate=F
 		UsdPhysics.Joint.Get(stage, name + '/base_link/x_joint').GetLocalPos0Attr().Set(Gf.Vec3f(x, 0, 0))
 		UsdPhysics.Joint.Get(stage, name + '/x_link/y_joint').GetLocalPos0Attr().Set(Gf.Vec3f(0, y, 0))
 		UsdPhysics.Joint.Get(stage, name + '/y_link/z_joint').GetLocalPos0Attr().Set(Gf.Vec3f(0, 0, z))
-		stage.GetPrimAtPath(name + '/y_link/z_joint').GetAttribute('physics:lowerLimit').Set(-z + lower_zlim/meters_per_unit)
+		stage.GetPrimAtPath(name + '/y_link/z_joint').GetAttribute('physics:lowerLimit').Set(-z + lower_zlim)
 		stage.GetPrimAtPath(name + '/y_link/z_joint').GetAttribute('physics:upperLimit').Set(upper_zlim - z)
 
 		roll = np.rad2deg(roll)

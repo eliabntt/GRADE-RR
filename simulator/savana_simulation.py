@@ -46,7 +46,7 @@ try:
     from utils.environment_utils import *
 
 
-    environment_setup()
+    simulation_environment_setup()
     # set timeline of the experiment
     timeline = setup_timeline(config)
 
@@ -134,7 +134,7 @@ try:
     _dc = dynamic_control_interface()
 
     robot_base_prim_path = config["robot_base_prim_path"].get()
-    base_robot_path = str(config["base_robot_path"].get())
+    usd_robot_path = str(config["usd_robot_path"].get())
     old_h_ap = []
     old_v_ap = []
     robot_init_loc = []
@@ -142,7 +142,7 @@ try:
 
     simulation_context.stop()
     for n in range(config["num_robots"].get()):
-        import_robot(robot_base_prim_path, n, local_file_prefix, base_robot_path)
+        import_robot(robot_base_prim_path, n, usd_robot_path, local_file_prefix)
         if config["init_loc"].get()["use"]:
             # assuming we go here
             x = config["init_loc"].get()["x"][n]
@@ -154,8 +154,8 @@ try:
         robot_init_loc.append([x,y,z])
         robot_init_ang.append([roll, pitch, yaw])
 
-        move_robot(f"{robot_base_prim_path}{n}", [x / meters_per_unit, y / meters_per_unit, z / meters_per_unit], [roll, pitch, yaw],
-                   (environment.env_limits[5]) / meters_per_unit, meters_per_unit=meters_per_unit)
+        set_drone_joints_init_loc(f"{robot_base_prim_path}{n}", [x / meters_per_unit, y / meters_per_unit, z / meters_per_unit], [roll, pitch, yaw],
+                   (environment.env_limits[5]) / meters_per_unit)
 
         add_ros_components(robot_base_prim_path, n, ros_transform_components, ros_camera_list, viewport_window_list,
                            camera_pose_frames, cam_pose_pubs, imu_pubs, robot_imu_frames,
@@ -311,8 +311,8 @@ try:
             ctime = timeline.get_current_time()
             print("Publishing cameras...")
 
-            pub_and_write_images(my_recorder, simulation_context, viewport_window_list,
-                                 True, ros_camera_list, config["rtx_mode"].get())
+            pub_and_write_images(simulation_context, viewport_window_list,
+                                 ros_camera_list, config["rtx_mode"].get(), my_recorder)
             timeline.set_current_time(ctime)
 
 except:

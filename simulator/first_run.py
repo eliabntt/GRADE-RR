@@ -41,9 +41,7 @@ print("Loading Complete")
 context = omni.usd.get_context()
 stage = context.get_stage() # used to access the elements of the simulation
 
-simulation_context = SimulationContext(physics_dt=1.0 / 60,
-	                                       rendering_dt=1.0 / 60,
-	                                       stage_units_in_meters=0.01, backend='torch')
+simulation_context = SimulationContext(physics_dt=1.0 / 60, rendering_dt=1.0 / 60, stage_units_in_meters=0.01, backend='torch')
 simulation_context.initialize_physics()
 physx_interface = omni.physx.acquire_physx_interface()
 physx_interface.start_simulation()
@@ -51,3 +49,8 @@ physx_interface.start_simulation()
 for _ in range(100):
     simulation_context.render()
     simulation_context.step(render=False)
+
+try:
+	kit.close()
+except:
+	pass

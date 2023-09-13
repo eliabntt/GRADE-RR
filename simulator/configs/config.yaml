@@ -7,7 +7,7 @@ base_env_path: "../usds/env_base.usd"
 meters_per_unit: 1
 clean_base_env: False
 robot_mesh_path: "../meshes/drone.dae"
-base_robot_path: "../usds/drone.usd"
+usd_robot_path: "../usds/drone.usd"
 out_folder: "exp_out"
 out_folder_npy: "exp_out"
 num_robots: 1
