@@ -172,3 +172,13 @@ Instance segmentation files will save also the mappings between classes. An exam
 
 ### Shapenet and GSO
 For the objects please download at least some assets from ShapeNetv2 or GSO websites. Paths should be `../gso/folders_of_the_objects` and `../shapenet/synsetIds/...`. For ShapeNet please also add `../shapenet/v1_csv/all_of_the_synset_csvs`. Our code will convert locally in `../gso/exported_usd` and `../shapenet/local-converted-USD`. Clearly, you can pre-process everything and use only the USDs afterwards (to save space). All the code is on `simulator/utils/object_utils.py`.
+
+### Project pixels to world
+Look at `scripts/pixel_to_world.py`
+
+### Bag processing
+Average stats `scripts/average_rosbag.py`
+Filter and compress `scripts/filter_compress.sh`
+
+### Automatically generate data
+See `scripts/bash_process.zsh` using `screen`
