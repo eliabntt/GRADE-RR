@@ -123,66 +123,72 @@ The data will be available in our [data repository](https://github.com/eliabntt/
 __________
 ## Citations
 
-If you find this work useful please cite our work
+You acknowledge that the Data & Software is a valuable scientific resource and agree to appropriately reference the following paper in any publication making use of the Data & Software.
 
-1. GRADE: currently under revision. Please cite this if you use this code, ideas from this paper, etc.
+Citation:
+
 ```
 @misc{bonetto2023grade,
-  doi = {10.48550/ARXIV.2303.04466},
-  url = {https://arxiv.org/abs/2303.04466},
-  author = {Bonetto, Elia and Xu, Chenghao and Ahmad, Aamir},
-  keywords = {Robotics (cs.RO), FOS: Computer and information sciences, FOS: Computer and information sciences},
-  title = {GRADE: Generating Realistic Animated Dynamic Environments for Robotics Research},
-  publisher = {arXiv},
-  year = {2023},
-  copyright = {arXiv.org perpetual, non-exclusive license}
+            doi = {10.48550/ARXIV.2303.04466},
+            url = {https://arxiv.org/abs/2303.04466},
+            author = {Bonetto, Elia and Xu, Chenghao and Ahmad, Aamir},
+            title = {GRADE: Generating Realistic Animated Dynamic Environments for Robotics Research},
+            publisher = {arXiv},
+            year = {2023},
+            copyright = {arXiv.org perpetual, non-exclusive license}
 }
 ```
 
-2. Synthetic Zebras: Published at ECMR2023. Please cite this if you use the data or the models published related to this publication, or if you find this work inspiring.
+Additionally:
+
+- If you use any Data and/or Software related to zebras(animal) detection from drone imagery reference the following paper in any publication as well
 ```
-@misc{bonetto2023synthetic,
-      title={Synthetic Data-based Detection of Zebras in Drone Imagery}, 
-      author={Elia Bonetto and Aamir Ahmad},
-      year={2023},
-      publisher = {arXiv},
-      url = {https://arxiv.org/abs/2305.00432},
-      doi = {10.48550/arXiv.2305.00432},
-      primaryClass={cs.CV}
+@inproceedings{bonetto2023synthetic,
+            title={Synthetic Data-based Detection of Zebras in Drone Imagery},
+            author={Elia Bonetto and Aamir Ahmad},
+            year={2023},
+            month = sep,
+            month_numeric = {9},
+            publisher = {IEEE},
+            url = {https://arxiv.org/abs/2305.00432},
+            booktitle = {2023 European Conference on Mobile Robots (ECMR 2023)},
+            note={To appear}
 }
 ```
 
-3. Dyanmic SLAM evaluations: published at the Active Vision for Robotics Workshop at ICRA 2023. Please cite this with GRADE main work if you want to reference the evaluations we did on Dynamic SLAM.
-
+- If you use any Data and/or Software related to our Dyanmic SLAM evaluations
 ```
-@inproceedings{ bonetto2023dynamicSLAM, 
+@inproceedings{bonetto2023dynamicSLAM, 
             title={{S}imulation of {D}ynamic {E}nvironments for {SLAM}}, 
             author={Elia Bonetto and Chenghao Xu and Aamir Ahmad}, 
             booktitle={ICRA2023 Workshop on Active Methods in Autonomous Navigation}, 
             year={2023}, 
-            url={https://arxiv.org/abs/2305.04286}}
+            url={https://arxiv.org/abs/2305.04286},
+            month = jun,
+            month_numeric = {6}
+}
 ```
 
-4. Detection and segmentation of humans in indoor scenes using synthetic data: published at the Pretraining for Robotics workshop at ICRA 2023. Please cite this with GRADE main work if you find our work on humans detection inspiring. 
-
+- If you use any Data and/or Software related to the tasks of detection/segmentation of humans in dynamic environments.
 ```
-@inproceedings{
-bonetto2023learning,
-title={Learning from synthetic data generated with {GRADE}},
-author={Elia Bonetto and Chenghao Xu and Aamir Ahmad},
-booktitle={ICRA2023 Workshop on Pretraining for Robotics (PT4R)},
-year={2023},
-url={https://openreview.net/forum?id=SUIOuV2y-Ce}
+@inproceedings{bonetto2023learning,
+            title={Learning from synthetic data generated with {GRADE}},
+            author={Elia Bonetto and Chenghao Xu and Aamir Ahmad},
+            booktitle={ICRA2023 Workshop on Pretraining for Robotics (PT4R)},
+            year={2023},
+            url={https://openreview.net/forum?id=SUIOuV2y-Ce},
+            month = jun,
+            month_numeric = {6}
 }
 ```
 ____________
 
 ## LICENSE
-By downloading and/or using the Data & Software (including downloading, cloning, installing, and any other use of the corresponding github repository), you acknowledge that you have read these terms and conditions, understand them, and agree to be bound by them. If you do not agree with these terms and conditions, you must not download and/or use the Data & Software. Any infringement of the terms of this agreement will automatically terminate your rights under this License
+By downloading and/or using the Data & Software (including downloading, cloning, installing, and any other use of the corresponding github repository), you acknowledge that you have read these terms and conditions, understand them, and agree to be bound by them. If you do not agree with these terms and conditions, you must not download and/or use the Data & Software. Any infringement of the terms of this agreement will automatically terminate your rights under this License. Please read the [licensing](https://github.com/eliabntt/GRADE-RR/blob/main/LICENSE.md) agreement prior to any use of our Data or Software.
 
 Accompanying software, such as, but not limited to, the one from Isaac Sim, is licensed according to their specific term of use.
 
-If you use data/software from other projects such as, but not limited to, TUM RGB-D, 3D-Front, 3D-Future, ... it is your responsibility to follow their licensing terms.
+If you use data/software from other projects such as, but not limited to, TUM RGB-D, 3D-Front, 3D-Future, ... it is your responsibility to follow their licensing terms, whose you implicitly agree.
 
 If you have questions regarding the license, please contact the [ps-licensing@tue.mpg.de](mailto:ps-licensing@tue.mpg.de).
 ______
