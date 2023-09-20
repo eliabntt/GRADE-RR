@@ -1,27 +1,945 @@
----
-title: "GRADE-RR Dataset"
-layout: default
----
 
 
----
-title: GRADE-RR
----
 
-{% capture home_url %}{{ site.url }}{{ site.baseurl }}/home{% endcapture %}
-<!DOCTYPE HTML>
-<html lang="en-GB">
-  <head>
-    <meta name="theme-color" content="#373435ff"/>
-    <meta charset="UTF-8">
-    <meta http-equiv="refresh" content="https://grade.is.tue.mpg.de">
-    <script type="text/javascript">
-      window.location.href = "https://grade.is.tue.mpg.de"
-    </script>
-    <title>Redirecting to GRADE-RR home</title>
-  </head>
-  <body>
-    If you are not redirected automatically, follow this 
-    <a href="https://grade.is.tue.mpg.de">GRADE-RR Home</a>.
-  </body>
-</html>
+<!-- About -->
+<section class="bg-light" id="about">
+    <div class="container-fluid">
+      <div class="jumbotron jumbotron-fluid" id="title-box">
+        <div class="container-fluid" align="center">
+          <h2>
+            GRADE
+          </h2>
+          <h4><i>Generating Realistic Animated Dynamic Environments for Robotics Research</i></h4>
+          <p>
+            <a href="https://eliabntt.github.io/">Elia Bonetto</a><sup>1,2,*</sup>,&nbsp;
+            <a href="https://kyle-xu001.github.io/">Chenghao Xu</a><sup>1,3</sup>,&nbsp;
+            <a href="https://aamirahmad.de/">Aamir Ahmad</a><sup>2,1</sup>,&nbsp;
+            <br />
+            <sup>1</sup>Max Planck Institute for Intelligent Systems&nbsp;&nbsp;
+            <sup>2</sup>University of Stuttgart&nbsp;&nbsp;
+            <sup>3</sup>Delft University of Technology&nbsp;&nbsp;
+            <br />
+            <sup>*</sup> Corresponding Author
+          </p>
+  
+          <div class="container-fluid">
+            <div class="col-md-12 mx-auto img text-center" style="max-width: 900px;">
+              <img class="img-fluid" src="{{site.baseurl}}/static/img/NewCover.jpg">
+            </div>
+          </div>
+          <br />
+  
+          <h5>
+            Project papers: <a href="https://arxiv.org/abs/2303.04466">[GRADE Paper]</a>&nbsp; <!-- todo fixme -->
+            <a href="https://arxiv.org/abs/2305.00432">[Synthetic Data-based Detection of Zebras in Drone Imagery - ECMR 2023]</a>&nbsp; <!-- todo fixme -->
+            <br>
+            <br>
+            Workshop papers: <a href="https://openreview.net/forum?id=SUIOuV2y-Ce">[Learning from synthetic data generated with GRADE - Pretraining4Robotics ICRA2023]</a>&nbsp; <!-- todo fixme -->
+            <a href="https://arxiv.org/abs/2305.04286">[Simulation of Dynamic Environments for SLAM - Active Methods in Auto. Nav. ICRA2023]</a>&nbsp; <!-- todo fixme -->
+            <br>
+            <br>
+            Data: <a href="https://github.com/eliabntt/GRADE_data/">[Download Data]</a>&nbsp;
+            <br>
+            <br>
+            Code: <a href="https://github.com/eliabntt/Front3D_to_USD">[Environment Generation Code]</a>&nbsp;
+            <a href="https://github.com/eliabntt/animated_human_SMPL_to_USD">[SMPL animation to USD]</a>&nbsp;
+            <a href="https://github.com/eliabntt/GRADE-RR">[GRADE framework]</a>
+            <a href="https://github.com/robot-perception-group/GRADE_tools/">[Data Processing and Evaluation]</a>
+          </h5>
+        </div>
+      </div>
+  </section>
+  
+  <center>
+    <section>
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-sm-6">
+            <div class="embed-responsive embed-responsive-16by9" style="max-width: 1320px;">
+              <iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen="" src="https://www.youtube-nocookie.com/embed/cmywCSD-9TU" title="independentCamera"
+                data-dashlane-frameid="1498">
+              </iframe>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="embed-responsive embed-responsive-16by9" style="max-width: 1320px;">
+              <iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen="" src="https://www.youtube-nocookie.com/embed/NntEgJVDIVw" title="independentCamera"
+                data-dashlane-frameid="1498">
+              </iframe>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </center>
+  
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-lg-12">
+        <h2 class="section-heading text-uppercase text-center">News</h2>
+        <h5 class="text-muted" style="text-align:left;">
+          <ul>
+            <li>June 2023: <a href="https://arxiv.org/abs/2305.00432">Synthetic Data-based Detection of Zebras in Drone Imagery</a> has been accepted as oral presentation at the next ECMR 2023 </li>
+            <li>May 2023: Main code porting to Isaac 2022 available in the <a
+              href="https://github.com/eliabntt/GRADE-RR/tree/v2022">v2022</a> branch. </li>
+            <li>May 2023: Showing how to use ONLY Synthetic Zebras to train a detector. <a
+                href="https://keeper.mpdl.mpg.de/d/12abb3bb6b12491480d5/">Data</a> and <a
+                href="https://arxiv.org/abs/2305.00432">paper</a> already available.</li>
+            <li>May 2023: Generate outdoor aerial views of Zebras with <a
+                href="https://github.com/eliabntt/GRADE-RR/blob/main/simulator/zebra_datagen.py">this code.</a>
+            <li>Accepted ICRA 2023 <em>Pretraining for Robotics</em> workshop paper <a
+                href="https://openreview.net/forum?id=SUIOuV2y-Ce">Learning from synthetic data generated with GRADE</a>
+            </li>
+            <li>Accepted ICRA 2023 <em>Active Methods in Autonomous Navigation</em> workshop paper <a
+                href="https://arxiv.org/abs/2305.04286">Simulation of Dynamic Environments for SLAM</a></li>
+            <li>Watch my talk at <a
+                href="https://www.nvidia.com/gtc/session-catalog/?tab.catalogallsessionstab=16566177511100015Kus&search=S51570#/session/1666623015127001DShI"
+                target="_blank">GTC 2023</a></li>
+            <li>March 2023: Annoncing <a href="https://github.com/eliabntt/GRADE-RR">GRADE</a>. Work submitted at T-RO
+              journal.</li>
+            <li>March 2023: Take a look at our released data <a href="https://github.com/eliabntt/GRADE_data">here</a>
+            </li>
+            <li>March 2023: Download the labelled <i>fr3/walking</i> sequences of the TUM RGBD dataset <a
+                href="https://github.com/eliabntt/GRADE_data">here</a></li>
+          </ul>
+        </h5>
+      </div>
+    </div>
+  </div>
+  
+  <div class="section">
+    <div class="container-fluid">
+      <div align="center">
+        <h2>Our Mission</h2>
+      </div>
+      <hr />
+      <p>
+        With GRADE we provide a pipeline to easily simulate robots in photorealistic dynamic environments.
+  
+        This will simplify the robotics research by a great extent by allowing easy data generation and precise custom
+        simulations.
+  
+        The project is based on <a href="https://developer.nvidia.com/isaac-sim">Isaac Sim</a>, <a
+          href="https://www.nvidia.com/en-us/omniverse/">Omniverse</a> and the open source <a
+          href="https://github.com/PixarAnimationStudios/USD">USD</a> format.
+  
+        <br>
+        <br>
+        On our first work, we put the focus into four main components: i) indoor environments, ii) dynamic assets, iii)
+        robot/camera setup and control, iv) simulation control, data processing and extra tools.
+  
+        <!--  This means, for example, that you can use your own placement strategy, assets, robot, or control mechanism. 
+            
+            We worked towards a flexible system that could address many needs, e.g. working with or without ROS, with or without physics, with your own software in the loop, to generate noisy or groundtruth data.-->
+  
+        Using our framework we generate an indoor dynamic environment dataset, and showcase various scenarios such as
+        heterogeneous multi-robot setup and outdoor video capturing.
+  
+        The data generated is solely based on publicly available datasets and tools such as: <a
+          href="https://tianchi.aliyun.com/specials/promotion/alibaba-3d-scene-dataset">3D-Front</a>,
+        <a href="https://research.google/resources/datasets/scanned-objects-google-research/">Google Scanned Objects</a>,
+        <a href="https://shapenet.org/">ShapeNet</a>, <a
+          href="https://chalearnlap.cvc.uab.cat/dataset/38/description/">Cloth3D</a>, <a
+          href="https://amass.is.tue.mpg.de/">AMASS</a>,
+        <a href="https://smpl.is.tue.mpg.de/">SMPL</a> and <a
+          href="https://github.com/DLR-RM/BlenderProc/">BlenderProc</a>.
+  
+        This has been used to extensive test various SLAM libraries and synthetic data usability in human
+        detection/segmentation task with both Mask-RCNN and YOLOv5.
+  
+        You can already check the data used for training, and the sequences we used to test the SLAM frameworks <a
+          href="https://github.com/eliabntt/GRADE_data/tree/main">here</a>.
+        <br>
+        <br>
+  
+        After that, we used the very same framework to generate a dataset of zebras captured outdoor from aerial views,
+        and demonstrated that we can train a detector <em>without using real world images</em> achieving <em>94% mAP</em>.
+        We already released the images and most of the data for you to experiment with.
+  
+        <br>
+        <br>
+        Thanks to the ROS support and the python interface, each one of our modules can be easily removed from the
+        pipeline, or exchanged with <i>your</i> custom implementations.
+        Our framework is easily expandable and customizable for any use case, and we will welcome any contribution that
+        you may have.
+        <br>
+        <br>
+        Note that the use of ROS is neither necessary nor mandatory. You can use the system without any working knowledge
+        of ROS or of its components.
+        <br>
+        <br>
+        For further details check the papers (<a href="https://arxiv.org/abs/2303.04466">GRADE</a>, <a
+          href="https://arxiv.org/abs/2305.00432">Zebras</a>) or write me an <a
+          href="mailto:elia.bonetto@tue.mpg.de">e-mail</a>.
+      </p>
+    </div>
+  
+  </div>
+  
+  <br />
+  <section class="bg-light" id="pipeline">
+    <div class="container-fluid">
+      <div class="col-md-12 mx-auto img text-center" style="max-width: 900px;">
+        <h2>GRADE pipeline</h2>
+        <img class="img-fluid" src="{{site.baseurl}}/static/img/pipeline.png">
+      </div>
+    </div>
+  </section>
+  
+  <section class="bg-light" id="generate">
+    <div class="text-center">
+      <h2>More informations</h2>
+    </div>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-6">
+          <h4 class="service-heading">Environments</h4>
+          <p class="text-muted">
+            While perception and processing capabilities of our robot increases, there's the need to increase also the
+            quality of our simulated environments.
+            This will enable research based on simulations that are more coherent with the real world that the robot will
+            sense when deployed, closing the sim-to-real gap.
+            Using Omniverse's <a
+              href="https://docs.omniverse.nvidia.com/con_connect/con_connect/overview.html">connectors</a> you can
+            convert almost any environment to the USD format. This can then be imported directly in IsaacSim.
+            Our <a href="https://github.com/eliabntt/Front3D_to_USD">conversion tool</a>, based on BlenderProc, focuses on
+            the 3D-Front dataset, the biggest available semantically-annotated indoor dataset with actual 3D meshes.
+            However, as we show in our work we can easily import environments from other applications such as
+            UnrealEngine, or download environments from popular marketplaces such as <a
+              href="https://sketchfab.com/feed">SketchFab</a>.
+            For example, we use the same system to convert BlenderProc environments (download them with <a
+              href="https://github.com/eliabntt/GRADE-RR/blob/main/scripts/get_benchbot.sh">this</a>), and FBX files.
+            Our script will automatically extract other useful information such as the STL of the environment, convert it
+            to x3d (which can be then converted to octomap), and get an approximated enclosing polygon.
+            Find more information on how you can easily convert an environment <a
+              href="https://github.com/eliabntt/Front3D_to_USD">here</a>.
+          </p>
+        </div>
+        <div class="col-md-6">
+          <h4 class="service-heading">Dynamic assets</h4>
+          <p class="text-muted">
+            Most of the robotics research is being carried out in <b>static</b> environments. This mainly because animated
+            assets are difficult to simulate, place and manage.
+            We focused mostly on animated clothed humans by converting and placing inside our environments <a
+              href="https://chalearnlap.cvc.uab.cat/dataset/38/description/">Cloth3D</a> and <a
+              href="https://amass.is.tue.mpg.de/">AMASS (CMU)</a> animated assets.
+            To do so, we implemented a simple to use <a
+              href="https://github.com/eliabntt/animated_human_SMPL_to_USD">tool</a> that allows a streamlined conversion
+            between SMPL
+            mesh and clothes animation to the USD format. The tool is expandable to different body models (e.g. SMPL-X) or
+            different data sources.
+  
+            The animations are then placed in the simulation with an easy to understand technique which can be easily
+            exchanged with your own script.
+            Our strategy use the STL trace of the animation and of the environment to check for collisions using a custom
+            <a href="https://github.com/eliabntt/moveit_based_collision_checker_and_placement">service</a> based on
+            MoveIt's FCL interface.
+            <br>
+            <br>
+            However, dynamic assets are not only humans but there can be also objects or animals. Luckly, you can easily
+            simulate those too.
+            For example, <a
+              href="https://github.com/eliabntt/GRADE-RR/blob/beaeddde94bccf9fcabea04db9fe68e67109828c/simulator/utils/objects_utils.py#L195">here</a>
+            we show how you can add flying properties to objects.
+            The zebras we showcase in the video (get them <a href="https://bit.ly/3Ijpzc3">here</a>) were converted using
+            blender to the USD format. The translation and rotation offset was added manually animated using <a
+              href="https://docs.omniverse.nvidia.com/app_create/prod_extensions/ext_animation_curves.html">this
+              procedure</a> and then manually placed and scaled in the savanna environment.
+            The zebras used for the generation instead are randomly scaled and placed (statically) at simulation time.
+            Check how <a href="https://github.com/eliabntt/GRADE-RR/blob/main/simulator/zebra_datagen.py">here</a> and <a
+              href="https://github.com/eliabntt/GRADE-RR/blob/main/simulator/utils/zebra_utils.py">here</a>.
+          </p>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <h4 class="service-heading">Robot/camera setup and control</h4>
+          <p class="text-muted">
+            Any robot can be imported in the simulation.
+            You can control the robot in various ways with or without ROS and with or without physics. Non-physics enabled
+            possibilities include control through teleporting and as a flying object.
+            Physics-enabled ones include software in the loop, joint-based waypoints, pre-developed controllers (e.g.
+            standard vehicles) and directly through joint commands.
+            Find out more <a href="https://github.com/eliabntt/GRADE-RR/blob/main/MOVEMENT.md">here</a>.
+            <br>
+            <br>
+            Since Isaac Sim does not provide fluid-dynamic simulation and frictionless perpendicular movement, we
+            developed a custom
+            virtual <a href="https://github.com/eliabntt/custom_6dof_joint_controller">6DOF joint controller</a> that
+            works both with position and velocity setpoints. This allowed us to control both a drone and a 3-wheeled
+            omnidirectional robot.
+  
+            The joint controller would work for any robot that you have, provided that you include in it your own joint
+            definitions.
+  
+            <br>
+            <br>
+            Robot's sensors can be created at run-time (<a
+              href="https://github.com/eliabntt/GRADE-RR/blob/beaeddde94bccf9fcabea04db9fe68e67109828c/simulator/paper_simulation.py#L325">main
+              script</a>, <a
+              href="https://github.com/eliabntt/GRADE-RR/blob/beaeddde94bccf9fcabea04db9fe68e67109828c/simulator/utils/robot_utils.py#L439">function</a>),
+            and dynamically changed, or pre-configured directly in the USD file.
+  
+            <br>
+            <br>Data publishing can be controlled manually, therefore each sensor can have a custom publishing and, if you
+            want, failure rate (<a
+              href="https://github.com/eliabntt/GRADE-RR/blob/beaeddde94bccf9fcabea04db9fe68e67109828c/simulator/paper_simulation.py#L555">link</a>).
+  
+            <br>
+            <br>
+            Since the simulator is ROS-enabled any sensor can be published manually with added noise and any custom topic
+            can be added or listened. However, the use of ROS is <em>NOT mandatory NOR required</em>.
+          </p>
+        </div>
+  
+        <div class="col-md-6">
+          <h4 class="service-heading">Simulation control, data processing and extras</h4>
+          <p class="text-muted">
+            The simulation control include loading the environment, placing and control the robot, placing the animations,
+            animate objects,
+            integrate ROS, assets/materials/lights randomization, dynamically set simulation settings, and data saving.
+            The pipeline is fully customizable, e.g. with new placement strategies, by using or not ROS, have software in
+            the loop,
+            add noise to data etc.
+            Check out more information about this <a
+              href="https://github.com/eliabntt/GRADE-RR/blob/main/OUR_CODE.md">here</a> and <a
+              href="https://github.com/eliabntt/GRADE-RR/blob/main/SAMPLES.md">here</a>.
+  
+            Based on the complexity of the environment and the on the number of lights performances can reach almost
+            realtime
+            processing (>15fps) with RTX rendering settings. Without using physics <i>and</i> ROS, it should be possible
+            to reach realtime performance.
+            Generated information includes RGB, depth, semantics, 2D-3D bounding-boxes,
+            semantic instances, motion-vector (optical flow), and asset skeleton/vertices positions.
+  
+            We implemented a set of <a href="https://github.com/robot-perception-group/GRADE_tools">tools</a> to
+            post-process the data, extract it, add noise and fix some known issues of the simulation.
+            Instructions to evaluate various SLAM framework with our or your own data can be found <a
+              href="https://github.com/robot-perception-group/GRADE_tools/tree/main/SLAM_evaluation">here</a>.
+            We also provide scripts and procedures to <a
+              href="https://github.com/robot-perception-group/GRADE_tools/blob/main/training_dataset_generation/">prepare</a>
+            the data and <a href="https://github.com/eliabntt/GRADE-nets">train</a> both YOLO and Mask R-CNN.
+            However, you can directly download the images, masks and boxes we used in the paper from our <a
+              href="https://github.com/eliabntt/GRADE_data/tree/main">data</a> repository.
+  
+            <a href="https://github.com/eliabntt/GRADE-RR/blob/main/scripts/colorize.py">Data visualization</a>, <a
+              href="https://github.com/robot-perception-group/GRADE_tools/blob/main/training_dataset_generation/convert_classes.py">instance-to-semantic
+              mapping</a> tool, get <a
+              href="https://github.com/eliabntt/GRADE-RR/blob/main/simulator/smpl_and_bbox.py">SMPL and corrected 3D
+              bounding boxes</a>, and automatically convert and process the USD as a <a
+              href="https://github.com/eliabntt/GRADE-RR/blob/main/EDIT_USDS.md">text file</a> are already available.
+  
+            Finally, we developed a way to replay any experiment in such a way one can generate data with newly
+            added/modified sensors and different environment settings, check the code <a
+              href="https://github.com/eliabntt/GRADE-RR/blob/main/simulator/replay_experiment.py">here</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+    </div>
+  </section>
+  
+  <section>
+    <div class="row">
+      <div class="col-lg-6">
+        <section class="bg-light" id="carousel">
+      <div id="carousel-main" class="carousel slide mx-auto container-fluid" data-ride="carousel">
+        <ol class="carousel-indicators">
+          <li data-target="#carousel-main" data-slide-to="0" class="active"></li>
+          <li data-target="#carousel-main" data-slide-to="1"></li>
+          <li data-target="#carousel-main" data-slide-to="2"></li>
+          <li data-target="#carousel-main" data-slide-to="3"></li>
+          <li data-target="#carousel-main" data-slide-to="4"></li>
+          <li data-target="#carousel-main" data-slide-to="5"></li>
+          <li data-target="#carousel-main" data-slide-to="6"></li>
+          <li data-target="#carousel-main" data-slide-to="7"></li>
+        </ol>
+        <div class="carousel-inner">
+          <div class="carousel-item active" data-bs-interval="2000">
+            <img class="d-block img-fluid" src="{{site.baseurl}}/static/carousel/rgb_conv.jpg" alt="A sample image">
+            <div class="carousel-caption d-none d-md-block">
+              <p>Sample of groundtruth generated data</p>
+            </div>
+          </div>
+          <div class="carousel-item" data-bs-interval="2000">
+            <img class="d-block img-fluid" src="{{site.baseurl}}/static/carousel/depth_conv.jpg" alt="Depth">
+            <div class="carousel-caption d-none d-md-block">
+              <p>Depth</p>
+            </div>
+          </div>
+          <div class="carousel-item" data-bs-interval="2000">
+            <img class="d-block img-fluid" src="{{site.baseurl}}/static/carousel/SMPL.png" alt="SMPL">
+            <div class="carousel-caption d-none d-md-block">
+              <p>SMPL shapes</p>
+            </div>
+          </div>
+          <div class="carousel-item" data-bs-interval="2000">
+            <img class="d-block img-fluid" src="{{site.baseurl}}/static/carousel/motion.jpg" alt="Motion vector">
+            <div class="carousel-caption d-none d-md-block">
+              <p>Motion vector</p>
+            </div>
+          </div>
+          <div class="carousel-item" data-bs-interval="2000">
+            <img class="d-block img-fluid" src="{{site.baseurl}}/static/carousel/bbox2d_conv.jpg" alt="2D bounding boxes">
+            <div class="carousel-caption d-none d-md-block">
+              <p>2D bounding boxes</p>
+            </div>
+          </div>
+          <div class="carousel-item" data-bs-interval="2000">
+            <img class="d-block img-fluid" src="{{site.baseurl}}/static/carousel/normal.jpg" alt="Normals">
+            <div class="carousel-caption d-none d-md-block">
+              <p>Normals</p>
+            </div>
+          </div>
+          <div class="carousel-item" data-bs-interval="2000">
+            <img class="d-block img-fluid" src="{{site.baseurl}}/static/carousel/instance_conv.jpg"
+              alt="Instance segmentation">
+            <div class="carousel-caption d-none d-md-block">
+              <p>Instance segmentation</p>
+            </div>
+          </div>
+        </div>
+        <a class="carousel-control-prev" href="#carousel-main" role="button" data-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="sr-only">Previous</span>
+        </a>
+        <a class="carousel-control-next" href="#carousel-main" role="button" data-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="sr-only">Next</span>
+        </a>
+      </div>
+        </section>
+      </div>
+      <div class="col-lg-6">
+        <section class="bg-light" id="carousel-zebras">
+          <div id="carousel-main-zebras" class="carousel slide mx-auto container-fluid" data-ride="carousel">
+            <ol class="carousel-indicators">
+              <li data-target="#carousel-main" data-slide-to="0" class="active"></li>
+              <li data-target="#carousel-main" data-slide-to="1"></li>
+              <li data-target="#carousel-main" data-slide-to="2"></li>
+              <li data-target="#carousel-main" data-slide-to="3"></li>
+              <li data-target="#carousel-main" data-slide-to="4"></li>
+              <li data-target="#carousel-main" data-slide-to="5"></li>
+              <li data-target="#carousel-main" data-slide-to="6"></li>
+              <li data-target="#carousel-main" data-slide-to="7"></li>
+            </ol>
+            <div class="carousel-inner">
+              <div class="carousel-item active" data-bs-interval="2000">
+                <img class="d-block img-fluid" src="{{site.baseurl}}/static/carousel/zebras/rgb_conv.jpg" alt="A sample image">
+                <div class="carousel-caption d-none d-md-block">
+                  <p>Sample of groundtruth generated data</p>
+                </div>
+              </div>
+              <div class="carousel-item" data-bs-interval="2000">
+                <img class="d-block img-fluid" src="{{site.baseurl}}/static/carousel/zebras/depth_conv.jpg" alt="Depth">
+                <div class="carousel-caption d-none d-md-block">
+                  <p>Depth</p>
+                </div>
+              </div>
+              <div class="carousel-item" data-bs-interval="2000">
+                <img class="d-block img-fluid" src="{{site.baseurl}}/static/carousel/zebras/bbox2d_conv.jpg" alt="2D bounding boxes">
+                <div class="carousel-caption d-none d-md-block">
+                  <p>2D bounding boxes</p>
+                </div>
+              </div>
+              <div class="carousel-item" data-bs-interval="2000">
+                <img class="d-block img-fluid" src="{{site.baseurl}}/static/carousel/zebras/instance_conv.png"
+                  alt="Instance segmentation">
+                <div class="carousel-caption d-none d-md-block">
+                  <p>Instance segmentation</p>
+                </div>
+              </div>
+              
+              <div class="carousel-item" data-bs-interval="2000">
+                <img class="d-block img-fluid" src="{{site.baseurl}}/static/carousel/zebras/bbox3d_conv.jpg"
+                  alt="Bbox3d">
+                <div class="carousel-caption d-none d-md-block">
+                  <p>3D bounding boxes</p>
+                </div>
+              </div>
+  
+              <div class="carousel-item" data-bs-interval="2000">
+                <img class="d-block img-fluid" src="{{site.baseurl}}/static/carousel/zebras/vertices_white.png"
+                  alt="Mesh Vertices">
+                <div class="carousel-caption d-none d-md-block">
+                  <p>Mesh vertices on a transparent background</p>
+                </div>
+              </div>
+  
+              <div class="carousel-item" data-bs-interval="2000">
+                <img class="d-block img-fluid" src="{{site.baseurl}}/static/carousel/zebras/rgb_v1.jpg"
+                  alt="Second viewpoint">
+                <div class="carousel-caption d-none d-md-block">
+                  <p>Second Viewpoint</p>
+                </div>
+              </div>
+  
+              
+              <div class="carousel-item" data-bs-interval="2000">
+                <img class="d-block img-fluid" src="{{site.baseurl}}/static/carousel/zebras/rgb_v2.jpg"
+                  alt="Third viewpoint">
+                <div class="carousel-caption d-none d-md-block">
+                  <p>Third Viewpoint</p>
+                </div>
+              </div>
+  
+            </div>
+            <a class="carousel-control-prev" href="#carousel-main-zebras" role="button" data-slide="prev">
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="sr-only">Previous</span>
+            </a>
+            <a class="carousel-control-next" href="#carousel-main-zebras" role="button" data-slide="next">
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="sr-only">Next</span>
+            </a>
+          </div>
+        </section>
+      </div>
+    </div>
+  </section>
+  
+  <section class="bg-light" id="download">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-12 text-center">
+          <h2 class="section-heading text-uppercase">Download</h2>
+          <h3 class="section-subheading text-muted">The full dataset will be made publicly available for research purposes
+            with the final version of the manuscript.
+            Keep checking this page or the <a href="https://github.com/eliabntt/GRADE_data/tree/main">main data
+              repository</a> since we will keep publishing new data as the time pass.
+            Since we use <i>only</i> publicly available datasets using our instructions you should be able to reproduce
+            our data. If in doubt, please reach out to me and I will provide assistance.</h3>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!--div class="row">
+        <div class="col-md-12">
+          <h4 class="section-subheading" id="downloadFiles">Download groundtruth files</h4>
+          <hr />
+  
+          <p>
+            <code>Rosbags</code> (RGB, depth, IMU, odometry, tf tree)
+          </p>
+          <p>
+            <code>npy</code> (RGB, depth, instance segmentation, bounding boxes)
+          </p>
+          <p>
+            <code>General</code> (USD of the environment, simulation settings, rng state, logs)
+          </p>
+  
+          <h4 class="section-subheading" id="downloadFiles">Download environments and animations</h4>
+          <hr />
+          <p>
+            <code>3DFront Environments</code> (only USD files, textures downloaded separately)
+          </p>
+          <p>
+            <code>Extra environments</code> (USD and textures)
+          </p>
+          <p>
+            <code>Cloth3D</code> (only USD files, textures downloaded separately)
+          </p>
+          <p>
+            <code>AMASS-CMU</code> (only USD files, textures downloaded separately)
+          </p>
+          <p>
+            <code>Zebra</code> animations (only USD files)
+          </p>
+  
+  
+          <h4 class="section-subheading">Pipelines</h4>
+          Code to generate the data is available at various location depending on the scope. If it involves a dataset, we
+          suppose that you accepted the related license and downloaded the data on your own.
+  
+          <p>
+            <code>AMASS</code> animations
+          </p>
+  
+          <p>
+            <code>Cloth3D</code> animations
+          </p>
+  
+          <p>
+            <code>Front3D</code> homes
+          </p>
+  
+          <p>
+            <code>Isaac sim manager</code>
+          </p>
+  
+          <p>
+            <code>Robot 6DOF control</code>
+          </p>
+  
+          <p>
+            <code>Data processing and testing</code>
+          </p>
+  
+        </div>
+      </div
+    </div>
+  </section>
+  -->
+  
+  <section class="bg-light" id="related_repos">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-12 text-center">
+          <h2 class="section-heading text-uppercase text-center">Related repositories</h2>
+          <h6 class="text-muted" style="text-align:left;">
+            <ul>
+              <li>All the data we generated, the TUM labelled data, the networks checkpoints trained as described in the
+                paper, the rosbags used to evaluate the SLAM methods and the results are available <a
+                  href="https://github.com/eliabntt/GRADE_data/">here</a></li>
+              <li>The tools to process the data, add noise to the rosbags or during the simulation, to evaluate the SLAM
+                methods, generate training data can be found <a
+                  href="https://github.com/robot-perception-group/GRADE_tools">here</a></li>
+              <li>In <a href="https://github.com/eliabntt/GRADE-nets">GRADE-nets</a> you can find the Mask RCNN and YOLOv5
+                networks we used to train our data, plus some additional helping script.</li>
+              <li>The code to convert SMPL-based animations to USD files is <a
+                  href="https://github.com/eliabntt/animated_human_SMPL_to_USD">here</a></li>
+              <li>To convert any environment from Blender to USD and generate some accompanying data use <a
+                  href="https://github.com/eliabntt/Front3D_to_USD">here</a>. This has a special focus in indoor
+                environmets and Front3D. Based on BlenderProc.</li>
+              <li>The catkin workspace repository which we use to autonomously explore the environments during the data
+                generation is <a href="https://github.com/eliabntt/ros_isaac_drone">here</a>. Based on ROS.</li>
+              <li>The modified version of DynaSLAM working with Python3 and using <code>detectron2</code> is <a
+                  href="https://github.com/eliabntt/DynaSLAM">here</a></li>
+              <li><a href="https://github.com/eliabntt/FUEL/tree/main">Our fork of <code>FUEL</code></a>, the chosen
+                autonomous exploration manager to control the drone within the environment.</li>
+              <li>Our <a
+                  href="https://github.com/eliabntt/custom_6dof_joint_controller/tree/main"><code>custom_6dof_joint_controller</code></a>
+                which is the bridge between the position/velocity commands and the joint velocities expected by IsaacSim.
+                This will allow you to control any robot within the simulation environment.</li>
+              <li>Our <a
+                  href="https://github.com/eliabntt/moveit_based_collision_checker_and_placement/tree/main"><code>moveit_based_collision_checker_and_placement</code></a>
+                our Move-it based placement strategy.</li>
+              </h5>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <section class="bg-light" id="known_issues">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-12 text-center">
+          <h4>Known Issues</h4>
+        </div>
+        <div class="col-md-12">
+          <p class="text-muted">
+            During our generation we found some issues related to bugs in IsaacSim itself. We address all of them in
+            various sections of our code.
+            The most notable ones are: rosbag clock timing issue fixed <a
+              href="https://github.com/robot-perception-group/GRADE_tools/blob/main/preprocessing/PREPROCESSING.md">here</a>,
+            3D bounding boxes for humans
+            not correctly generated fixed <a
+              href="https://github.com/eliabntt/GRADE-RR/blob/main/simulator/smpl_and_bbox.py">here</a>, simulation that
+            automatically changes the aperture settings
+            of the camera fixed <a
+              href="https://github.com/eliabntt/GRADE-RR/blob/beaeddde94bccf9fcabea04db9fe68e67109828c/simulator/paper_simulation.py#L340">at
+              runtime</a>.
+            LiDAR and LRF misfire with dynamic objects can be fixed by updating the code to the latest release and using a
+            rendering-based laser sensor (check our branch <a
+              href="https://github.com/eliabntt/GRADE-RR/tree/v2022">here</a> and instructions <a
+              href="https://docs.omniverse.nvidia.com/prod_digital-twins/app_isaacsim/tutorial_ros_rtx_lidar.html">on how
+              to add it</a>).
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <section>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-12 text-center">
+          <h2 class="section-heading text-uppercase">Publications</h2>
+  
+        </div>
+      </div>
+  
+      <p>If you find our work useful please cite our works.</p>
+  
+      <div class="position-relative">
+        <div class="right-0 top-0 position-absolute">
+          <clipboard-copy aria-label="Copy" class="ClipboardButton btn m-2 p-0 tooltipped-no-delay"
+            data-copy-feedback="Copied!" data-tooltip-direction="w" tabindex="0" role="button" id="btn-copy-clip"
+            data-clipboard-target="#paper1">
+            <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true"
+              className="octicon octicon-paste js-clipboard-clippy-icon m-2">
+              <path fillRule="evenodd"
+                d="M5.75 1a.75.75 0 00-.75.75v3c0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75v-3a.75.75 0 00-.75-.75h-4.5zm.75 3V2.5h3V4h-3zm-2.874-.467a.75.75 0 00-.752-1.298A1.75 1.75 0 002 3.75v9.5c0 .966.784 1.75 1.75 1.75h8.5A1.75 1.75 0 0014 13.25v-9.5a1.75 1.75 0 00-.874-1.515.75.75 0 10-.752 1.298.25.25 0 01.126.217v9.5a.25.25 0 01-.25.25h-8.5a.25.25 0 01-.25-.25v-9.5a.25.25 0 01.126-.217z">
+              </path>
+            </svg>
+            <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true"
+              className="octicon octicon-check js-clipboard-check-icon color-text-success d-none m-2">
+              <path fillRule="evenodd"
+                d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z">
+              </path>
+            </svg>
+          </clipboard-copy>
+        </div>
+        <pre>
+           
+          <code id="paper1">
+            {% raw %}
+            @misc{bonetto2023grade,
+              doi = {10.48550/ARXIV.2303.04466},
+              url = {https://arxiv.org/abs/2303.04466},
+              author = {Bonetto, Elia and Xu, Chenghao and Ahmad, Aamir},
+              title = {{GRADE}: {G}enerating {R}ealistic {A}nimated {D}ynamic {E}nvironments for {R}obotics {R}esearch},
+              publisher = {arXiv},
+              year = {2023},
+              copyright = {arXiv.org perpetual, non-exclusive license}
+          }
+          {% endraw %}
+          </code>
+        </pre>
+      </div>
+  
+      <div class="position-relative">
+        <div class="right-0 top-0 position-absolute">
+          <clipboard-copy aria-label="Copy" class="ClipboardButton btn m-2 p-0 tooltipped-no-delay"
+            data-copy-feedback="Copied!" data-tooltip-direction="w" tabindex="0" role="button" id="btn-copy-clip"
+            data-clipboard-target="#paper2">
+            <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true"
+              className="octicon octicon-paste js-clipboard-clippy-icon m-2">
+              <path fillRule="evenodd"
+                d="M5.75 1a.75.75 0 00-.75.75v3c0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75v-3a.75.75 0 00-.75-.75h-4.5zm.75 3V2.5h3V4h-3zm-2.874-.467a.75.75 0 00-.752-1.298A1.75 1.75 0 002 3.75v9.5c0 .966.784 1.75 1.75 1.75h8.5A1.75 1.75 0 0014 13.25v-9.5a1.75 1.75 0 00-.874-1.515.75.75 0 10-.752 1.298.25.25 0 01.126.217v9.5a.25.25 0 01-.25.25h-8.5a.25.25 0 01-.25-.25v-9.5a.25.25 0 01.126-.217z">
+              </path>
+            </svg>
+            <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true"
+              className="octicon octicon-check js-clipboard-check-icon color-text-success d-none m-2">
+              <path fillRule="evenodd"
+                d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z">
+              </path>
+            </svg>
+          </clipboard-copy>
+        </div>
+        <pre>
+          <code id="paper2">
+            {% raw %}
+            @conference{bonetto2023ECMRZebras,
+              title = {Synthetic Data-based Detection of Zebras in Drone Imagery},
+              author = {Bonetto, Elia and Ahmad, Aamir},
+              booktitle = {IEEE European Conference on Mobile Robots},
+              publisher = {IEEE},
+              month = sep,
+              year = {2023},
+              doi = {},
+              month_numeric = {9}
+            }
+            {% endraw %}
+          </code>
+        </pre>
+      </div>
+  
+      <div class="position-relative">
+        <div class="right-0 top-0 position-absolute">
+          <clipboard-copy aria-label="Copy" class="ClipboardButton btn m-2 p-0 tooltipped-no-delay"
+            data-copy-feedback="Copied!" data-tooltip-direction="w" tabindex="0" role="button" id="btn-copy-clip"
+            data-clipboard-target="#paper3">
+            <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true"
+              className="octicon octicon-paste js-clipboard-clippy-icon m-2">
+              <path fillRule="evenodd"
+                d="M5.75 1a.75.75 0 00-.75.75v3c0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75v-3a.75.75 0 00-.75-.75h-4.5zm.75 3V2.5h3V4h-3zm-2.874-.467a.75.75 0 00-.752-1.298A1.75 1.75 0 002 3.75v9.5c0 .966.784 1.75 1.75 1.75h8.5A1.75 1.75 0 0014 13.25v-9.5a1.75 1.75 0 00-.874-1.515.75.75 0 10-.752 1.298.25.25 0 01.126.217v9.5a.25.25 0 01-.25.25h-8.5a.25.25 0 01-.25-.25v-9.5a.25.25 0 01.126-.217z">
+              </path>
+            </svg>
+            <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true"
+              className="octicon octicon-check js-clipboard-check-icon color-text-success d-none m-2">
+              <path fillRule="evenodd"
+                d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z">
+              </path>
+            </svg>
+          </clipboard-copy>
+        </div>
+        <pre>
+          <code id="paper3">
+            {% raw %}
+            @inproceedings{ bonetto2023dynamicSLAM, 
+              title={{S}imulation of {D}ynamic {E}nvironments for {SLAM}}, 
+              author={Elia Bonetto and Chenghao Xu and Aamir Ahmad}, 
+              booktitle={ICRA2023 Workshop on Active Methods in Autonomous Navigation}, 
+              year={2023}, 
+              url={https://arxiv.org/abs/2305.04286}}
+            {% endraw %}
+          </code>
+        </pre>
+      </div>
+  
+      <div class="position-relative">
+        <div class="right-0 top-0 position-absolute">
+          <clipboard-copy aria-label="Copy" class="ClipboardButton btn m-2 p-0 tooltipped-no-delay"
+            data-copy-feedback="Copied!" data-tooltip-direction="w" tabindex="0" role="button" id="btn-copy-clip"
+            data-clipboard-target="#paper4">
+            <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true"
+              className="octicon octicon-paste js-clipboard-clippy-icon m-2">
+              <path fillRule="evenodd"
+                d="M5.75 1a.75.75 0 00-.75.75v3c0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75v-3a.75.75 0 00-.75-.75h-4.5zm.75 3V2.5h3V4h-3zm-2.874-.467a.75.75 0 00-.752-1.298A1.75 1.75 0 002 3.75v9.5c0 .966.784 1.75 1.75 1.75h8.5A1.75 1.75 0 0014 13.25v-9.5a1.75 1.75 0 00-.874-1.515.75.75 0 10-.752 1.298.25.25 0 01.126.217v9.5a.25.25 0 01-.25.25h-8.5a.25.25 0 01-.25-.25v-9.5a.25.25 0 01.126-.217z">
+              </path>
+            </svg>
+            <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true"
+              className="octicon octicon-check js-clipboard-check-icon color-text-success d-none m-2">
+              <path fillRule="evenodd"
+                d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z">
+              </path>
+            </svg>
+          </clipboard-copy>
+        </div>
+        <pre>
+          <code id="paper4">
+            {% raw %}
+            @inproceedings{
+              bonetto2023learning,
+              title={Learning from synthetic data generated with {GRADE}},
+              author={Elia Bonetto and Chenghao Xu and Aamir Ahmad},
+              booktitle={ICRA2023 Workshop on Pretraining for Robotics (PT4R)},
+              year={2023},
+              url={https://openreview.net/forum?id=SUIOuV2y-Ce}
+              }
+            {% endraw %}
+          </code>
+        </pre>
+      </div>
+    </div>
+  
+  </section>
+  
+  
+  <section class="bg-light" id="known_issues">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-12 text-center">
+          <h4>Disclaimer</h4>
+        </div>
+        <div class="col-md-12">
+          <p class="text-muted">
+            GRADE was developed as a tool for research in robotics. The dataset may
+            have unintended biases (including those of a societal, gender or racial nature).
+          </p>
+        </div>
+      </div>
+  
+      <div class="row">
+        <div class="col-md-12 text-center">
+          <h4>Copyright</h4>
+        </div>
+        <div class="col-md-12">
+          <p class="text-muted">
+            All datasets and benchmarks on this page are copyright by us and published under <a rel="license"
+              href="https://github.com/eliabntt/GRADE-RR/blob/main/LICENSE.md">this license</a>.
+          </p>
+          <p>For commercial licenses of GRADE-RR and any of its annotations, email us at <a
+              href="mailto:licensing@tue.mpg.de">licensing@tue.mpg.de</a></p>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  
+  <!-- Team -->
+  <section class="bg-light" id="team">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-lg-12 text-center">
+          <h2 class="section-heading text-uppercase">The Team</h2>
+          <div class="text-muted">
+          </div>
+        </div>
+      </div>
+  
+  
+      <div class="row">
+        <div class="col-md-4">
+          <div class="team-member">
+            <a href="https://eliabntt.github.io">
+              <img class="mx-auto rounded-circle" src="{{site.baseurl}}/static/img/profile/eb.jpg" />
+  
+              <h4>Elia Bonetto</h4>
+            </a>
+            <h5>Principal Investigator</h5>
+            <h6 class="text-muted">Max Planck Institute for Intelligent Systems, Germany</h6>
+            <h6 class="text-muted">Institute of Flight Mechanics and Controls, University of Stuttgart, Germany</h6>
+            <h6 class="text-muted">University of Tübingen, Germany</h6>
+          </div>
+        </div>
+  
+        <div class="col-md-4">
+          <div class="team-member">
+            <a href="https://kyle-xu001.github.io/">
+              <img class="mx-auto rounded-circle" src="{{site.baseurl}}/static/img/profile/cx.jpg" />
+              <h4>Chenghao Xu</h4>
+            </a>
+            <h6 class="text-muted">Delft University of Technology, Netherlands</h6>
+            <h6 class="text-muted">Max Planck Institute for Intelligent Systems, Germany</h6>
+          </div>
+        </div>
+  
+        <div class="col-md-4">
+          <div class="team-member">
+            <a href="https://aamirahmad.de">
+              <img class="mx-auto rounded-circle" src="{{site.baseurl}}/static/img/profile/aa.jpeg" />
+  
+              <h4>Aamir Ahmad</h4>
+            </a>
+            <h6 class="text-muted">Institute of Flight Mechanics and Controls, University of Stuttgart, Germany</h6>
+            <h6 class="text-muted">Max Planck Institute for Intelligent Systems, Germany</h6>
+          </div>
+        </div>
+      </div>
+  
+  </section>
+  
+  
+  <script type="application/ld+json">
+  {
+    "@context":"http://schema.org/",
+    "@type":"Dataset",
+    "name":"GRADE-RR dataset",
+    "description":"Project page of the GRADE framework.",
+    "url":"https://grade-rr.github.io/",
+    "sameAs":"",
+    "citation":"",
+    "identifier": "",
+    "keywords":[ "synthetic-data", "data-generation", "robotics", "dynamic environments", "dynamic-environments"
+    ],
+    "creator":{
+       "@type":"",
+       "url": "https://grade-rr.github.io/",
+       "name":"GRADE-RR Team",
+       "contactPoint":{
+          "@type":"ContactPoint",
+          "contactType": "technical support",
+          "email":"elia.bonetto@tue.mpg.de",
+          "url":"https://eliabntt.github.io"
+       }
+    },
+    "distribution":[
+       {
+          "@type":"DataDownload",
+          "encodingFormat":"video/mp4",
+          "contentUrl":""
+       },
+       {
+          "@type":"DataDownload",
+          "encodingFormat":"image/jpeg",
+          "contentUrl":""
+       },
+       {
+          "@type":"DataDownload",
+          "encodingFormat":"text/csv",
+          "contentUrl":""
+       },
+       {
+          "@type":"DataDownload",
+          "encodingFormat":"application/octet-stream",
+          "contentUrl":""
+       }
+    ],
+    "license": ""
+  }
+  </script>
