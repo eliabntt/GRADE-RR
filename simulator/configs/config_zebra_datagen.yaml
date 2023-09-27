@@ -1,21 +1,21 @@
 # GENERAL NOTE the paths need to be ABSOLUTE!
-env_path: "/media/ebonetto/WindowsData/Zebra_envs/Usable"
+env_path: "/ps/project/irotate/syn_zebras/Zebra_envs/Usable"
 use_stl: False # this disable stl loading thus placement AND robot heading
 use_npy: False
-base_env_path: "/media/ebonetto/WindowsData/ov/isaac_sim-2021.2.1/GRADE-RR/usds/base_env_zebra.usd"
-zebra_anims_loc: "/media/ebonetto/WindowsData/Zebra_anims"
+base_env_path: "/home/ebonetto/.local/share/ov/pkg/GRADE-RR/usds/base_env_zebra.usd"
+zebra_anims_loc: "/ps/project/irotate/syn_zebras/Zebra_anims"
 randomize_sky: True # only if allowed
-robot_mesh_path: "/media/ebonetto/WindowsData/ov/isaac_sim-2021.2.1/GRADE-RR/meshes/drone.dae"
-base_robot_path: "/media/ebonetto/WindowsData/ov/isaac_sim-2021.2.1/GRADE-RR/usds/drone_savana.usd"
-out_folder: "/media/ebonetto/WindowsData/zebra_out_close"
-out_folder_npy: "/media/ebonetto/WindowsData/zebra_out_close"
+robot_mesh_path: "/home/ebonetto/.local/share/ov/pkg/GRADE-RR/meshes/drone.dae"
+base_robot_path: "/home/ebonetto/.local/share/ov/pkg/GRADE-RR/usds/drone_paper.usd"
+out_folder: "/home/ebonetto/zebra_out_superclose"
+out_folder_npy: "/home/ebonetto/zebra_out_superclose"
 fps: 30
 num_robots: 3
 experiment_length: 220
-anim_exp_len: 200
+anim_exp_len: 600
 physics_hz: 240 # NOTE THAT THIS IS THE RATE OF CLOCK AND IMU
 render_hz: 240 # LEAVE IT EQUAL TO PHYSICS HZ
-npy_sensor_size: [1920, 1080]
+npy_sensor_size: [640, 480]
 env_prim_path: "/World/home"
 robot_base_prim_path: "/my_robot_"
 _recorder_settings: {
@@ -33,4 +33,11 @@ _recorder_settings: {
   "poses": { "enabled": True, "colorize": True, "npy": True },
 }
 min_number_zebras: 2
-max_number_zebras: 250
+max_number_zebras: 50
+robot_traj: # remember that movement will be linear and instantaneous. No acceleration or anything. This implies no odom, nor IMU data. If you want those, please add the same trajectory to a joint publisher.
+  - {pose: {x: 0, y: 0, z: 0, roll: 0, pitch: 0, yaw: 0}, time: 0}
+  - {pose: {x: -16.61, y: 4.4, z: 6.55, roll: 20, pitch: -10, yaw: 15}, time: 2}
+  - {pose: {x: -58.83, y: 11.00, z: -2.67, roll: 4, pitch: -22, yaw: 60}, time: 3}
+  - {pose: {x: 56.38, y: -55.85, z: 45.23, roll: -10, pitch: 30, yaw: 120}, time: 7}
+  - {pose: {x: -20.95, y: -37.64, z: -4.46, roll: 10, pitch: 50, yaw: 240}, time: 10}
+  - {pose: {x: 0, y: 0, z: 0, roll: 0, pitch: 0, yaw: 0}, time: 0}
