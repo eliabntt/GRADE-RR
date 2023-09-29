@@ -255,6 +255,8 @@ try:
   # use rtx while setting up!
   set_raytracing_settings(config["physics_hz"].get())
   env_prim_path = environment.load_and_center(config["env_prim_path"].get())
+  process_semantics(config["env_prim_path"].get())
+
   randomize_and_fix_lights(config["_random_light"].get(), rng, env_prim_path, environment.env_limits[-1] - 0.2,
                            environment.meters_per_unit, is_rtx=config["rtx_mode"].get())
   randomize_roughness(config["_random_roughness"].get(), rng, env_prim_path)

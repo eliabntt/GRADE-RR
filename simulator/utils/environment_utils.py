@@ -121,7 +121,7 @@ class environment:
 
 	# disable_extension('omni.isaac.occupancy_map')
 
-	def load_and_center(self, prim_path: str = "/World/home", correct_paths_req: bool = True, push_in_floor: bool = False):
+	def load_and_center(self, prim_path: str = "/World/home", correct_paths_req: bool = False, push_in_floor: bool = False):
 		"""
 		Load the environment from the usd path env_path
 		Center it wrt the world coordinate frames
@@ -154,7 +154,6 @@ class environment:
 					time.sleep(10)
 			else:
 				print("Not correcting paths --- check that all textures are visibile and the reflection maps are correct")
-
 			# center the home in the middle of the environment
 			set_translate(stage.GetPrimAtPath(prim_path), list(- np.array(self.shifts) / self.meters_per_unit))
 			for child in stage.GetPrimAtPath(prim_path).GetAllChildren():

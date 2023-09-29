@@ -186,7 +186,9 @@ try:
 
 	# use rtx while setting up!
 	set_raytracing_settings(config["physics_hz"].get())
-	env_prim_path = environment.load_and_center(config["env_prim_path"].get(), correct_paths_req=False)
+	env_prim_path = environment.load_and_center(config["env_prim_path"].get())
+	process_semantics(config["env_prim_path"].get(), "World")
+
 	if all_env_names[env_id] == "L_Terrain":
 		set_scale(stage.GetPrimAtPath(f"/World/home"), 100)
 

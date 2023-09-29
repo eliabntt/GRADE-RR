@@ -63,6 +63,8 @@ if base_world_path != "":
 	print("Loading environment...")
 	environment = environment(config, meters_per_unit=meters_per_unit) # setup the class
 	env_prim_path = environment.load_and_center(config["env_prim_path"].get()) # actually load the env
+	process_semantics(config["env_prim_path"].get()) # add semantic information based either on label you provide, or looking into fields of the objcets. This applies semantic to all childs
+
 	print("Visualization...")
 	for _ in range(1000):
 		simulation_context.render()

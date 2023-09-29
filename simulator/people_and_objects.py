@@ -66,6 +66,8 @@ if base_world_path != "":
 	print("Loading environment...")
 	environment = environment(config, meters_per_unit=meters_per_unit) 
 	env_prim_path = environment.load_and_center(config["env_prim_path"].get())
+	process_semantics(config["env_prim_path"].get())
+
 	print("Visualization...")
 	for _ in range(1000):
 		simulation_context.render()

@@ -107,7 +107,8 @@ try:
 
     # use rtx while setting up!
     set_raytracing_settings(config["physics_hz"].get())
-    env_prim_path = environment.load_and_center(config["env_prim_path"].get(), correct_paths_req=False)
+    env_prim_path = environment.load_and_center(config["env_prim_path"].get())
+    process_semantics(config["env_prim_path"].get())
 
     ros_camera_list = []
     ros_transform_components = []  # list of tf and joint components, one (of each) for each robot

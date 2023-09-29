@@ -75,8 +75,9 @@ def load_human(human_base_prim_path, n, asset_path, dynamic_prims=[], added_prim
 		clear_properties(f"{human_base_prim_path}{n}")
 		if correct_texture_paths:
 			print("Correcting texture paths, you might want to change utils/misc_utils.py:correct_paths")
-			correct_paths(f"{human_base_prim_path}{n}", "human")
+			correct_paths(f"{human_base_prim_path}{n}")
 		else:
 			print("Not correcting texture paths, you might want to check the textures")
+		process_semantics(f"{human_base_prim_path}{n}", "human")
 	else:
 		raise Exception(f"Failed to load human {n} from {asset_path}")

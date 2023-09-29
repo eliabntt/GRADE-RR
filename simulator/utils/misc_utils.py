@@ -16,7 +16,6 @@ from typing import Dict, Optional, Union
 
 # ros
 import rospy, rosgraph
-from collision_check.srv import *
 from geometry_msgs.msg import PoseStamped, Point
 from nav_msgs.msg import Odometry
 from sensor_msgs.msg import Imu
@@ -58,15 +57,11 @@ def add_semantics(prim: Prim, semantic_label: str):
   sem.GetSemanticTypeAttr().Set("class")
   sem.GetSemanticDataAttr().Set(str(semantic_label))
 
-def correct_paths(parent_name: str, label: str = None):
+def correct_paths(parent_name: str):
   """
   Helper function to correct the paths of the world's materials (as they come from Windows).
-  It adds also the semantic info so that it can be rendered in the viewer.
-  If NO label is given, it will search for a specific attribute (see process_semantics) otherwise set it to the label given
-  It will remove double sided attribute (useful for collisions)
 
   parent_name: the prim path of the father.
-  label: the eventual label to give to the set of assets
   """
   stage = omni.usd.get_context().get_stage()
 
@@ -81,7 +76,6 @@ def correct_paths(parent_name: str, label: str = None):
         except:
           print(f"Error changing shader of in {shader_path}")
           time.sleep(5)
-  process_semantics(parent_name, label)
 
 def change_shader_path(shader_path: str):
     """
@@ -341,6 +335,9 @@ def position_object(environment, type: int, objects: list = [], ob_stl_paths: li
   ob_stl_paths: the corresponding stls
   reset: if the collision checker need to be resetted forcefully
   """
+  # thih import will work if you compile our https://github.com/eliabntt/moveit_based_collision_checker_and_placement/tree/main
+  # and you add the source catkin command to isaac_X_X/setup_python_env.sh
+  from collision_check.srv import *
   if environment.env_stl_path == None:
     print(
       "No stl is being loaded for the environment, please pre-fix all objects locations or implement your own strategy")
