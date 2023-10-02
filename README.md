@@ -143,16 +143,15 @@ Additionally:
 
 - If you use any Data and/or Software related to zebras(animal) detection from drone imagery reference the following paper in any publication as well
 ```
-@inproceedings{bonetto2023synthetic,
-            title={Synthetic Data-based Detection of Zebras in Drone Imagery},
-            author={Elia Bonetto and Aamir Ahmad},
-            year={2023},
-            month = sep,
-            month_numeric = {9},
-            publisher = {IEEE},
-            url = {https://arxiv.org/abs/2305.00432},
-            booktitle = {2023 European Conference on Mobile Robots (ECMR 2023)},
-            note={To appear}
+@INPROCEEDINGS{10256293,
+  author={Bonetto, Elia and Ahmad, Aamir},
+  booktitle={2023 European Conference on Mobile Robots (ECMR)}, 
+  title={Synthetic Data-Based Detection of Zebras in Drone Imagery}, 
+  year={2023},
+  volume={},
+  number={},
+  pages={1-8},
+  doi={10.1109/ECMR59166.2023.10256293}}
 }
 ```
 
