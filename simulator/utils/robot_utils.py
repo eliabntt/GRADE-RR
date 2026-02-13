@@ -1,7 +1,7 @@
-import utils.misc_utils
+import grade_utils.misc_utils
 from omni.isaac.core.utils.prims import set_targets
 from scipy.spatial.transform import Rotation
-from utils.misc_utils import *
+from grade_utils.misc_utils import *
 from omni.isaac.core.utils.render_product import create_hydra_texture
 
 def create_odom_message(_dc, robot_body_ptr, handle, meters_per_unit):

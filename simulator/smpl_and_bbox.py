@@ -93,13 +93,13 @@ try:
 	CONFIG = {"display_options": 3286, "width": 1280, "height": 720, "headless": config["headless"].get()}
 	kit = SimulationApp(launch_config=CONFIG, experience=f"{os.environ['EXP_PATH']}/omni.isaac.sim.python.kit")
 
-	import utils.misc_utils
-	from utils.misc_utils import *
-	from utils.robot_utils import *
-	from utils.simulation_utils import *
-	from utils.objects_utils import *
-	from utils.environment_utils import *
-	from utils.human_utils import *
+	import grade_utils.misc_utils
+	from grade_utils.misc_utils import *
+	from grade_utils.robot_utils import *
+	from grade_utils.simulation_utils import *
+	from grade_utils.objects_utils import *
+	from grade_utils.environment_utils import *
+	from grade_utils.human_utils import *
 
 	simulation_environment_setup()
 	local_file_prefix = "my-computer://"

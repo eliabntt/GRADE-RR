@@ -51,15 +51,15 @@ for _ in range(100):
     simulation_context.render()
     simulation_context.step(render=False)
 
-import utils.misc_utils
-from utils.misc_utils import *
-from utils.robot_utils import *
-from utils.simulation_utils import *
+import grade_utils.misc_utils
+from grade_utils.misc_utils import *
+from grade_utils.robot_utils import *
+from grade_utils.simulation_utils import *
 
 simulation_environment_setup(need_ros = False) # enable some extensions, check if ros is running automatically
 
 if base_world_path != "":
-	from utils.environment_utils import *
+	from grade_utils.environment_utils import *
 	print("Loading environment...")
 	environment = environment(config, meters_per_unit=meters_per_unit) # setup the class
 	env_prim_path = environment.load_and_center(config["env_prim_path"].get()) # actually load the env

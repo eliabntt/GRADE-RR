@@ -4,8 +4,14 @@ The init function should be used to load the environment.
 It will get the environment from a given folder and create the necessary support variables.
 """
 
-from omni.isaac.occupancy_map import _occupancy_map
-from omni.isaac.occupancy_map.scripts.utils import update_location, compute_coordinates, generate_image
+try:
+	from omni.isaac.occupancy_map import _occupancy_map
+	from omni.isaac.occupancy_map.scripts.utils import update_location, compute_coordinates, generate_image
+except ModuleNotFoundError:
+	_occupancy_map = None
+	update_location = None
+	compute_coordinates = None
+	generate_image = None
 
 import grade_utils.misc_utils
 from grade_utils.misc_utils import *
@@ -45,14 +51,14 @@ class environment:
 			self.env_mesh = None
 		if config["use_npy"].get():
 			self.env_info = np.load(os.path.join(self.env_usd_export_folder, self.env_name, self.env_name + ".npy"),
-			                        allow_pickle=True)
+									allow_pickle=True)
 			self.env_info = self.env_info.tolist()
 		else:
 			self.env_info = [0, 0, 0, 0, 0, 0, np.array([[-1000, -1000], [-1000, 1000], [1000, 1000], [1000, -1000]])]
 		self.env_limits = self.env_info[0:6]
 
 		self.shifts = [(self.env_limits[0] + self.env_limits[3]) / 2, (self.env_limits[1] + self.env_limits[4]) / 2,
-		               self.env_limits[2]]
+					   self.env_limits[2]]
 		self.env_limits_shifted = [self.env_limits[i] - self.shifts[i % 3] for i, _ in enumerate(self.env_limits)]
 		self.area_polygon = get_area(self.env_info[6])
 		self.env_polygon = [Point(i[0], i[1], 0) for i in self.env_info[-1]]
@@ -138,15 +144,15 @@ class environment:
 		# from omni.isaac.core.utils.nucleus import find_nucleus_server
 		# result, nucleus_server = find_nucleus_server()
 		res, _ = omni.kit.commands.execute('CreateReferenceCommand',
-		                                   usd_context=omni.usd.get_context(),
-		                                   path_to=prim_path,
-		                                   asset_path=self.env_path,
-		                                   # asset_path= nucleus_server + "/Isaac/Environments/Simple_Warehouse/warehouse.usd",
-		                                   instanceable=True)
+										   usd_context=omni.usd.get_context(),
+										   path_to=prim_path,
+										   asset_path=self.env_path,
+										   # asset_path= nucleus_server + "/Isaac/Environments/Simple_Warehouse/warehouse.usd",
+										   instanceable=True)
 		if res:
 			clear_properties(prim_path)
 			if correct_paths_req:
-				   print("Correcting paths... --- note that you might want to change grade_utils/misc_utils.py:correct_paths")
+				print("Correcting paths... --- note that you might want to change grade_utils/misc_utils.py:correct_paths")
 				try:
 					correct_paths(prim_path)
 				except:

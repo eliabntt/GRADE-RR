@@ -1,3 +1,4 @@
+
 import argparse
 import carb
 import confuse
@@ -8,7 +9,7 @@ import sys
 import time
 import traceback
 import yaml
-from omni.isaac.kit import SimulationApp
+from isaacsim import SimulationApp
 from time import sleep
 
 
@@ -102,18 +103,19 @@ def randomize_floor_position(floor_data, floor_translation, scale, meters_per_un
 
 	return floor_points, max_floor_x, min_floor_x, max_floor_y, min_floor_y
 
+
 try:
 	parser = argparse.ArgumentParser(description="Dynamic Worlds Simulator")
 	parser.add_argument("--config_file", type=str, default="config.yaml")
 	parser.add_argument("--headless", type=boolean_string, default=True, help="Wheter to run it in headless mode or not")
 	parser.add_argument("--rtx_mode", type=boolean_string, default=False,
-	                    help="Use rtx when True, use path tracing when False")
+						help="Use rtx when True, use path tracing when False")
 	parser.add_argument("--record", type=boolean_string, default=False, help="Writing data to the disk")
 	parser.add_argument("--debug_vis", type=boolean_string, default=False,
-	                    help="When true continuosly loop the rendering")
+						help="When true continuosly loop the rendering")
 	parser.add_argument("--neverending", type=boolean_string, default=False, help="Never stop the main loop")
 	parser.add_argument("--fix_env", type=str, default="",
-	                    help="leave it empty to have a random env, fix it to use a fixed one. Useful for loop processing")
+						help="leave it empty to have a random env, fix it to use a fixed one. Useful for loop processing")
 
 	args, unknown = parser.parse_known_args()
 	config = confuse.Configuration("DynamicWorlds", __name__)
@@ -122,14 +124,14 @@ try:
 	can_start = True
 
 	CONFIG = {"display_options": 3286, "width": 1280, "height": 720, "headless": config["headless"].get()}
-	kit = SimulationApp(launch_config=CONFIG, experience=f"{os.environ['EXP_PATH']}/omni.isaac.sim.python.kit")
+	simulation_app = SimulationApp(launch_config=CONFIG)
 
 	# Cannot move before SimApp is launched
-	import utils.misc_utils
-	from utils.misc_utils import *
-	from utils.robot_utils import *
-	from utils.simulation_utils import *
-	from utils.environment_utils import *
+	import grade_utils.misc_utils
+	from grade_utils.misc_utils import *
+	from grade_utils.robot_utils import *
+	from grade_utils.simulation_utils import *
+	from grade_utils.environment_utils import *
 	from pxr import UsdGeom, UsdLux, Gf, Vt, UsdPhysics, PhysxSchema, Usd, UsdShade, Sdf, UsdSkel
 
 	simulation_environment_setup(need_ros=False)
@@ -258,7 +260,7 @@ try:
 
 	zebra_files = glob.glob(f"{zebra_anims_loc}/*.usd")
 
-	from utils.zebra_utils import *
+	from grade_utils.zebra_utils import *
 	from omni.kit.window.sequencer.scripts import sequencer_drop_controller
 
 	_, sequence = omni.kit.commands.execute("SequencerCreateSequenceCommand")

@@ -1,12 +1,10 @@
 import grade_utils.misc_utils
 from grade_utils.misc_utils import *
 
-
 def move_humans_to_ground(my_humans_heights: list, body_lists: list, frame: float, meters_per_unit: float,
                           max_height: float):
 	"""
 	Function to keep the human at ground level (0 for now, but can be elaborated)
-
 	my_human_heights: list of [animation_frames, [vertices, z_loc]]. For every frame of the animation, for every vertex, the z loc
 	body_lists: Using to access the prim, list of prim paths
 	frame: the simulation frame we are in (float or int will get a cast to int)
@@ -43,7 +41,6 @@ def move_humans_to_ground(my_humans_heights: list, body_lists: list, frame: floa
 			loc = [loc[0], loc[1], loc[2] - z_min]
 			set_translate(stage.GetPrimAtPath(body_lists[index]), loc)
 
-
 def load_human(human_base_prim_path, n, asset_path, dynamic_prims=[], added_prims=[], correct_texture_paths=False):
 	"""
 	Load the human based on the usd path and add it to the dynamic prims list
@@ -74,7 +71,7 @@ def load_human(human_base_prim_path, n, asset_path, dynamic_prims=[], added_prim
 		added_prims.append(cnt)
 		clear_properties(f"{human_base_prim_path}{n}")
 		if correct_texture_paths:
-			   print("Correcting texture paths, you might want to change grade_utils/misc_utils.py:correct_paths")
+			print("Correcting texture paths, you might want to change grade_utils/misc_utils.py:correct_paths")
 			correct_paths(f"{human_base_prim_path}{n}")
 		else:
 			print("Not correcting texture paths, you might want to check the textures")

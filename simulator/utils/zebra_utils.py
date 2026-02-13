@@ -1,6 +1,6 @@
-import utils.misc_utils
+import grade_utils.misc_utils
 from omni.kit.sequencer.usd import SequenceSchema, usd_sequencer
-from utils.misc_utils import *
+from grade_utils.misc_utils import *
 
 
 def load_zebra(zebra_base_prim_path, n, asset_path):

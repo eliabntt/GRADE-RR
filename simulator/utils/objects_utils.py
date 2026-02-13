@@ -1,5 +1,5 @@
-import utils.misc_utils
-from utils.misc_utils import *
+import grade_utils.misc_utils
+from grade_utils.misc_utils import *
 
 mtl_created_list = []
 
