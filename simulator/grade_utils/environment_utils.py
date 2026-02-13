@@ -22,7 +22,11 @@ import numpy as np
 try:
 	from geometry_msgs.msg import Point
 except ImportError:
-	Point = None
+	class Point:
+		def __init__(self, x=0, y=0, z=0):
+			self.x = x
+			self.y = y
+			self.z = z
 current_dir = os.path.dirname(os.path.abspath(__file__))
 simulator_dir = os.path.abspath(os.path.join(current_dir, '..'))
 if simulator_dir not in sys.path:
