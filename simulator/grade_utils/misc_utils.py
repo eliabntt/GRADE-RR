@@ -12,7 +12,18 @@ import scipy.spatial.transform as tf
 from stl import mesh
 import time
 import trimesh
+
 from typing import Dict, Optional, Union
+
+def get_area(polygon):
+	"""
+	Computes the area of a polygon.
+	:param polygon: np.ndarray of shape (N, 2) representing the vertices of the polygon
+	:return: float, area of the polygon
+	"""
+	x = polygon[:, 0]
+	y = polygon[:, 1]
+	return 0.5 * np.abs(np.dot(x, np.roll(y, 1)) - np.dot(y, np.roll(x, 1)))
 
 
 # ros
