@@ -31,8 +31,8 @@ from omni.syntheticdata.tests.utils import add_semantics
 from omni.isaac.core.utils.physics import simulate_async
 from omni.isaac.core.utils.nucleus import get_assets_root_path
 from omni.isaac.core.utils.semantics import add_update_semantics
-from omni.isaac.core.utils.extensions import get_extension_path_from_name
-from omni.isaac.core.utils.stage import set_stage_up_axis
+from isaacsim.core.utils.extensions import get_extension_path_from_name
+from isaacsim.core.utils.stage import set_stage_up_axis
 from omni.isaac.core import PhysicsContext
 from omni.physx.scripts.physicsUtils import add_ground_plane
 from omni.kit.viewport.utility import get_active_viewport

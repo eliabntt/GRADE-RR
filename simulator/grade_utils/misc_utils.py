@@ -55,20 +55,22 @@ except ImportError:
 	String = None
 	ROS2_AVAILABLE = False
 
-# shapenet
+shapenet = None
+shapenet = None
 try:
 	import omni.isaac.shapenet as shapenet
-except ImportError:
+except Exception as e:
+	print("[INFO] omni.isaac.shapenet extension not available or failed to import:", e)
 	shapenet = None
 
 import omni.kit
 from omni.isaac import RangeSensorSchema
 from omni.isaac.core import SimulationContext, PhysicsContext
 import omni.replicator.core as rep
-from omni.isaac.core.prims import XFormPrim
-from omni.isaac.core.utils.carb import set_carb_setting
-from omni.isaac.core.utils.extensions import enable_extension, disable_extension
-from omni.isaac.core.utils.stage import is_stage_loading, set_stage_up_axis
+from isaacsim.core.prims import SingleXFormPrim
+from isaacsim.core.utils.carb import set_carb_setting
+from isaacsim.core.utils.extensions import enable_extension, disable_extension
+from isaacsim.core.utils.stage import is_stage_loading, set_stage_up_axis
 from omni.isaac.dynamic_control import _dynamic_control
 try:
 	import omni.isaac.IsaacSensorSchema as IsaacSensorSchema

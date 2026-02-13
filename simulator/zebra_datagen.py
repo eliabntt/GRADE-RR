@@ -6,6 +6,12 @@ import ipdb
 import numpy as np
 import os
 import sys
+
+# Ensure 'simulator' directory is in sys.path for robust imports
+simulator_dir = os.path.dirname(os.path.abspath(__file__))
+if simulator_dir not in sys.path:
+	sys.path.insert(0, simulator_dir)
+import sys
 import time
 import traceback
 import yaml
@@ -104,7 +110,10 @@ def randomize_floor_position(floor_data, floor_translation, scale, meters_per_un
 	return floor_points, max_floor_x, min_floor_x, max_floor_y, min_floor_y
 
 
+
 try:
+
+
 	parser = argparse.ArgumentParser(description="Dynamic Worlds Simulator")
 	parser.add_argument("--config_file", type=str, default="config.yaml")
 	parser.add_argument("--headless", type=boolean_string, default=True, help="Wheter to run it in headless mode or not")
@@ -118,6 +127,33 @@ try:
 						help="leave it empty to have a random env, fix it to use a fixed one. Useful for loop processing")
 
 	args, unknown = parser.parse_known_args()
+
+	# Print the contents of the config file before loading with confuse
+	import yaml as _yaml
+	try:
+		with open(args.config_file, 'r') as f:
+			config_contents = f.read()
+		print("[DEBUG] Raw config.yaml contents:\n" + config_contents)
+		config_yaml = _yaml.safe_load(config_contents)
+		print("[DEBUG] Parsed YAML keys:", list(config_yaml.keys()) if config_yaml else "EMPTY OR INVALID")
+		# If the config only has an 'include' key, resolve it and use that file instead
+		if config_yaml and list(config_yaml.keys()) == ["include"]:
+			include_path = config_yaml["include"]
+			print(f"[DEBUG] Resolving include: {include_path}")
+			# If the include path is relative, resolve relative to the current config file
+			import os
+			if not os.path.isabs(include_path):
+				include_path = os.path.join(os.path.dirname(args.config_file), include_path)
+			print(f"[DEBUG] Using included config file: {include_path}")
+			args.config_file = include_path
+			with open(args.config_file, 'r') as f:
+				config_contents = f.read()
+			print("[DEBUG] Included config.yaml contents:\n" + config_contents)
+			config_yaml = _yaml.safe_load(config_contents)
+			print("[DEBUG] Included YAML keys:", list(config_yaml.keys()) if config_yaml else "EMPTY OR INVALID")
+	except Exception as e:
+		print(f"[ERROR] Could not read or parse config file: {e}")
+
 	config = confuse.Configuration("DynamicWorlds", __name__)
 	config.set_file(args.config_file)
 	config.set_args(args)
@@ -142,7 +178,14 @@ try:
 	                    "Landscape_2", "Ground", "Ground", "Landscape_1", "Landscape_0", "Landscape_1"]
 
 	need_sky = [True] * len(all_env_names)
-	env_id = all_env_names.index(config["fix_env"].get())
+	fix_env_value = config["fix_env"].get()
+	if fix_env_value and fix_env_value in all_env_names:
+		env_id = all_env_names.index(fix_env_value)
+	else:
+		# fallback: pick a random environment if not specified or invalid
+		import random
+		env_id = random.randint(0, len(all_env_names) - 1)
+		print(f"[INFO] fix_env not set or invalid, using random environment: {all_env_names[env_id]}")
 
 	rng = np.random.default_rng()
 	rng_state = np.random.get_state()
@@ -150,6 +193,12 @@ try:
 	local_file_prefix = ""
 
 	# setup environment variables
+	import os
+	abs_config_path = os.path.abspath(args.config_file)
+	print(f"[DEBUG] Config file used: {args.config_file}")
+	print(f"[DEBUG] Absolute config path: {abs_config_path}")
+	print(f"[DEBUG] Config file exists: {os.path.exists(abs_config_path)}")
+	print(f"[DEBUG] Config keys: {list(config.keys())}")
 	environment = environment(config, rng, local_file_prefix)
 
 	out_dir = os.path.join(config['out_folder'].get(), environment.env_name)
@@ -160,8 +209,14 @@ try:
 	omni.usd.get_context().open_stage(local_file_prefix + config["base_env_path"].get(), None)
 
 	# Wait two frames so that stage starts loading
-	kit.update()
-	kit.update()
+	if 'kit' in globals():
+		kit.update()
+		kit.update()
+	elif 'simulation_app' in globals():
+		simulation_app.update()
+		simulation_app.update()
+	else:
+		print("[ERROR] Neither 'kit' nor 'simulation_app' is defined. Cannot update simulation.")
 
 	print("Loading stage...")
 	while is_stage_loading():
@@ -181,7 +236,10 @@ try:
 	simulation_context.initialize_physics()
 
 	simulation_context.play()
-	simulation_context.stop()
+	try:
+		simulation_context.stop()
+	except NameError:
+		print("[ERROR] simulation_context is not defined at shutdown.")
 
 	kit.update()
 	meters_per_unit = 0.01

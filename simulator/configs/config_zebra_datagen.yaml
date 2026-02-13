@@ -2,7 +2,7 @@
 env_path: "/media/ebonetto/WindowsData/Zebra_envs/Usable"
 use_stl: False # this disable stl loading thus placement AND robot heading
 use_npy: False
-base_env_path: "/media/ebonetto/WindowsData/ov/isaac_sim-2022.2.1/GRADE-RR/usds/env_base.usd"
+base_env_path: "GRADE-RR/usds/env_base_saved.usd"
 zebra_anims_loc: "/media/ebonetto/WindowsData/Zebra_anims"
 randomize_sky: True # only if allowed
 robot_mesh_path: "/media/ebonetto/WindowsData/ov/isaac_sim-2021.2.1/GRADE-RR/meshes/drone.dae"
