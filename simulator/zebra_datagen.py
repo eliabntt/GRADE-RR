@@ -1,22 +1,48 @@
+# 1. Start Isaac Sim first
+import os as _os_bootstrap
+from datetime import datetime as _dt_bootstrap
+try:
+	with open("/tmp/grade_rr_zebra_bootstrap.log", "a", encoding="utf-8") as _f_bootstrap:
+		_f_bootstrap.write(f"[{_dt_bootstrap.now().isoformat()}] zebra_datagen.py bootstrap reached\n")
+except Exception:
+	pass
+
+import isaacsim
+from isaacsim import SimulationApp
 
 import argparse
-import carb
 import confuse
-import ipdb
 import numpy as np
 import os
 import sys
+from datetime import datetime
 
 # Ensure 'simulator' directory is in sys.path for robust imports
 simulator_dir = os.path.dirname(os.path.abspath(__file__))
 if simulator_dir not in sys.path:
 	sys.path.insert(0, simulator_dir)
-import sys
 import time
 import traceback
 import yaml
-from isaacsim import SimulationApp
 from time import sleep
+
+
+def _heartbeat(msg):
+	timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+	line = f"[{timestamp}] zebra_datagen: {msg}"
+	print(line, flush=True)
+	try:
+		carb.log_warn(line)
+	except Exception:
+		pass
+	try:
+		with open("/tmp/grade_rr_zebra_datagen.log", "a", encoding="utf-8") as f:
+			f.write(line + "\n")
+	except Exception:
+		pass
+
+
+_heartbeat("module import completed")
 
 
 def boolean_string(s):
@@ -112,12 +138,13 @@ def randomize_floor_position(floor_data, floor_translation, scale, meters_per_un
 
 
 try:
+	_heartbeat("entered main try block")
 
 
 	parser = argparse.ArgumentParser(description="Dynamic Worlds Simulator")
 	parser.add_argument("--config_file", type=str, default="config.yaml")
 	parser.add_argument("--headless", type=boolean_string, default=True, help="Wheter to run it in headless mode or not")
-	parser.add_argument("--rtx_mode", type=boolean_string, default=False,
+	parser.add_argument("--rtx_mode", type=boolean_string, default=True,
 						help="Use rtx when True, use path tracing when False")
 	parser.add_argument("--record", type=boolean_string, default=False, help="Writing data to the disk")
 	parser.add_argument("--debug_vis", type=boolean_string, default=False,
@@ -127,6 +154,7 @@ try:
 						help="leave it empty to have a random env, fix it to use a fixed one. Useful for loop processing")
 
 	args, unknown = parser.parse_known_args()
+	_heartbeat(f"args parsed config_file={args.config_file} headless={args.headless} fix_env={args.fix_env}")
 
 	# Print the contents of the config file before loading with confuse
 	import yaml as _yaml
@@ -161,6 +189,37 @@ try:
 
 	CONFIG = {"display_options": 3286, "width": 1280, "height": 720, "headless": config["headless"].get()}
 	simulation_app = SimulationApp(launch_config=CONFIG)
+	kit = simulation_app
+	_heartbeat("SimulationApp launched from config")
+
+	import carb
+	import omni
+	import omni.client
+	cloud_path = "http://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.1"
+	omni.client.set_alias("omniverse://localhost", cloud_path)
+	omni.client.set_alias("omniverse://localhost/NVIDIA", f"{cloud_path}/NVIDIA")
+	if hasattr(omni.client, "mount"):
+		try:
+			omni.client.mount(
+				"omniverse://localhost",
+				cloud_path,
+			)
+			omni.client.mount(
+				"omniverse://localhost/NVIDIA",
+				f"{cloud_path}/NVIDIA",
+			)
+		except Exception as e:
+			carb.log_warn(f"omni.client.mount unavailable/failed, relying on set_alias only: {e}")
+
+	settings = carb.settings.get_settings()
+	mdl_paths = settings.get("/rtx/materialDb/mdlSearchPaths") or []
+	if cloud_path not in mdl_paths:
+		mdl_paths.append(cloud_path)
+	if f"{cloud_path}/NVIDIA/Materials" not in mdl_paths:
+		mdl_paths.append(f"{cloud_path}/NVIDIA/Materials")
+	if f"{cloud_path}/NVIDIA/Assets/Skies" not in mdl_paths:
+		mdl_paths.append(f"{cloud_path}/NVIDIA/Assets/Skies")
+	settings.set("/rtx/materialDb/mdlSearchPaths", mdl_paths)
 
 	# Cannot move before SimApp is launched
 	import grade_utils.misc_utils
@@ -200,6 +259,16 @@ try:
 	print(f"[DEBUG] Config file exists: {os.path.exists(abs_config_path)}")
 	print(f"[DEBUG] Config keys: {list(config.keys())}")
 	environment = environment(config, rng, local_file_prefix)
+	requested_env = config["fix_env"].get()
+	if requested_env and environment.env_name != requested_env:
+		env_root = os.path.abspath(config["env_path"].get())
+		available_envs = []
+		if os.path.isdir(env_root):
+			available_envs = sorted([os.path.splitext(f)[0] for f in os.listdir(env_root) if f.endswith(".usd")])
+		raise FileNotFoundError(
+			f"Requested --fix_env={requested_env} was not found in env_path={env_root}. "
+			f"Loaded '{environment.env_name}' instead. Available .usd environments: {available_envs}"
+		)
 
 	out_dir = os.path.join(config['out_folder'].get(), environment.env_name)
 	out_dir_npy = os.path.join(config['out_folder_npy'].get(), environment.env_name)
@@ -207,6 +276,7 @@ try:
 		os.makedirs(out_dir)
 
 	omni.usd.get_context().open_stage(local_file_prefix + config["base_env_path"].get(), None)
+	_heartbeat(f"open_stage requested path={local_file_prefix + config['base_env_path'].get()}")
 
 	# Wait two frames so that stage starts loading
 	if 'kit' in globals():
@@ -317,6 +387,11 @@ try:
 	import glob
 
 	zebra_files = glob.glob(f"{zebra_anims_loc}/*.usd")
+	if len(zebra_files) == 0:
+		raise FileNotFoundError(
+			f"No zebra animation USD files found in zebra_anims_loc={zebra_anims_loc}. "
+			"Expected files like Attack.usd, Gallop.usd, Idle.usd, ..."
+		)
 
 	from grade_utils.zebra_utils import *
 	from omni.kit.window.sequencer.scripts import sequencer_drop_controller
@@ -412,7 +487,6 @@ try:
 	substep = 3
 
 	simulation_context.play()
-	import ipdb; ipdb.set_trace()
 
 	while kit.is_running():
 		if simulation_step > 0:
@@ -514,9 +588,6 @@ try:
 			sleep(0.5)
 			# two frames with the same animation point
 			# todo fix the time
-			import ipdb;
-
-			ipdb.set_trace()
 
 			timeline.set_current_time(max_anim_length / timeline.get_time_codes_per_seconds())
 			if need_sky[env_id]:
@@ -546,7 +617,6 @@ try:
 				except:
 					print("Error publishing camera")
 					pub_try_cnt += 1
-					import ipdb; ipdb.set_trace()
 					# simulation_context.stop()
 					# simulation_context.play()
 					sleep(0.5)
@@ -583,11 +653,14 @@ try:
 		if simulation_step >= exp_len:
 			break
 except:
-	extype, value, tb = sys.exc_info()
 	traceback.print_exc()
-	ipdb.post_mortem(tb)
+	raise
 finally:
-	simulation_context.stop()
+	if 'simulation_context' in globals() or 'simulation_context' in locals():
+		try:
+			simulation_context.stop()
+		except Exception:
+			pass
 	try:
 		kit.close()
 	except:

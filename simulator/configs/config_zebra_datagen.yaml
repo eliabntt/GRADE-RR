@@ -1,14 +1,14 @@
 # GENERAL NOTE the paths need to be ABSOLUTE!
-env_path: "/media/ebonetto/WindowsData/Zebra_envs/Usable"
+env_path: "/home/jschwenkbeck/Documents/GRADE/GRADE-RR/usds"
 use_stl: False # this disable stl loading thus placement AND robot heading
 use_npy: False
-base_env_path: "GRADE-RR/usds/env_base_saved.usd"
-zebra_anims_loc: "/media/ebonetto/WindowsData/Zebra_anims"
+base_env_path: "/home/jschwenkbeck/Documents/GRADE/GRADE-RR/usds/empty.usd"
+zebra_anims_loc: "/home/jschwenkbeck/Documents/GRADE/GRADE-RR/meshes"
 randomize_sky: True # only if allowed
-robot_mesh_path: "/media/ebonetto/WindowsData/ov/isaac_sim-2021.2.1/GRADE-RR/meshes/drone.dae"
-usd_robot_path: "/media/ebonetto/WindowsData/ov/isaac_sim-2022.2.1/GRADE-RR/usds/drone_2022.usd"
-out_folder: "/media/ebonetto/WindowsData/zebra_out_close"
-out_folder_npy: "/media/ebonetto/WindowsData/zebra_out_close"
+robot_mesh_path: "/home/jschwenkbeck/Documents/GRADE/GRADE-RR/meshes/drone.dae"
+usd_robot_path: "/home/jschwenkbeck/Documents/GRADE/GRADE-RR/usds/drone_2022.usd"
+out_folder: "/home/jschwenkbeck/Documents/GRADE/GRADE-RR/exp_out/zebra_out_close"
+out_folder_npy: "/home/jschwenkbeck/Documents/GRADE/GRADE-RR/exp_out/zebra_out_close"
 fps: 30
 num_robots: 3
 experiment_length: 220

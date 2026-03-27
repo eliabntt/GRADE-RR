@@ -23,7 +23,13 @@ try:
 	from geometry_msgs.msg import Point
 except ImportError:
 	class Point:
-		def __init__(self, x=0, y=0, z=0):
+		def __init__(self, *args, x=0, y=0, z=0):
+			if len(args) >= 1:
+				x = args[0]
+			if len(args) >= 2:
+				y = args[1]
+			if len(args) >= 3:
+				z = args[2]
 			self.x = x
 			self.y = y
 			self.z = z
@@ -111,7 +117,7 @@ class environment:
 		self.shifts = [(self.env_limits[0] + self.env_limits[3]) / 2, (self.env_limits[1] + self.env_limits[4]) / 2, self.env_limits[2]]
 		self.env_limits_shifted = [self.env_limits[i] - self.shifts[i % 3] for i, _ in enumerate(self.env_limits)]
 		self.area_polygon = get_area(self.env_info[6])
-		self.env_polygon = [Point(i[0], i[1], 0) for i in self.env_info[-1]]
+		self.env_polygon = [Point(x=i[0], y=i[1], z=0) for i in self.env_info[-1]]
 
 	def generate_map(self, out_path: str, zlim=[0, 1], cell_size = 0.05, origin=[0, 0, 0]):
 		"""
