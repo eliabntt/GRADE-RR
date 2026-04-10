@@ -1,8 +1,8 @@
 # GENERAL NOTE the paths need to be ABSOLUTE!
-env_path: "/home/jschwenkbeck/Documents/GRADE/GRADE-RR/usds"
+env_path: "/home/jschwenkbeck/Documents/GRADE/GRADE-RR/Savana"
 use_stl: False # this disable stl loading thus placement AND robot heading
 use_npy: False
-base_env_path: "/home/jschwenkbeck/Documents/GRADE/GRADE-RR/usds/empty.usd"
+base_env_path: "/home/jschwenkbeck/Documents/GRADE/GRADE-RR/Savana/Savana.usd"
 zebra_anims_loc: "/home/jschwenkbeck/Documents/GRADE/GRADE-RR/meshes"
 randomize_sky: True # only if allowed
 robot_mesh_path: "/home/jschwenkbeck/Documents/GRADE/GRADE-RR/meshes/drone.dae"

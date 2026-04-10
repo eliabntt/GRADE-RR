@@ -44,6 +44,7 @@ def _heartbeat(msg):
 
 _heartbeat("module import completed")
 
+# /home/jschwenkbeck/miniforge3/envs/env_isaaclab/bin/python /home/jschwenkbeck/Documents/GRADE/GRADE-RR/simulator/zebra_datagen.py --config_file /home/jschwenkbeck/Documents/GRADE/GRADE-RR/simulator/configs/config_zebra_datagen.yaml --headless False --fix_env env_base_flat
 
 def boolean_string(s):
 	if s.lower() not in {'false', 'true'}:
@@ -229,7 +230,7 @@ try:
 	from grade_utils.environment_utils import *
 	from pxr import UsdGeom, UsdLux, Gf, Vt, UsdPhysics, PhysxSchema, Usd, UsdShade, Sdf, UsdSkel
 
-	simulation_environment_setup(need_ros=False)
+	simulation_environment_setup(need_ros=False, need_sequencer=True, need_shapenet=False)
 
 	all_env_names = ["Bliss", "Forest", "Grasslands", "Iceland", "L_Terrain", "Meadow",
 	                 "Moorlands", "Nature_1", 'Nature_2', "Savana", "Windmills", "Woodland"]
@@ -278,20 +279,30 @@ try:
 	omni.usd.get_context().open_stage(local_file_prefix + config["base_env_path"].get(), None)
 	_heartbeat(f"open_stage requested path={local_file_prefix + config['base_env_path'].get()}")
 
-	# Wait two frames so that stage starts loading
+	# Wait multiple frames so that stage starts loading  
 	if 'kit' in globals():
-		kit.update()
-		kit.update()
+		for i in range(10):
+			_heartbeat(f"update frame {i+1}/10")
+			kit.update()
 	elif 'simulation_app' in globals():
-		simulation_app.update()
-		simulation_app.update()
+		for i in range(10):
+			_heartbeat(f"update frame {i+1}/10")
+			simulation_app.update()
 	else:
 		print("[ERROR] Neither 'kit' nor 'simulation_app' is defined. Cannot update simulation.")
 
 	print("Loading stage...")
-	while is_stage_loading():
-		kit.update()
-	print("Loading Complete")
+	_heartbeat("starting stage load wait loop")
+	load_timeout_secs = 120
+	start_time = time.time()
+	while is_stage_loading() and (time.time() - start_time) < load_timeout_secs:
+		time.sleep(0.1)
+		try:
+			kit.update()
+		except Exception as e:
+			_heartbeat(f"Exception during update: {e}")
+			break
+	_heartbeat(f"Loading Complete (elapsed: {time.time() - start_time:.1f}s)")
 
 	context = omni.usd.get_context()
 	stage = context.get_stage()
@@ -394,9 +405,19 @@ try:
 		)
 
 	from grade_utils.zebra_utils import *
-	from omni.kit.window.sequencer.scripts import sequencer_drop_controller
+	try:
+		from omni.kit.window.sequencer.scripts import sequencer_drop_controller
+		_heartbeat("using window sequencer drop controller")
+	except Exception as _sequencer_import_error:
+		sequencer_drop_controller = None
+		_heartbeat(f"window sequencer unavailable, using fallback sequencer commands: {_sequencer_import_error}")
 
-	_, sequence = omni.kit.commands.execute("SequencerCreateSequenceCommand")
+	seq_ok, sequence = omni.kit.commands.execute("SequencerCreateSequenceCommand")
+	if (not seq_ok) or sequence is None:
+		raise RuntimeError(
+			"Failed to create Sequencer sequence. Ensure sequencer extensions are available "
+			"(omni.kit.sequencer.core and omni.kit.sequencer.usd)."
+		)
 	sequence_path = sequence.GetPrim().GetPath()
 	kit.update()
 

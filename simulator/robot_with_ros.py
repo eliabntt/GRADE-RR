@@ -5,6 +5,7 @@ from pathlib import Path
 import confuse
 from isaacsim import SimulationApp
 
+#/home/jschwenkbeck/miniforge3/envs/env_isaaclab/bin/python /home/jschwenkbeck/Documents/GRADE/GRADE-RR/simulator/robot_with_ros.py --config_file /home/jschwenkbeck/Documents/GRADE/GRADE-RR/simulator/configs/robot_with_ros.yaml --headless False --steps 50000
 
 def boolean_string(value: str) -> bool:
 	if value.lower() not in {"false", "true"}:
@@ -66,7 +67,7 @@ try:
 	import omni
 	from isaacsim.core.api import SimulationContext
 	from isaacsim.core.utils.stage import is_stage_loading
-	from pxr import Gf, Sdf, UsdGeom
+	from pxr import Gf, Sdf, UsdGeom, UsdPhysics
 
 	if bool(cfg("ros", args.ros)):
 		try:
@@ -106,10 +107,23 @@ try:
 	print(f"[robot_with_ros] spawning {num_robots} robot(s) from: {usd_robot_path}")
 	spacing = 2.0 / max(meters_per_unit, 1e-9)
 	for idx in range(num_robots):
-		prim_path = f"{robot_base_prim_path}{idx}"
-		xform = UsdGeom.Xform.Define(stage, Sdf.Path(prim_path))
-		xform.GetPrim().GetReferences().AddReference(usd_robot_path)
-		UsdGeom.XformCommonAPI(xform).SetTranslate(Gf.Vec3d(float(idx) * spacing, 0.0, 0.0))
+		root_path = f"{robot_base_prim_path}{idx}_root"
+		robot_path = f"{root_path}/robot"
+
+		root_xform = UsdGeom.Xform.Define(stage, Sdf.Path(root_path))
+		UsdGeom.XformCommonAPI(root_xform).SetTranslate(Gf.Vec3d(float(idx) * spacing, 0.0, 0.0))
+
+		robot_xform = UsdGeom.Xform.Define(stage, Sdf.Path(robot_path))
+		robot_xform.GetPrim().GetReferences().AddReference(usd_robot_path)
+
+		# Let referenced prims resolve before applying collision overrides.
+		app.update()
+		app.update()
+
+		visual_mesh_prim = stage.GetPrimAtPath(f"{robot_path}/yaw_link/visuals")
+		if visual_mesh_prim and visual_mesh_prim.IsValid():
+			mesh_collision_api = UsdPhysics.MeshCollisionAPI.Apply(visual_mesh_prim)
+			mesh_collision_api.CreateApproximationAttr().Set("convexHull")
 
 	sim = SimulationContext(
 		physics_dt=1.0 / physics_hz,

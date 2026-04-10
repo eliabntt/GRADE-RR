@@ -10,44 +10,47 @@ GRAPH_PATH = "/Render/PostProcess/SDGPipeline"
 from isaacsim.core.utils.extensions import enable_extension, disable_extension
 import carb
 
-def simulation_environment_setup(need_ros=True):
+
+def _safe_enable_extension(name):
+	try:
+		enable_extension(name)
+	except Exception as e:
+		print(f"[INFO] {name} extension not available or failed to enable: {e}")
+
+
+def _safe_disable_extension(name):
+	try:
+		disable_extension(name)
+	except Exception:
+		pass
+
+def simulation_environment_setup(need_ros=True, need_sequencer=False, need_shapenet=True):
 	"""
 	Enable the necessary extensions that will be used within the simulation
 	"""
-	try:
-		try:
-			enable_extension("omni.isaac.ros_bridge")
-		except Exception as e:
-			print("[INFO] omni.isaac.ros_bridge extension not available or failed to enable:", e)
-	except Exception as e:
-		print("[INFO] omni.isaac.ros_bridge extension not available or failed to enable:", e)
-	enable_extension("omni.isaac.physics_inspector")
-	enable_extension("omni.isaac.physics_utilities")
-	enable_extension("omni.anim.skelJoint")
-	enable_extension("omni.kit.window.sequencer")
-	enable_extension("omni.isaac.dynamic_control")
-	try:
-		try:
-			enable_extension("omni.isaac.shapenet")
-		except Exception as e:
-			print("[INFO] omni.isaac.shapenet extension not available or failed to enable:", e)
-	except Exception as e:
-		print("[INFO] omni.isaac.shapenet extension not available or failed to enable:", e)
-	enable_extension("semantics.schema.editor")
-	enable_extension("omni.hydra.iray")
-	enable_extension("omni.iray.settings.core")
-	enable_extension('omni.isaac.occupancy_map')
-	try:
-		try:
-			enable_extension('omni.isaac.shapenet')
-		except Exception as e:
-			print("[INFO] omni.isaac.shapenet extension not available or failed to enable:", e)
-	except Exception as e:
-		print("[INFO] omni.isaac.shapenet extension not available or failed to enable:", e)
-	enable_extension('omni.isaac.range_sensor')
-	disable_extension('omni.isaac.sun_study')
-	enable_extension('omni.isaac.core_nodes')
-	enable_extension('omni.isaac.sensor')
+	if need_ros:
+		_safe_enable_extension("omni.isaac.ros_bridge")
+
+	_safe_enable_extension("omni.isaac.physics_inspector")
+	_safe_enable_extension("omni.isaac.physics_utilities")
+	_safe_enable_extension("omni.anim.skelJoint")
+
+	if need_sequencer:
+		# Isaac Sim 5.1 exposes sequencer through core/usd extensions.
+		_safe_enable_extension("omni.kit.sequencer.usd")
+		_safe_enable_extension("omni.kit.sequencer.core")
+
+	_safe_enable_extension("omni.isaac.dynamic_control")
+	if need_shapenet:
+		_safe_enable_extension("omni.isaac.shapenet")
+	_safe_enable_extension("semantics.schema.editor")
+	_safe_enable_extension("omni.hydra.iray")
+	_safe_enable_extension("omni.iray.settings.core")
+	_safe_enable_extension('omni.isaac.occupancy_map')
+	_safe_enable_extension('omni.isaac.range_sensor')
+	_safe_disable_extension('omni.isaac.sun_study')
+	_safe_enable_extension('omni.isaac.core_nodes')
+	_safe_enable_extension('omni.isaac.sensor')
 	# Necessary ONLY if using NUCLEUS
 	# Locate /Isaac folder on nucleus server to load sample
 	# from omni.isaac.core.utils.nucleus import get_assets_root_path
