@@ -9,7 +9,7 @@ except Exception:
 
 import isaacsim
 from isaacsim import SimulationApp
-
+# conda activate env_isaaclab && /home/jschwenkbeck/miniforge3/envs/env_isaaclab/bin/python /home/jschwenkbeck/Documents/GRADE/GRADE-RR/simulator/zebra_datagen.py --config_file /home/jschwenkbeck/Documents/GRADE/GRADE-RR/simulator/configs/config_zebra_datagen.yaml --headless False
 import argparse
 import confuse
 import numpy as np
@@ -24,6 +24,7 @@ if simulator_dir not in sys.path:
 import time
 import traceback
 import yaml
+from scipy.spatial.transform import Rotation
 from time import sleep
 
 
@@ -38,6 +39,30 @@ def _heartbeat(msg):
 	try:
 		with open("/tmp/grade_rr_zebra_datagen.log", "a", encoding="utf-8") as f:
 			f.write(line + "\n")
+	except Exception:
+		pass
+
+
+def _patch_property_window_for_headless():
+	"""Guard known property-window callback issue in headless Isaac Sim 5.1."""
+	try:
+		import omni.kit.window.property.window as _prop_window_mod
+		_orig = _prop_window_mod.PropertyWindow.save_scroll_pos
+
+		def _safe_save_scroll_pos(self, *args, **kwargs):
+			frame = getattr(self, "properties_frame", None)
+			if frame is None:
+				return
+			if getattr(frame, "scroll_y_max", None) is None or getattr(frame, "scroll_y", None) is None:
+				return
+			try:
+				return _orig(self, *args, **kwargs)
+			except AttributeError as e:
+				if "scroll_y_max" in str(e):
+					return
+				raise
+
+		_prop_window_mod.PropertyWindow.save_scroll_pos = _safe_save_scroll_pos
 	except Exception:
 		pass
 
@@ -156,6 +181,7 @@ try:
 
 	args, unknown = parser.parse_known_args()
 	_heartbeat(f"args parsed config_file={args.config_file} headless={args.headless} fix_env={args.fix_env}")
+	cli_argv = set(sys.argv[1:])
 
 	# Print the contents of the config file before loading with confuse
 	import yaml as _yaml
@@ -185,17 +211,35 @@ try:
 
 	config = confuse.Configuration("DynamicWorlds", __name__)
 	config.set_file(args.config_file)
+	# Avoid overriding file values with parser defaults when a flag was not explicitly passed.
+	# In particular, --fix_env default "" would mask config-file fix_env.
+	if "--fix_env" not in cli_argv:
+		try:
+			delattr(args, "fix_env")
+		except Exception:
+			pass
 	config.set_args(args)
 	can_start = True
+	interactive_preview_mode = (not config["headless"].get()) and (not config["record"].get())
+	preview_settings_rate = 60 if interactive_preview_mode else config["physics_hz"].get()
+	preview_stage_renders = 5 if interactive_preview_mode else 50
+	preview_robot_renders = 1 if interactive_preview_mode else 5
+	preview_substep = 1 if interactive_preview_mode else 3
+	preview_inner_renders = 1 if interactive_preview_mode else 3
+	preview_sleep_s = 0.0 if interactive_preview_mode else 0.5
 
 	CONFIG = {"display_options": 3286, "width": 1280, "height": 720, "headless": config["headless"].get()}
 	simulation_app = SimulationApp(launch_config=CONFIG)
 	kit = simulation_app
 	_heartbeat("SimulationApp launched from config")
+	if interactive_preview_mode:
+		_heartbeat("interactive preview mode enabled (windowed + no record): reduced render load")
 
 	import carb
 	import omni
 	import omni.client
+	if config["headless"].get():
+		_patch_property_window_for_headless()
 	cloud_path = "http://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.1"
 	omni.client.set_alias("omniverse://localhost", cloud_path)
 	omni.client.set_alias("omniverse://localhost/NVIDIA", f"{cloud_path}/NVIDIA")
@@ -230,7 +274,35 @@ try:
 	from grade_utils.environment_utils import *
 	from pxr import UsdGeom, UsdLux, Gf, Vt, UsdPhysics, PhysxSchema, Usd, UsdShade, Sdf, UsdSkel
 
-	simulation_environment_setup(need_ros=False, need_sequencer=True, need_shapenet=False)
+	def _focus_editor_camera_on_target(target_pos_m):
+		"""Best-effort: move default editor camera to look at a target in meters."""
+		camera_candidates = ["/OmniverseKit_Persp", "/World/Camera", "/OmniverseKit_Top"]
+		cam_prim = None
+		for p in camera_candidates:
+			prim = stage.GetPrimAtPath(p)
+			if prim and prim.IsValid():
+				cam_prim = prim
+				break
+		if cam_prim is None:
+			return
+
+		tx = float(target_pos_m[0]) / meters_per_unit
+		ty = float(target_pos_m[1]) / meters_per_unit
+		tz = float(target_pos_m[2]) / meters_per_unit
+		cam_pos = np.array([tx - (8.0 / meters_per_unit), ty - (8.0 / meters_per_unit), tz + (4.0 / meters_per_unit)])
+
+		delta_x = tx - cam_pos[0]
+		delta_y = ty - cam_pos[1]
+		delta_z = tz - cam_pos[2]
+		yaw = np.arctan2(delta_y, delta_x)
+		pitch = -np.arctan2(delta_z, max(1e-6, np.sqrt(delta_x * delta_x + delta_y * delta_y)))
+
+		set_translate(cam_prim, [float(cam_pos[0]), float(cam_pos[1]), float(cam_pos[2])])
+		set_rotate(cam_prim, [0.0, float(pitch), float(yaw)])
+
+	# Defer extension setup until after stage load to avoid loader-time instability.
+	# (Some optional extensions can interfere with stage reopen/load in Isaac Sim 5.1.)
+	deferred_extension_setup = (False, True, False)
 
 	all_env_names = ["Bliss", "Forest", "Grasslands", "Iceland", "L_Terrain", "Meadow",
 	                 "Moorlands", "Nature_1", 'Nature_2', "Savana", "Windmills", "Woodland"]
@@ -260,6 +332,18 @@ try:
 	print(f"[DEBUG] Config file exists: {os.path.exists(abs_config_path)}")
 	print(f"[DEBUG] Config keys: {list(config.keys())}")
 	environment = environment(config, rng, local_file_prefix)
+	base_env_name = os.path.splitext(os.path.basename(config["base_env_path"].get()))[0]
+	if base_env_name in all_env_names:
+		env_id = all_env_names.index(base_env_name)
+		print(f"[INFO] Using base_env_path environment '{base_env_name}' (env_id={env_id})")
+	elif environment.env_name in all_env_names:
+		env_id = all_env_names.index(environment.env_name)
+		print(f"[INFO] Using loaded environment '{environment.env_name}' (env_id={env_id})")
+	else:
+		print(
+			f"[WARN] Loaded environment '{environment.env_name}' not in known list; "
+			f"keeping env_id={env_id} ({all_env_names[env_id]})"
+		)
 	requested_env = config["fix_env"].get()
 	if requested_env and environment.env_name != requested_env:
 		env_root = os.path.abspath(config["env_path"].get())
@@ -308,7 +392,16 @@ try:
 	stage = context.get_stage()
 	set_stage_up_axis("Z")
 
-	omni.kit.commands.execute("DeletePrimsCommand", paths=["/World/GroundPlane"])
+	# Enable optional extensions only after stage is loaded.
+	need_ros_ext, need_seq_ext, need_shapenet_ext = deferred_extension_setup
+	simulation_environment_setup(
+		need_ros=need_ros_ext,
+		need_sequencer=need_seq_ext,
+		need_shapenet=need_shapenet_ext,
+	)
+
+	if stage.GetPrimAtPath("/World/GroundPlane").IsValid():
+		omni.kit.commands.execute("DeletePrimsCommand", paths=["/World/GroundPlane"])
 
 	# do this AFTER loading the world
 	simulation_context = SimulationContext(physics_dt=1.0 / config["physics_hz"].get(),
@@ -326,7 +419,7 @@ try:
 	meters_per_unit = 0.01
 
 	# use rtx while setting up!
-	set_raytracing_settings(config["physics_hz"].get())
+	set_raytracing_settings(preview_settings_rate)
 	env_prim_path = environment.load_and_center(config["env_prim_path"].get())
 	process_semantics(config["env_prim_path"].get(), "World")
 
@@ -343,7 +436,7 @@ try:
 	scale = np.array(stage.GetPrimAtPath(f"/World/home/{ground_area_name[env_id]}").GetProperty("xformOp:scale").Get())
 	# i need to consider that z has a bounding box and that the position is on the top corner
 
-	for _ in range(50):
+	for _ in range(preview_stage_renders):
 		simulation_context.render()
 
 	floor_points, max_floor_x, min_floor_x, max_floor_y, min_floor_y = randomize_floor_position(floor_data,
@@ -383,7 +476,7 @@ try:
 		add_npy_viewport(viewport_window_list, robot_base_prim_path, n, old_h_ap, old_v_ap, config,simulation_context, tot_num_ros_cam=0)
 	kit.update()
 
-	for _ in range(5):
+	for _ in range(preview_robot_renders):
 		simulation_context.render()
 
 	for index, cam in enumerate(viewport_window_list):
@@ -405,20 +498,28 @@ try:
 		)
 
 	from grade_utils.zebra_utils import *
-	try:
-		from omni.kit.window.sequencer.scripts import sequencer_drop_controller
-		_heartbeat("using window sequencer drop controller")
-	except Exception as _sequencer_import_error:
+	sequence_path = ""
+	if config["headless"].get() or interactive_preview_mode:
 		sequencer_drop_controller = None
-		_heartbeat(f"window sequencer unavailable, using fallback sequencer commands: {_sequencer_import_error}")
+		if interactive_preview_mode:
+			_heartbeat("interactive preview mode: skipping sequencer clip authoring for zebras")
+		else:
+			_heartbeat("headless mode: skipping sequencer clip authoring for zebras")
+	else:
+		try:
+			from omni.kit.window.sequencer.scripts import sequencer_drop_controller
+			_heartbeat("using window sequencer drop controller")
+		except Exception as _sequencer_import_error:
+			sequencer_drop_controller = None
+			_heartbeat(f"window sequencer unavailable, using fallback sequencer commands: {_sequencer_import_error}")
 
-	seq_ok, sequence = omni.kit.commands.execute("SequencerCreateSequenceCommand")
-	if (not seq_ok) or sequence is None:
-		raise RuntimeError(
-			"Failed to create Sequencer sequence. Ensure sequencer extensions are available "
-			"(omni.kit.sequencer.core and omni.kit.sequencer.usd)."
-		)
-	sequence_path = sequence.GetPrim().GetPath()
+		seq_ok, sequence = omni.kit.commands.execute("SequencerCreateSequenceCommand")
+		if (not seq_ok) or sequence is None:
+			raise RuntimeError(
+				"Failed to create Sequencer sequence. Ensure sequencer extensions are available "
+				"(omni.kit.sequencer.core and omni.kit.sequencer.usd)."
+			)
+		sequence_path = sequence.GetPrim().GetPath().pathString
 	kit.update()
 
 	zebra_anim_names = ["Attack", "Attack01", "Attack02", "Eating", "Gallop", "Hit_Back", "Hit_Front", "Hit_Left",
@@ -472,11 +573,12 @@ try:
 
 	# IT IS OF CRUCIAL IMPORTANCE THAT AFTER THIS POINT THE RENDER GETS DONE WITH THE SLEEPING CALL! OTHERWISE PATH TRACING SPP WILL GET RUINED
 	if (config["rtx_mode"].get()):
-		set_raytracing_settings(config["physics_hz"].get())
+		set_raytracing_settings(preview_settings_rate)
 	else:
-		set_pathtracing_settings(config["physics_hz"].get())
+		set_pathtracing_settings(preview_settings_rate)
 
-	omni.usd.get_context().get_selection().set_selected_prim_paths([], False)
+	if not config["headless"].get():
+		omni.usd.get_context().get_selection().set_selected_prim_paths([], False)
 
 	for _ in range(5):
 		simulation_context.step(render=False)
@@ -504,12 +606,37 @@ try:
 
 	hidden_position = [min_floor_x / meters_per_unit, min_floor_y / meters_per_unit, -10e5]
 	all_zebras = preload_all_zebras(config, rng, zebra_files, zebra_info, simulation_context, sequencer_drop_controller,
-	                         max_anim_length, hidden_position)
-	substep = 3
+	                         max_anim_length, hidden_position, sequence_path)
+	substep = preview_substep
 
 	simulation_context.play()
 
 	while kit.is_running():
+		if interactive_preview_mode:
+			if simulation_step == 0:
+				frame_info_preview = place_zebras(
+					all_zebras,
+					rng,
+					floor_points,
+					meters_per_unit,
+					hidden_position,
+					config,
+					max_anim_length,
+					zebra_info,
+				)
+				zebra_keys = [k for k in frame_info_preview.keys() if k.startswith("/zebra")]
+				if len(zebra_keys) > 0:
+					try:
+						_focus_editor_camera_on_target(frame_info_preview[zebra_keys[0]]["position"])
+						_heartbeat(f"preview camera focused on {zebra_keys[0]}")
+					except Exception as e:
+						_heartbeat(f"preview camera focus failed: {e}")
+				_heartbeat("interactive roam mode active: use viewport navigation freely")
+				simulation_step = 1
+			simulation_context.step(render=False)
+			simulation_context.render()
+			continue
+
 		if simulation_step > 0:
 			for zebra in all_zebras:
 				set_translate(stage.GetPrimAtPath(zebra), list(hidden_position))
@@ -602,53 +729,60 @@ try:
 			simulation_context.step(render=False)
 			simulation_context.step(render=False)
 
-			for _ in range(3):
+			for _ in range(preview_inner_renders):
 				simulation_context.step(render=False)
 				simulation_context.render()
 
-			sleep(0.5)
+			if preview_sleep_s > 0:
+				sleep(preview_sleep_s)
 			# two frames with the same animation point
 			# todo fix the time
 
 			timeline.set_current_time(max_anim_length / timeline.get_time_codes_per_seconds())
 			if need_sky[env_id]:
-				# with probability 0.9 during day hours
-				stage.GetPrimAtPath("/World/Looks/SkyMaterial/Shader").GetAttribute("inputs:SunPositionFromTOD").Set(True)
-				if rng.uniform() < 0.9:
-					stage.GetPrimAtPath("/World/Looks/SkyMaterial/Shader").GetAttribute("inputs:TimeOfDay").Set(
-						rng.uniform(5, 20))
+				sky_shader = stage.GetPrimAtPath("/World/Looks/SkyMaterial/Shader")
+				if sky_shader and sky_shader.IsValid():
+					# with probability 0.9 during day hours
+					sun_attr = sky_shader.GetAttribute("inputs:SunPositionFromTOD")
+					if sun_attr:
+						sun_attr.Set(True)
+					tod_attr = sky_shader.GetAttribute("inputs:TimeOfDay")
+					if tod_attr:
+						if rng.uniform() < 0.9:
+							tod_attr.Set(rng.uniform(5, 20))
+						else:
+							if rng.uniform() < 0.5:
+								tod_attr.Set(rng.uniform(0, 5))
+							else:
+								tod_attr.Set(rng.uniform(20, 24))
+			if config["record"].get():
+				print("Publishing cameras...")
+				my_recorder._enable_record = True
+				frame_info["step"] = simulation_step
+				frame_info["substep"] = c_substep
+				pub_try_cnt = 0
+				success_pub = False
+				while not success_pub and pub_try_cnt < 3:
+					try:
+						pub_and_write_images(simulation_context, viewport_window_list, [],
+						                     config["rtx_mode"].get(), my_recorder)
+						success_pub = True
+					except:
+						print("Error publishing camera")
+						pub_try_cnt += 1
+						# simulation_context.stop()
+						# simulation_context.play()
+						sleep(0.5)
+						simulation_context.render()
+						simulation_context.render()
+				if not success_pub:
+					frame_info["error"] = True
 				else:
-					if rng.uniform() < 0.5:
-						stage.GetPrimAtPath("/World/Looks/SkyMaterial/Shader").GetAttribute("inputs:TimeOfDay").Set(
-							rng.uniform(0, 5))
-					else:
-						stage.GetPrimAtPath("/World/Looks/SkyMaterial/Shader").GetAttribute("inputs:TimeOfDay").Set(
-							rng.uniform(20, 24))
-			print("Publishing cameras...")
-			my_recorder._enable_record = True
-			frame_info["step"] = simulation_step
-			frame_info["substep"] = c_substep
-			pub_try_cnt = 0
-			success_pub = False
-			while not success_pub and pub_try_cnt < 3:
-				try:
-					pub_and_write_images(simulation_context, viewport_window_list, [],
-					                     config["rtx_mode"].get(), my_recorder)
-					success_pub = True
-				except:
-					print("Error publishing camera")
-					pub_try_cnt += 1
-					# simulation_context.stop()
-					# simulation_context.play()
-					sleep(0.5)
-					simulation_context.render()
-					simulation_context.render()
-			if not success_pub:
-				frame_info["error"] = True
+					frame_info["error"] = False
+
+				np.save(out_dir_npy + f"/frame_{simulation_step}_{c_substep}.npy", frame_info)
 			else:
 				frame_info["error"] = False
-
-			np.save(out_dir_npy + f"/frame_{simulation_step}_{c_substep}.npy", frame_info)
 			simulation_context.stop()
 			# clips = [f"/World/Sequence{k}{k}_Clip" for k in frame_info.keys() if k.startswith("/zebra")]
 			# remove targets from clips

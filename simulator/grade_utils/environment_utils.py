@@ -19,6 +19,7 @@ except ModuleNotFoundError:
 import sys
 import os
 import numpy as np
+import omni
 try:
 	from geometry_msgs.msg import Point
 except ImportError:
@@ -37,7 +38,7 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 simulator_dir = os.path.abspath(os.path.join(current_dir, '..'))
 if simulator_dir not in sys.path:
 	sys.path.insert(0, simulator_dir)
-from grade_utils.misc_utils import get_area
+from grade_utils.misc_utils import get_area, clear_properties, set_translate
 
 
 class environment:
@@ -54,6 +55,26 @@ class environment:
 		Supports both subdirectory and flat USD file layouts.
 		"""
 		import os
+		base_env_path = None
+		try:
+			base_env_path = config["base_env_path"].get()
+		except Exception:
+			base_env_path = None
+		if base_env_path:
+			abs_base_env_path = os.path.abspath(base_env_path)
+			if not os.path.isfile(abs_base_env_path):
+				raise FileNotFoundError(f"[ERROR] base_env_path does not exist: {abs_base_env_path}")
+			self.env_name = os.path.splitext(os.path.basename(abs_base_env_path))[0]
+			self.env_path = local_file_prefix + abs_base_env_path
+			self.env_stl_path = None
+			self.env_mesh = None
+			self.env_info = [0, 0, 0, 0, 0, 0, np.array([[-1000, -1000], [-1000, 1000], [1000, 1000], [1000, -1000]])]
+			self.env_limits = self.env_info[0:6]
+			self.shifts = [(self.env_limits[0] + self.env_limits[3]) / 2, (self.env_limits[1] + self.env_limits[4]) / 2, self.env_limits[2]]
+			self.env_limits_shifted = [self.env_limits[i] - self.shifts[i % 3] for i, _ in enumerate(self.env_limits)]
+			self.area_polygon = get_area(self.env_info[6])
+			self.env_polygon = [Point(x=i[0], y=i[1], z=0) for i in self.env_info[-1]]
+			return
 		self.env_usd_export_folder = config["env_path"].get()
 		abs_env_path = os.path.abspath(self.env_usd_export_folder)
 		print(f"[DEBUG] env_path from config: {self.env_usd_export_folder}")

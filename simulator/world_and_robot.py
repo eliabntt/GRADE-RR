@@ -1,7 +1,7 @@
 import argparse
 import os
 from pathlib import Path
-
+#conda activate env_isaaclab && /home/jschwenkbeck/miniforge3/envs/env_isaaclab/bin/python /home/jschwenkbeck/Documents/GRADE/GRADE-RR/simulator/world_and_robot.py --config_file /home/jschwenkbeck/Documents/GRADE/GRADE-RR/simulator/configs/world_and_robot.yaml --headless False
 import confuse
 from isaacsim import SimulationApp
 
@@ -33,6 +33,7 @@ parser = argparse.ArgumentParser(description="World + robot local asset test")
 parser.add_argument("--headless", type=boolean_string, default=True, help="Run headless")
 parser.add_argument("--rtx_mode", type=boolean_string, default=False, help="Kept for compatibility")
 parser.add_argument("--config_file", type=str, default="config.yaml")
+parser.add_argument("--keep_open", type=boolean_string, default=True, help="Keep running until Ctrl+C")
 args, _ = parser.parse_known_args()
 
 config = confuse.Configuration("world_and_robot", __name__)
@@ -111,8 +112,16 @@ try:
 	simulation_context.initialize_physics()
 
 	simulation_context.play()
-	for _ in range(300):
-		simulation_context.step(render=True)
+	if bool(args.keep_open):
+		print("[world_and_robot] running continuously (Ctrl+C to stop)")
+		try:
+			while True:
+				simulation_context.step(render=True)
+		except KeyboardInterrupt:
+			print("[world_and_robot] stop requested by user")
+	else:
+		for _ in range(300):
+			simulation_context.step(render=True)
 	simulation_context.stop()
 
 	print("[world_and_robot] completed successfully")
