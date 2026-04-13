@@ -5,7 +5,7 @@ from pathlib import Path
 import confuse
 from isaacsim import SimulationApp
 
-#/home/jschwenkbeck/miniforge3/envs/env_isaaclab/bin/python /home/jschwenkbeck/Documents/GRADE/GRADE-RR/simulator/robot_with_ros.py --config_file /home/jschwenkbeck/Documents/GRADE/GRADE-RR/simulator/configs/robot_with_ros.yaml --headless False --steps 50000
+#conda activate env_isaaclab && python simulator/robot_with_ros.py --config_file simulator/configs/robot_with_ros.yaml --headless False --steps 50000
 
 def boolean_string(value: str) -> bool:
 	if value.lower() not in {"false", "true"}:

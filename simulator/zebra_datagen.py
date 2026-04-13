@@ -14,6 +14,19 @@ import traceback
 from scipy.spatial.transform import Rotation
 from time import sleep
 
+# Example commands (from repo root):
+# 1) Full data collection (headless):
+#    conda activate env_isaaclab && python simulator/zebra_datagen.py \
+#      --config_file simulator/configs/config_zebra_datagen.yaml --mode datagen --headless True --record True
+# 2) Full data collection (windowed):
+#    conda activate env_isaaclab && python simulator/zebra_datagen.py \
+#      --config_file simulator/configs/config_zebra_datagen.yaml --mode datagen --headless False --record True
+# 3) Interactive roaming preview (no recording):
+#    conda activate env_isaaclab && python simulator/zebra_datagen.py \
+#      --config_file simulator/configs/config_zebra_datagen.yaml --mode roam --headless False --record False
+# 4) Fixed environment selection:
+#    ... --fix_env Savana
+
 
 def _patch_property_window_for_headless():
 	"""Guard known property-window callback issue in headless Isaac Sim 5.1."""

@@ -1,7 +1,7 @@
 import argparse
 import os
 from pathlib import Path
-#conda activate env_isaaclab && /home/jschwenkbeck/miniforge3/envs/env_isaaclab/bin/python /home/jschwenkbeck/Documents/GRADE/GRADE-RR/simulator/world_and_robot.py --config_file /home/jschwenkbeck/Documents/GRADE/GRADE-RR/simulator/configs/world_and_robot.yaml --headless False
+#conda activate env_isaaclab && python simulator/world_and_robot.py --config_file simulator/configs/world_and_robot.yaml --headless False
 import confuse
 from isaacsim import SimulationApp
 
