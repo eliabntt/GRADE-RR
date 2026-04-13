@@ -26,25 +26,15 @@ def get_area(polygon):
 	return 0.5 * np.abs(np.dot(x, np.roll(y, 1)) - np.dot(y, np.roll(x, 1)))
 
 
-# ros
+
 try:
-	try:
-		import rclpy
-		from rclpy.node import Node
-		from geometry_msgs.msg import PoseStamped, Point
-		from nav_msgs.msg import Odometry
-		from sensor_msgs.msg import Imu
-		from std_msgs.msg import String
-		ROS2_AVAILABLE = True
-	except ImportError:
-		rclpy = None
-		Node = None
-		PoseStamped = None
-		Point = None
-		Odometry = None
-		Imu = None
-		String = None
-		ROS2_AVAILABLE = False
+	import rclpy
+	from rclpy.node import Node
+	from geometry_msgs.msg import PoseStamped, Point
+	from nav_msgs.msg import Odometry
+	from sensor_msgs.msg import Imu
+	from std_msgs.msg import String
+	ROS2_AVAILABLE = True
 except ImportError:
 	rclpy = None
 	Node = None
@@ -55,7 +45,6 @@ except ImportError:
 	String = None
 	ROS2_AVAILABLE = False
 
-shapenet = None
 shapenet = None
 try:
 	import omni.isaac.shapenet as shapenet

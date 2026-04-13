@@ -1,21 +1,9 @@
-# 1. Start Isaac Sim first
-import os as _os_bootstrap
-from datetime import datetime as _dt_bootstrap
-try:
-	with open("/tmp/grade_rr_zebra_bootstrap.log", "a", encoding="utf-8") as _f_bootstrap:
-		_f_bootstrap.write(f"[{_dt_bootstrap.now().isoformat()}] zebra_datagen.py bootstrap reached\n")
-except Exception:
-	pass
-
-import isaacsim
 from isaacsim import SimulationApp
-# conda activate env_isaaclab && /home/jschwenkbeck/miniforge3/envs/env_isaaclab/bin/python /home/jschwenkbeck/Documents/GRADE/GRADE-RR/simulator/zebra_datagen.py --config_file /home/jschwenkbeck/Documents/GRADE/GRADE-RR/simulator/configs/config_zebra_datagen.yaml --headless False
 import argparse
 import confuse
 import numpy as np
 import os
 import sys
-from datetime import datetime
 
 # Ensure 'simulator' directory is in sys.path for robust imports
 simulator_dir = os.path.dirname(os.path.abspath(__file__))
@@ -23,24 +11,8 @@ if simulator_dir not in sys.path:
 	sys.path.insert(0, simulator_dir)
 import time
 import traceback
-import yaml
 from scipy.spatial.transform import Rotation
 from time import sleep
-
-
-def _heartbeat(msg):
-	timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-	line = f"[{timestamp}] zebra_datagen: {msg}"
-	print(line, flush=True)
-	try:
-		carb.log_warn(line)
-	except Exception:
-		pass
-	try:
-		with open("/tmp/grade_rr_zebra_datagen.log", "a", encoding="utf-8") as f:
-			f.write(line + "\n")
-	except Exception:
-		pass
 
 
 def _patch_property_window_for_headless():
@@ -65,11 +37,6 @@ def _patch_property_window_for_headless():
 		_prop_window_mod.PropertyWindow.save_scroll_pos = _safe_save_scroll_pos
 	except Exception:
 		pass
-
-
-_heartbeat("module import completed")
-
-# /home/jschwenkbeck/miniforge3/envs/env_isaaclab/bin/python /home/jschwenkbeck/Documents/GRADE/GRADE-RR/simulator/zebra_datagen.py --config_file /home/jschwenkbeck/Documents/GRADE/GRADE-RR/simulator/configs/config_zebra_datagen.yaml --headless False --fix_env env_base_flat
 
 def boolean_string(s):
 	if s.lower() not in {'false', 'true'}:
@@ -164,9 +131,6 @@ def randomize_floor_position(floor_data, floor_translation, scale, meters_per_un
 
 
 try:
-	_heartbeat("entered main try block")
-
-
 	parser = argparse.ArgumentParser(description="Dynamic Worlds Simulator")
 	parser.add_argument("--config_file", type=str, default="config.yaml")
 	parser.add_argument("--headless", type=boolean_string, default=True, help="Wheter to run it in headless mode or not")
@@ -182,34 +146,7 @@ try:
 						help="leave it empty to have a random env, fix it to use a fixed one. Useful for loop processing")
 
 	args, unknown = parser.parse_known_args()
-	_heartbeat(f"args parsed config_file={args.config_file} headless={args.headless} fix_env={args.fix_env}")
 	cli_argv = set(sys.argv[1:])
-
-	# Print the contents of the config file before loading with confuse
-	import yaml as _yaml
-	try:
-		with open(args.config_file, 'r') as f:
-			config_contents = f.read()
-		print("[DEBUG] Raw config.yaml contents:\n" + config_contents)
-		config_yaml = _yaml.safe_load(config_contents)
-		print("[DEBUG] Parsed YAML keys:", list(config_yaml.keys()) if config_yaml else "EMPTY OR INVALID")
-		# If the config only has an 'include' key, resolve it and use that file instead
-		if config_yaml and list(config_yaml.keys()) == ["include"]:
-			include_path = config_yaml["include"]
-			print(f"[DEBUG] Resolving include: {include_path}")
-			# If the include path is relative, resolve relative to the current config file
-			import os
-			if not os.path.isabs(include_path):
-				include_path = os.path.join(os.path.dirname(args.config_file), include_path)
-			print(f"[DEBUG] Using included config file: {include_path}")
-			args.config_file = include_path
-			with open(args.config_file, 'r') as f:
-				config_contents = f.read()
-			print("[DEBUG] Included config.yaml contents:\n" + config_contents)
-			config_yaml = _yaml.safe_load(config_contents)
-			print("[DEBUG] Included YAML keys:", list(config_yaml.keys()) if config_yaml else "EMPTY OR INVALID")
-	except Exception as e:
-		print(f"[ERROR] Could not read or parse config file: {e}")
 
 	config = confuse.Configuration("DynamicWorlds", __name__)
 	config.set_file(args.config_file)
@@ -233,9 +170,8 @@ try:
 	CONFIG = {"display_options": 3286, "width": 1280, "height": 720, "headless": config["headless"].get()}
 	simulation_app = SimulationApp(launch_config=CONFIG)
 	kit = simulation_app
-	_heartbeat("SimulationApp launched from config")
 	if interactive_preview_mode:
-		_heartbeat("roam mode enabled: reduced render load and no data capture")
+		print("roam mode enabled: reduced render load and no data capture")
 
 	import carb
 	import omni
@@ -327,12 +263,6 @@ try:
 	local_file_prefix = ""
 
 	# setup environment variables
-	import os
-	abs_config_path = os.path.abspath(args.config_file)
-	print(f"[DEBUG] Config file used: {args.config_file}")
-	print(f"[DEBUG] Absolute config path: {abs_config_path}")
-	print(f"[DEBUG] Config file exists: {os.path.exists(abs_config_path)}")
-	print(f"[DEBUG] Config keys: {list(config.keys())}")
 	environment = environment(config, rng, local_file_prefix)
 	base_env_name = os.path.splitext(os.path.basename(config["base_env_path"].get()))[0]
 	if base_env_name in all_env_names:
@@ -363,32 +293,20 @@ try:
 		os.makedirs(out_dir)
 
 	omni.usd.get_context().open_stage(local_file_prefix + config["base_env_path"].get(), None)
-	_heartbeat(f"open_stage requested path={local_file_prefix + config['base_env_path'].get()}")
 
-	# Wait multiple frames so that stage starts loading  
-	if 'kit' in globals():
-		for i in range(10):
-			_heartbeat(f"update frame {i+1}/10")
-			kit.update()
-	elif 'simulation_app' in globals():
-		for i in range(10):
-			_heartbeat(f"update frame {i+1}/10")
-			simulation_app.update()
-	else:
-		print("[ERROR] Neither 'kit' nor 'simulation_app' is defined. Cannot update simulation.")
+	for _ in range(10):
+		kit.update()
 
 	print("Loading stage...")
-	_heartbeat("starting stage load wait loop")
 	load_timeout_secs = 120
 	start_time = time.time()
 	while is_stage_loading() and (time.time() - start_time) < load_timeout_secs:
 		time.sleep(0.1)
 		try:
 			kit.update()
-		except Exception as e:
-			_heartbeat(f"Exception during update: {e}")
+		except Exception:
 			break
-	_heartbeat(f"Loading Complete (elapsed: {time.time() - start_time:.1f}s)")
+	print(f"Loading Complete (elapsed: {time.time() - start_time:.1f}s)")
 
 	context = omni.usd.get_context()
 	stage = context.get_stage()
@@ -504,16 +422,16 @@ try:
 	if config["headless"].get() or interactive_preview_mode:
 		sequencer_drop_controller = None
 		if interactive_preview_mode:
-			_heartbeat("roam mode: skipping sequencer clip authoring for zebras")
+			print("roam mode: skipping sequencer clip authoring for zebras")
 		else:
-			_heartbeat("headless mode: skipping sequencer clip authoring for zebras")
+			print("headless mode: skipping sequencer clip authoring for zebras")
 	else:
 		try:
 			from omni.kit.window.sequencer.scripts import sequencer_drop_controller
-			_heartbeat("using window sequencer drop controller")
+			print("using window sequencer drop controller")
 		except Exception as _sequencer_import_error:
 			sequencer_drop_controller = None
-			_heartbeat(f"window sequencer unavailable, using fallback sequencer commands: {_sequencer_import_error}")
+			print(f"window sequencer unavailable, using fallback sequencer commands: {_sequencer_import_error}")
 
 		seq_ok, sequence = omni.kit.commands.execute("SequencerCreateSequenceCommand")
 		if (not seq_ok) or sequence is None:
@@ -630,10 +548,10 @@ try:
 				if len(zebra_keys) > 0:
 					try:
 						_focus_editor_camera_on_target(frame_info_preview[zebra_keys[0]]["position"])
-						_heartbeat(f"preview camera focused on {zebra_keys[0]}")
-					except Exception as e:
-						_heartbeat(f"preview camera focus failed: {e}")
-				_heartbeat("interactive roam mode active: use viewport navigation freely")
+						print(f"preview camera focused on {zebra_keys[0]}")
+					except Exception:
+						pass
+				print("interactive roam mode active: use viewport navigation freely")
 				simulation_step = 1
 			simulation_context.step(render=False)
 			simulation_context.render()
