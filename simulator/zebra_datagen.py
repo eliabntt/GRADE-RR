@@ -176,6 +176,8 @@ try:
 	parser.add_argument("--debug_vis", type=boolean_string, default=False,
 						help="When true continuosly loop the rendering")
 	parser.add_argument("--neverending", type=boolean_string, default=False, help="Never stop the main loop")
+	parser.add_argument("--mode", type=str, default="datagen", choices=["datagen", "roam"],
+						help="datagen runs the full dataset pipeline; roam keeps the scene interactive and lightweight")
 	parser.add_argument("--fix_env", type=str, default="",
 						help="leave it empty to have a random env, fix it to use a fixed one. Useful for loop processing")
 
@@ -220,7 +222,7 @@ try:
 			pass
 	config.set_args(args)
 	can_start = True
-	interactive_preview_mode = (not config["headless"].get()) and (not config["record"].get())
+	interactive_preview_mode = args.mode == "roam"
 	preview_settings_rate = 60 if interactive_preview_mode else config["physics_hz"].get()
 	preview_stage_renders = 5 if interactive_preview_mode else 50
 	preview_robot_renders = 1 if interactive_preview_mode else 5
@@ -233,7 +235,7 @@ try:
 	kit = simulation_app
 	_heartbeat("SimulationApp launched from config")
 	if interactive_preview_mode:
-		_heartbeat("interactive preview mode enabled (windowed + no record): reduced render load")
+		_heartbeat("roam mode enabled: reduced render load and no data capture")
 
 	import carb
 	import omni
@@ -502,7 +504,7 @@ try:
 	if config["headless"].get() or interactive_preview_mode:
 		sequencer_drop_controller = None
 		if interactive_preview_mode:
-			_heartbeat("interactive preview mode: skipping sequencer clip authoring for zebras")
+			_heartbeat("roam mode: skipping sequencer clip authoring for zebras")
 		else:
 			_heartbeat("headless mode: skipping sequencer clip authoring for zebras")
 	else:
