@@ -4,6 +4,13 @@ from grade_utils.misc_utils import *
 mtl_created_list = []
 
 def setup_shapenet(username, password, csv_location):
+	"""
+	Setup ShapeNet access and load the local database.
+
+	username: ShapeNet username
+	password: ShapeNet password
+	csv_location: local cache folder for ShapeNet metadata
+	"""
 	global database
 	if shapenet is None:
 		print("[INFO] Shapenet extension is not available. Cannot setup shapenet.")
@@ -15,6 +22,14 @@ def setup_shapenet(username, password, csv_location):
 	return database
 
 def load_object(rng=np.random.default_rng(), obj_name="shapenet", config=None, scale=1):
+	"""
+	Load one obstacle object of the selected type.
+
+	rng: random generator
+	obj_name: "shapenet" or "google"
+	config: simulator config
+	scale: object scale factor
+	"""
 	if obj_name == "shapenet":
 		if shapenet is None:
 			print("[INFO] Shapenet extension is not available. Cannot load shapenet object.")
@@ -113,6 +128,13 @@ def load_google_obj(rng=np.random.default_rng(), config=None, scale = 1):
 	return str(prim_path), asset
 
 async def convert_google_obj(in_path, out_path):
+	"""
+	It converts a Google 3D model to a format that can be used in Omni.
+
+	:param in_path: The path to the file you want to convert
+	:param out_path: The path to the output file
+	:return: A boolean value.
+	"""
 	import omni.kit.asset_converter as assetimport
 	context = omni.kit.asset_converter.AssetConverterContext()
 	converter_manager = omni.kit.asset_converter.get_instance()
@@ -122,6 +144,22 @@ async def convert_google_obj(in_path, out_path):
 	return success
 
 def load_objects(config, environment, rng, dynamic_prims, scale):
+	"""
+	Load objects in the environment.
+
+	Config should contain `config["obstacles"]` with the considered keys.
+	In our case those are shapenet and google (scanned_objects).
+	In config we define the number of objects for each class.
+	If the import fails the system tries to load from another class.
+
+	For now we do not generate positions that are collision free, so the objects
+	may intersect with obstacles/humans/camera.
+
+	config: the config dictionary
+	environment: the environment object
+	rng: the global rng
+	dynamic_prims: the list of dynamic prims used in the main thread
+	"""
 	stage = omni.usd.get_context().get_stage()
 	shapenet_obs = 0
 	if shapenet is not None:
