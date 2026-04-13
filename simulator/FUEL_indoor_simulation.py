@@ -45,13 +45,13 @@ try:
 	kit = SimulationApp(launch_config=CONFIG, experience=f"{os.environ['EXP_PATH']}/omni.isaac.sim.python.kit")
 
 	# Cannot move before SimApp is launched
-	import utils.misc_utils
-	from utils.misc_utils import *
-	from utils.robot_utils import *
-	from utils.simulation_utils import *
-	from utils.objects_utils import *
-	from utils.environment_utils import *
-	from utils.human_utils import *
+	import grade_utils.misc_utils
+	from grade_utils.misc_utils import *
+	from grade_utils.robot_utils import *
+	from grade_utils.simulation_utils import *
+	from grade_utils.objects_utils import *
+	from grade_utils.environment_utils import *
+	from grade_utils.human_utils import *
 
 	def monitor_movement(msg, args):
 		global second_start

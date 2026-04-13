@@ -1,16 +1,55 @@
+from isaacsim import SimulationApp
 import argparse
-import carb
 import confuse
-import ipdb
 import numpy as np
 import os
 import sys
+
+# Ensure 'simulator' directory is in sys.path for robust imports
+simulator_dir = os.path.dirname(os.path.abspath(__file__))
+if simulator_dir not in sys.path:
+	sys.path.insert(0, simulator_dir)
 import time
 import traceback
-import yaml
-from omni.isaac.kit import SimulationApp
+from scipy.spatial.transform import Rotation
 from time import sleep
 
+# Example commands (from repo root):
+# 1) Full data collection (headless):
+#    conda activate env_isaaclab && python simulator/zebra_datagen.py \
+#      --config_file simulator/configs/config_zebra_datagen.yaml --mode datagen --headless True --record True
+# 2) Full data collection (windowed):
+#    conda activate env_isaaclab && python simulator/zebra_datagen.py \
+#      --config_file simulator/configs/config_zebra_datagen.yaml --mode datagen --headless False --record True
+# 3) Interactive roaming preview (no recording):
+#    conda activate env_isaaclab && python simulator/zebra_datagen.py \
+#      --config_file simulator/configs/config_zebra_datagen.yaml --mode roam --headless False --record False
+# 4) Fixed environment selection:
+#    ... --fix_env Savana
+
+
+def _patch_property_window_for_headless():
+	"""Guard known property-window callback issue in headless Isaac Sim 5.1."""
+	try:
+		import omni.kit.window.property.window as _prop_window_mod
+		_orig = _prop_window_mod.PropertyWindow.save_scroll_pos
+
+		def _safe_save_scroll_pos(self, *args, **kwargs):
+			frame = getattr(self, "properties_frame", None)
+			if frame is None:
+				return
+			if getattr(frame, "scroll_y_max", None) is None or getattr(frame, "scroll_y", None) is None:
+				return
+			try:
+				return _orig(self, *args, **kwargs)
+			except AttributeError as e:
+				if "scroll_y_max" in str(e):
+					return
+				raise
+
+		_prop_window_mod.PropertyWindow.save_scroll_pos = _safe_save_scroll_pos
+	except Exception:
+		pass
 
 def boolean_string(s):
 	if s.lower() not in {'false', 'true'}:
@@ -102,37 +141,119 @@ def randomize_floor_position(floor_data, floor_translation, scale, meters_per_un
 
 	return floor_points, max_floor_x, min_floor_x, max_floor_y, min_floor_y
 
+
+
 try:
 	parser = argparse.ArgumentParser(description="Dynamic Worlds Simulator")
 	parser.add_argument("--config_file", type=str, default="config.yaml")
 	parser.add_argument("--headless", type=boolean_string, default=True, help="Wheter to run it in headless mode or not")
-	parser.add_argument("--rtx_mode", type=boolean_string, default=False,
-	                    help="Use rtx when True, use path tracing when False")
+	parser.add_argument("--rtx_mode", type=boolean_string, default=True,
+						help="Use rtx when True, use path tracing when False")
 	parser.add_argument("--record", type=boolean_string, default=False, help="Writing data to the disk")
 	parser.add_argument("--debug_vis", type=boolean_string, default=False,
-	                    help="When true continuosly loop the rendering")
+						help="When true continuosly loop the rendering")
 	parser.add_argument("--neverending", type=boolean_string, default=False, help="Never stop the main loop")
+	parser.add_argument("--mode", type=str, default="datagen", choices=["datagen", "roam"],
+						help="datagen runs the full dataset pipeline; roam keeps the scene interactive and lightweight")
 	parser.add_argument("--fix_env", type=str, default="",
-	                    help="leave it empty to have a random env, fix it to use a fixed one. Useful for loop processing")
+						help="leave it empty to have a random env, fix it to use a fixed one. Useful for loop processing")
 
 	args, unknown = parser.parse_known_args()
+	cli_argv = set(sys.argv[1:])
+
 	config = confuse.Configuration("DynamicWorlds", __name__)
 	config.set_file(args.config_file)
+	# Avoid overriding file values with parser defaults when a flag was not explicitly passed.
+	# In particular, --fix_env default "" would mask config-file fix_env.
+	if "--fix_env" not in cli_argv:
+		try:
+			delattr(args, "fix_env")
+		except Exception:
+			pass
 	config.set_args(args)
 	can_start = True
+	interactive_preview_mode = args.mode == "roam"
+	preview_settings_rate = 60 if interactive_preview_mode else config["physics_hz"].get()
+	preview_stage_renders = 5 if interactive_preview_mode else 50
+	preview_robot_renders = 1 if interactive_preview_mode else 5
+	preview_substep = 1 if interactive_preview_mode else 3
+	preview_inner_renders = 1 if interactive_preview_mode else 3
+	preview_sleep_s = 0.0 if interactive_preview_mode else 0.5
 
 	CONFIG = {"display_options": 3286, "width": 1280, "height": 720, "headless": config["headless"].get()}
-	kit = SimulationApp(launch_config=CONFIG, experience=f"{os.environ['EXP_PATH']}/omni.isaac.sim.python.kit")
+	simulation_app = SimulationApp(launch_config=CONFIG)
+	kit = simulation_app
+	if interactive_preview_mode:
+		print("roam mode enabled: reduced render load and no data capture")
+
+	import carb
+	import omni
+	import omni.client
+	if config["headless"].get():
+		_patch_property_window_for_headless()
+	cloud_path = "http://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.1"
+	omni.client.set_alias("omniverse://localhost", cloud_path)
+	omni.client.set_alias("omniverse://localhost/NVIDIA", f"{cloud_path}/NVIDIA")
+	if hasattr(omni.client, "mount"):
+		try:
+			omni.client.mount(
+				"omniverse://localhost",
+				cloud_path,
+			)
+			omni.client.mount(
+				"omniverse://localhost/NVIDIA",
+				f"{cloud_path}/NVIDIA",
+			)
+		except Exception as e:
+			carb.log_warn(f"omni.client.mount unavailable/failed, relying on set_alias only: {e}")
+
+	settings = carb.settings.get_settings()
+	mdl_paths = settings.get("/rtx/materialDb/mdlSearchPaths") or []
+	if cloud_path not in mdl_paths:
+		mdl_paths.append(cloud_path)
+	if f"{cloud_path}/NVIDIA/Materials" not in mdl_paths:
+		mdl_paths.append(f"{cloud_path}/NVIDIA/Materials")
+	if f"{cloud_path}/NVIDIA/Assets/Skies" not in mdl_paths:
+		mdl_paths.append(f"{cloud_path}/NVIDIA/Assets/Skies")
+	settings.set("/rtx/materialDb/mdlSearchPaths", mdl_paths)
 
 	# Cannot move before SimApp is launched
-	import utils.misc_utils
-	from utils.misc_utils import *
-	from utils.robot_utils import *
-	from utils.simulation_utils import *
-	from utils.environment_utils import *
+	import grade_utils.misc_utils
+	from grade_utils.misc_utils import *
+	from grade_utils.robot_utils import *
+	from grade_utils.simulation_utils import *
+	from grade_utils.environment_utils import *
 	from pxr import UsdGeom, UsdLux, Gf, Vt, UsdPhysics, PhysxSchema, Usd, UsdShade, Sdf, UsdSkel
 
-	simulation_environment_setup(need_ros=False)
+	def _focus_editor_camera_on_target(target_pos_m):
+		"""Best-effort: move default editor camera to look at a target in meters."""
+		camera_candidates = ["/OmniverseKit_Persp", "/World/Camera", "/OmniverseKit_Top"]
+		cam_prim = None
+		for p in camera_candidates:
+			prim = stage.GetPrimAtPath(p)
+			if prim and prim.IsValid():
+				cam_prim = prim
+				break
+		if cam_prim is None:
+			return
+
+		tx = float(target_pos_m[0]) / meters_per_unit
+		ty = float(target_pos_m[1]) / meters_per_unit
+		tz = float(target_pos_m[2]) / meters_per_unit
+		cam_pos = np.array([tx - (8.0 / meters_per_unit), ty - (8.0 / meters_per_unit), tz + (4.0 / meters_per_unit)])
+
+		delta_x = tx - cam_pos[0]
+		delta_y = ty - cam_pos[1]
+		delta_z = tz - cam_pos[2]
+		yaw = np.arctan2(delta_y, delta_x)
+		pitch = -np.arctan2(delta_z, max(1e-6, np.sqrt(delta_x * delta_x + delta_y * delta_y)))
+
+		set_translate(cam_prim, [float(cam_pos[0]), float(cam_pos[1]), float(cam_pos[2])])
+		set_rotate(cam_prim, [0.0, float(pitch), float(yaw)])
+
+	# Defer extension setup until after stage load to avoid loader-time instability.
+	# (Some optional extensions can interfere with stage reopen/load in Isaac Sim 5.1.)
+	deferred_extension_setup = (False, True, False)
 
 	all_env_names = ["Bliss", "Forest", "Grasslands", "Iceland", "L_Terrain", "Meadow",
 	                 "Moorlands", "Nature_1", 'Nature_2', "Savana", "Windmills", "Woodland"]
@@ -140,7 +261,14 @@ try:
 	                    "Landscape_2", "Ground", "Ground", "Landscape_1", "Landscape_0", "Landscape_1"]
 
 	need_sky = [True] * len(all_env_names)
-	env_id = all_env_names.index(config["fix_env"].get())
+	fix_env_value = config["fix_env"].get()
+	if fix_env_value and fix_env_value in all_env_names:
+		env_id = all_env_names.index(fix_env_value)
+	else:
+		# fallback: pick a random environment if not specified or invalid
+		import random
+		env_id = random.randint(0, len(all_env_names) - 1)
+		print(f"[INFO] fix_env not set or invalid, using random environment: {all_env_names[env_id]}")
 
 	rng = np.random.default_rng()
 	rng_state = np.random.get_state()
@@ -149,6 +277,28 @@ try:
 
 	# setup environment variables
 	environment = environment(config, rng, local_file_prefix)
+	base_env_name = os.path.splitext(os.path.basename(config["base_env_path"].get()))[0]
+	if base_env_name in all_env_names:
+		env_id = all_env_names.index(base_env_name)
+		print(f"[INFO] Using base_env_path environment '{base_env_name}' (env_id={env_id})")
+	elif environment.env_name in all_env_names:
+		env_id = all_env_names.index(environment.env_name)
+		print(f"[INFO] Using loaded environment '{environment.env_name}' (env_id={env_id})")
+	else:
+		print(
+			f"[WARN] Loaded environment '{environment.env_name}' not in known list; "
+			f"keeping env_id={env_id} ({all_env_names[env_id]})"
+		)
+	requested_env = config["fix_env"].get()
+	if requested_env and environment.env_name != requested_env:
+		env_root = os.path.abspath(config["env_path"].get())
+		available_envs = []
+		if os.path.isdir(env_root):
+			available_envs = sorted([os.path.splitext(f)[0] for f in os.listdir(env_root) if f.endswith(".usd")])
+		raise FileNotFoundError(
+			f"Requested --fix_env={requested_env} was not found in env_path={env_root}. "
+			f"Loaded '{environment.env_name}' instead. Available .usd environments: {available_envs}"
+		)
 
 	out_dir = os.path.join(config['out_folder'].get(), environment.env_name)
 	out_dir_npy = os.path.join(config['out_folder_npy'].get(), environment.env_name)
@@ -157,20 +307,34 @@ try:
 
 	omni.usd.get_context().open_stage(local_file_prefix + config["base_env_path"].get(), None)
 
-	# Wait two frames so that stage starts loading
-	kit.update()
-	kit.update()
+	for _ in range(10):
+		kit.update()
 
 	print("Loading stage...")
-	while is_stage_loading():
-		kit.update()
-	print("Loading Complete")
+	load_timeout_secs = 120
+	start_time = time.time()
+	while is_stage_loading() and (time.time() - start_time) < load_timeout_secs:
+		time.sleep(0.1)
+		try:
+			kit.update()
+		except Exception:
+			break
+	print(f"Loading Complete (elapsed: {time.time() - start_time:.1f}s)")
 
 	context = omni.usd.get_context()
 	stage = context.get_stage()
 	set_stage_up_axis("Z")
 
-	omni.kit.commands.execute("DeletePrimsCommand", paths=["/World/GroundPlane"])
+	# Enable optional extensions only after stage is loaded.
+	need_ros_ext, need_seq_ext, need_shapenet_ext = deferred_extension_setup
+	simulation_environment_setup(
+		need_ros=need_ros_ext,
+		need_sequencer=need_seq_ext,
+		need_shapenet=need_shapenet_ext,
+	)
+
+	if stage.GetPrimAtPath("/World/GroundPlane").IsValid():
+		omni.kit.commands.execute("DeletePrimsCommand", paths=["/World/GroundPlane"])
 
 	# do this AFTER loading the world
 	simulation_context = SimulationContext(physics_dt=1.0 / config["physics_hz"].get(),
@@ -179,13 +343,16 @@ try:
 	simulation_context.initialize_physics()
 
 	simulation_context.play()
-	simulation_context.stop()
+	try:
+		simulation_context.stop()
+	except NameError:
+		print("[ERROR] simulation_context is not defined at shutdown.")
 
 	kit.update()
 	meters_per_unit = 0.01
 
 	# use rtx while setting up!
-	set_raytracing_settings(config["physics_hz"].get())
+	set_raytracing_settings(preview_settings_rate)
 	env_prim_path = environment.load_and_center(config["env_prim_path"].get())
 	process_semantics(config["env_prim_path"].get(), "World")
 
@@ -202,7 +369,7 @@ try:
 	scale = np.array(stage.GetPrimAtPath(f"/World/home/{ground_area_name[env_id]}").GetProperty("xformOp:scale").Get())
 	# i need to consider that z has a bounding box and that the position is on the top corner
 
-	for _ in range(50):
+	for _ in range(preview_stage_renders):
 		simulation_context.render()
 
 	floor_points, max_floor_x, min_floor_x, max_floor_y, min_floor_y = randomize_floor_position(floor_data,
@@ -242,7 +409,7 @@ try:
 		add_npy_viewport(viewport_window_list, robot_base_prim_path, n, old_h_ap, old_v_ap, config,simulation_context, tot_num_ros_cam=0)
 	kit.update()
 
-	for _ in range(5):
+	for _ in range(preview_robot_renders):
 		simulation_context.render()
 
 	for index, cam in enumerate(viewport_window_list):
@@ -257,12 +424,35 @@ try:
 	import glob
 
 	zebra_files = glob.glob(f"{zebra_anims_loc}/*.usd")
+	if len(zebra_files) == 0:
+		raise FileNotFoundError(
+			f"No zebra animation USD files found in zebra_anims_loc={zebra_anims_loc}. "
+			"Expected files like Attack.usd, Gallop.usd, Idle.usd, ..."
+		)
 
-	from utils.zebra_utils import *
-	from omni.kit.window.sequencer.scripts import sequencer_drop_controller
+	from grade_utils.zebra_utils import *
+	sequence_path = ""
+	if config["headless"].get() or interactive_preview_mode:
+		sequencer_drop_controller = None
+		if interactive_preview_mode:
+			print("roam mode: skipping sequencer clip authoring for zebras")
+		else:
+			print("headless mode: skipping sequencer clip authoring for zebras")
+	else:
+		try:
+			from omni.kit.window.sequencer.scripts import sequencer_drop_controller
+			print("using window sequencer drop controller")
+		except Exception as _sequencer_import_error:
+			sequencer_drop_controller = None
+			print(f"window sequencer unavailable, using fallback sequencer commands: {_sequencer_import_error}")
 
-	_, sequence = omni.kit.commands.execute("SequencerCreateSequenceCommand")
-	sequence_path = sequence.GetPrim().GetPath()
+		seq_ok, sequence = omni.kit.commands.execute("SequencerCreateSequenceCommand")
+		if (not seq_ok) or sequence is None:
+			raise RuntimeError(
+				"Failed to create Sequencer sequence. Ensure sequencer extensions are available "
+				"(omni.kit.sequencer.core and omni.kit.sequencer.usd)."
+			)
+		sequence_path = sequence.GetPrim().GetPath().pathString
 	kit.update()
 
 	zebra_anim_names = ["Attack", "Attack01", "Attack02", "Eating", "Gallop", "Hit_Back", "Hit_Front", "Hit_Left",
@@ -316,11 +506,12 @@ try:
 
 	# IT IS OF CRUCIAL IMPORTANCE THAT AFTER THIS POINT THE RENDER GETS DONE WITH THE SLEEPING CALL! OTHERWISE PATH TRACING SPP WILL GET RUINED
 	if (config["rtx_mode"].get()):
-		set_raytracing_settings(config["physics_hz"].get())
+		set_raytracing_settings(preview_settings_rate)
 	else:
-		set_pathtracing_settings(config["physics_hz"].get())
+		set_pathtracing_settings(preview_settings_rate)
 
-	omni.usd.get_context().get_selection().set_selected_prim_paths([], False)
+	if not config["headless"].get():
+		omni.usd.get_context().get_selection().set_selected_prim_paths([], False)
 
 	for _ in range(5):
 		simulation_context.step(render=False)
@@ -348,13 +539,37 @@ try:
 
 	hidden_position = [min_floor_x / meters_per_unit, min_floor_y / meters_per_unit, -10e5]
 	all_zebras = preload_all_zebras(config, rng, zebra_files, zebra_info, simulation_context, sequencer_drop_controller,
-	                         max_anim_length, hidden_position)
-	substep = 3
+	                         max_anim_length, hidden_position, sequence_path)
+	substep = preview_substep
 
 	simulation_context.play()
-	import ipdb; ipdb.set_trace()
 
 	while kit.is_running():
+		if interactive_preview_mode:
+			if simulation_step == 0:
+				frame_info_preview = place_zebras(
+					all_zebras,
+					rng,
+					floor_points,
+					meters_per_unit,
+					hidden_position,
+					config,
+					max_anim_length,
+					zebra_info,
+				)
+				zebra_keys = [k for k in frame_info_preview.keys() if k.startswith("/zebra")]
+				if len(zebra_keys) > 0:
+					try:
+						_focus_editor_camera_on_target(frame_info_preview[zebra_keys[0]]["position"])
+						print(f"preview camera focused on {zebra_keys[0]}")
+					except Exception:
+						pass
+				print("interactive roam mode active: use viewport navigation freely")
+				simulation_step = 1
+			simulation_context.step(render=False)
+			simulation_context.render()
+			continue
+
 		if simulation_step > 0:
 			for zebra in all_zebras:
 				set_translate(stage.GetPrimAtPath(zebra), list(hidden_position))
@@ -447,57 +662,60 @@ try:
 			simulation_context.step(render=False)
 			simulation_context.step(render=False)
 
-			for _ in range(3):
+			for _ in range(preview_inner_renders):
 				simulation_context.step(render=False)
 				simulation_context.render()
 
-			sleep(0.5)
+			if preview_sleep_s > 0:
+				sleep(preview_sleep_s)
 			# two frames with the same animation point
 			# todo fix the time
-			import ipdb;
-
-			ipdb.set_trace()
 
 			timeline.set_current_time(max_anim_length / timeline.get_time_codes_per_seconds())
 			if need_sky[env_id]:
-				# with probability 0.9 during day hours
-				stage.GetPrimAtPath("/World/Looks/SkyMaterial/Shader").GetAttribute("inputs:SunPositionFromTOD").Set(True)
-				if rng.uniform() < 0.9:
-					stage.GetPrimAtPath("/World/Looks/SkyMaterial/Shader").GetAttribute("inputs:TimeOfDay").Set(
-						rng.uniform(5, 20))
+				sky_shader = stage.GetPrimAtPath("/World/Looks/SkyMaterial/Shader")
+				if sky_shader and sky_shader.IsValid():
+					# with probability 0.9 during day hours
+					sun_attr = sky_shader.GetAttribute("inputs:SunPositionFromTOD")
+					if sun_attr:
+						sun_attr.Set(True)
+					tod_attr = sky_shader.GetAttribute("inputs:TimeOfDay")
+					if tod_attr:
+						if rng.uniform() < 0.9:
+							tod_attr.Set(rng.uniform(5, 20))
+						else:
+							if rng.uniform() < 0.5:
+								tod_attr.Set(rng.uniform(0, 5))
+							else:
+								tod_attr.Set(rng.uniform(20, 24))
+			if config["record"].get():
+				print("Publishing cameras...")
+				my_recorder._enable_record = True
+				frame_info["step"] = simulation_step
+				frame_info["substep"] = c_substep
+				pub_try_cnt = 0
+				success_pub = False
+				while not success_pub and pub_try_cnt < 3:
+					try:
+						pub_and_write_images(simulation_context, viewport_window_list, [],
+						                     config["rtx_mode"].get(), my_recorder)
+						success_pub = True
+					except:
+						print("Error publishing camera")
+						pub_try_cnt += 1
+						# simulation_context.stop()
+						# simulation_context.play()
+						sleep(0.5)
+						simulation_context.render()
+						simulation_context.render()
+				if not success_pub:
+					frame_info["error"] = True
 				else:
-					if rng.uniform() < 0.5:
-						stage.GetPrimAtPath("/World/Looks/SkyMaterial/Shader").GetAttribute("inputs:TimeOfDay").Set(
-							rng.uniform(0, 5))
-					else:
-						stage.GetPrimAtPath("/World/Looks/SkyMaterial/Shader").GetAttribute("inputs:TimeOfDay").Set(
-							rng.uniform(20, 24))
-			print("Publishing cameras...")
-			my_recorder._enable_record = True
-			frame_info["step"] = simulation_step
-			frame_info["substep"] = c_substep
-			pub_try_cnt = 0
-			success_pub = False
-			while not success_pub and pub_try_cnt < 3:
-				try:
-					pub_and_write_images(simulation_context, viewport_window_list, [],
-					                     config["rtx_mode"].get(), my_recorder)
-					success_pub = True
-				except:
-					print("Error publishing camera")
-					pub_try_cnt += 1
-					import ipdb; ipdb.set_trace()
-					# simulation_context.stop()
-					# simulation_context.play()
-					sleep(0.5)
-					simulation_context.render()
-					simulation_context.render()
-			if not success_pub:
-				frame_info["error"] = True
+					frame_info["error"] = False
+
+				np.save(out_dir_npy + f"/frame_{simulation_step}_{c_substep}.npy", frame_info)
 			else:
 				frame_info["error"] = False
-
-			np.save(out_dir_npy + f"/frame_{simulation_step}_{c_substep}.npy", frame_info)
 			simulation_context.stop()
 			# clips = [f"/World/Sequence{k}{k}_Clip" for k in frame_info.keys() if k.startswith("/zebra")]
 			# remove targets from clips
@@ -523,11 +741,14 @@ try:
 		if simulation_step >= exp_len:
 			break
 except:
-	extype, value, tb = sys.exc_info()
 	traceback.print_exc()
-	ipdb.post_mortem(tb)
+	raise
 finally:
-	simulation_context.stop()
+	if 'simulation_context' in globals() or 'simulation_context' in locals():
+		try:
+			simulation_context.stop()
+		except Exception:
+			pass
 	try:
 		kit.close()
 	except:

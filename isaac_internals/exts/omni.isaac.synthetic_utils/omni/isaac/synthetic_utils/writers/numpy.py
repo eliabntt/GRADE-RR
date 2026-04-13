@@ -16,7 +16,7 @@ import os
 import numpy as np
 from PIL import Image
 from .base import BaseWriter
-from omni.isaac.core.utils.viewports import get_viewport_names
+from isaacsim.core.utils.viewports import get_viewport_names
 
 
 class NumpyWriter(BaseWriter):

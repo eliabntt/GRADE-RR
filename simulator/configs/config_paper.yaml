@@ -4,7 +4,7 @@ use_stl: True # this disable stl loading thus placement AND initial robot headin
 use_npy: True # use limits of the environment saved in the npy file located in the same folder of the environment
 meters_per_unit: 0.01
 human_path: "/ps/project/irotate/cloth3d/exported_usd/"
-base_env_path: "/media/ebonetto/WindowsData/ov/isaac_sim-2022.2.1/GRADE-RR/usds/env_base.usd"
+base_env_path: "GRADE-RR/usds/env_base_saved.usd"
 reload_references: False
 generate_map: True
 clean_base_env: False

@@ -1,6 +1,9 @@
 # GRADE-RR or how to Generate Realistic Animated Dynamic Environments for Robotics Research
 
-### Note that while we used the v2021 for the paper, that version is now deprecated. I will work only on v2022+
+### Setup note
+
+I used this article to set it up (Ubuntu 24.04 + Isaac Sim):
+https://koheiotsuka701.medium.com/running-isaac-sim-and-isaac-ros-on-ubuntu-24-04-bf9eaf550837
 
 GRADE is a system I developed to seamlessly manage the Isaac Sim simulation software to Generate Realistic Animated Dynamic Environments for Robotics Research
 
@@ -75,7 +78,7 @@ _______
 │   └── ...
 ├── simulator # main simulator folder, each main file will have it's own description
 │   ├── configs # yaml configuration files
-│   ├── utils # utils loaded and used by the main files
+│   ├── grade_utils # utils loaded and used by the main files
 │   └── ... 
 ├── meshes # folder containing meshes
 └── usds # usds files
@@ -87,7 +90,7 @@ ___________________
 
 ## HowToS, Installation, Tips, and Known issues
 
-The system, contrary to Gazebo, is not straightforward. This is the price you have to pay to be able to access low level APIs and have more control. We highly encourage thorugh readings of the documentation, of the tips section, and for you to get acquainted to the utils that we have organized (perhaps badly, open a pull request please).
+The system, contrary to Gazebo, is not straightforward. This is the price you have to pay to be able to access low level APIs and have more control. We highly encourage thorugh readings of the documentation and of the tips section.
 
 [Install, StartUp, Issues](https://github.com/eliabntt/GRADE-RR/blob/main/HOWTO.md)
 
@@ -97,7 +100,7 @@ To [generate people based on SMPL](https://github.com/eliabntt/animated_human_SM
 
 Additional scripts are provided [here](https://github.com/eliabntt/GRADE-RR/blob/main/scripts). Those can be used to process paths, get statistics of the rosbags, colorize the data filter and compress rosbags, transform the pixels to world coordinates etc.
 
-A brief description of the utils libraries used in our code is [here](https://github.com/eliabntt/GRADE-RR/blob/main/simulator/utils/UTILS.md).
+A brief description of the helper libraries is available in the `simulator/grade_utils` module docstrings.
 
 _____
 ## Isaac's edited files details

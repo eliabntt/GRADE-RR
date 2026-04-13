@@ -1,30 +1,62 @@
-import utils.misc_utils
-from omni.kit.sequencer.usd import SequenceSchema, usd_sequencer
-from utils.misc_utils import *
+import grade_utils.misc_utils
+from grade_utils.misc_utils import *
 
 
 def load_zebra(zebra_base_prim_path, n, asset_path):
 	stage = omni.usd.get_context().get_stage()
-	res, _ = omni.kit.commands.execute("CreateReferenceCommand",
-	                                   usd_context=omni.usd.get_context(),
-	                                   path_to=f"{zebra_base_prim_path}{n}",
-	                                   asset_path=asset_path,
-	                                   instanceable=False)
+	res, _ = omni.kit.commands.execute(
+		"CreateReferenceCommand",
+		usd_context=omni.usd.get_context(),
+		path_to=f"{zebra_base_prim_path}{n}",
+		asset_path=asset_path,
+		instanceable=False,
+	)
 	clear_properties(f"{zebra_base_prim_path}{n}")
 	return f"{zebra_base_prim_path}{n}"
+
+
+def _sequencer_drop_fallback(sequence_prim_path: str, zebra_path: str, timeslot: float):
+	"""
+	Fallback sequencer insertion compatible with omni.kit.sequencer.core/usd when
+	omni.kit.window.sequencer.scripts.sequencer_drop_controller is unavailable.
+	"""
+	track_name = Sdf.Path(zebra_path).name
+	track_res, track = omni.kit.commands.execute(
+		"SequencerTrackCreateCommand",
+		sequence_path=sequence_prim_path,
+		track_name=track_name,
+		track_type="Asset",
+	)
+	if not track_res or track is None:
+		raise RuntimeError(f"Failed to create sequencer track for {zebra_path}")
+
+	track_path = track.GetPrim().GetPath().pathString
+	clip_name = f"{track_name}_Clip"
+	clip_end = float(timeslot) + 1.0
+	clip_res, clip = omni.kit.commands.execute(
+		"SequencerClipCreateCommand",
+		track_path=track_path,
+		clip_name=clip_name,
+		prim_path=zebra_path,
+		clip_start=float(timeslot),
+		clip_end=clip_end,
+	)
+	if not clip_res or clip is None:
+		raise RuntimeError(f"Failed to create sequencer clip for {zebra_path}")
 
 
 def place_zebras(frame_info, rng, floor_points, meters_per_unit, hidden_position, config, max_anim_len, zebra_info):
 	stage = omni.usd.get_context().get_stage()
 	# create bool array as big as floor_points
-	occupied = np.zeros((floor_points.shape[0]-2, floor_points.shape[1]-2), dtype=bool)
+	occupied = np.zeros((floor_points.shape[0] - 2, floor_points.shape[1] - 2), dtype=bool)
 
 	deleted_zebras = []
 	out_frame_info = {}
 	min_number_zebras = config["min_number_zebras"].get()
 	max_number_zebras = config["max_number_zebras"].get()
-	selected_zebras = rng.choice(list(frame_info.keys()), size=int(rng.uniform(min_number_zebras, max_number_zebras)),
-	                             replace=False)
+	selected_zebras = rng.choice(
+		list(frame_info.keys()), size=int(rng.uniform(min_number_zebras, max_number_zebras)), replace=False
+	)
 
 	for zebra in selected_zebras:
 		out_frame_info[zebra] = frame_info[zebra].copy()
@@ -106,14 +138,6 @@ def place_zebras(frame_info, rng, floor_points, meters_per_unit, hidden_position
 				loc = np.mean(tmp_floor_points, axis=0) / meters_per_unit
 				loc = np.array(floor_points[newcenter[0], newcenter[1]]) / meters_per_unit
 				set_translate(stage.GetPrimAtPath(zebra), list(loc))
-				# set the rotation of the zebra to the roll, pitch, yaw
-				# lower_point = np.min(tmp_floor_points, axis=0)
-				# upper_point = np.max(tmp_floor_points, axis=0)
-				# vector = np.array(upper_point) - np.array(lower_point)
-				# compute roll pitch and yaw of vector
-				# roll, pitch, yaw = Rotation.from_rotvec(vector).as_euler("XYZ")
-				# transform = Rotation.from_matrix(
-				#     trimesh.PointCloud(tmp_floor_points).bounding_box_oriented.transform[:3, :3]).as_euler("XYZ")
 				out_frame_info[zebra]["position"] = loc * meters_per_unit
 				out_frame_info[zebra]["rotation"] = [0, 0, yaw]
 				out_frame_info[zebra]["center"] = newcenter
@@ -133,29 +157,46 @@ def place_zebras(frame_info, rng, floor_points, meters_per_unit, hidden_position
 		del out_frame_info[zebra]
 	return out_frame_info
 
+
 def randomize_frame(zebra, rng, max_anim_len, zebra_info):
 	stage = omni.usd.get_context().get_stage()
 	zebra_path = zebra["path"]
+	sequence_path = zebra.get("sequence_path") or ""
 
 	scale = rng.integers(40, 100)
 	set_scale(stage.GetPrimAtPath(zebra_path), scale)
 
 	zebra_name = zebra["name"]
-	prim = stage.GetPrimAtPath(f"/World/Sequence{zebra_path}{zebra_path}_Clip")
+	prim = stage.GetPrimAtPath(f"{sequence_path}{zebra_path}{zebra_path}_Clip") if sequence_path else None
 	anim_len = zebra_info[zebra_name]["length"]
 	timeslot = max_anim_len - rng.integers(0, anim_len)
-
-	prim.GetAttribute("startTime").Set(Sdf.TimeCode(timeslot * 1.0))
-	prim.GetAttribute("endTime").Set(
-		Sdf.TimeCode(float(max(timeslot + zebra_info[zebra_name]["length"], max_anim_len))))
+	if prim and prim.IsValid():
+		prim.GetAttribute("startTime").Set(Sdf.TimeCode(timeslot * 1.0))
+		prim.GetAttribute("endTime").Set(Sdf.TimeCode(float(max(timeslot + zebra_info[zebra_name]["length"], max_anim_len))))
 	points_in_mesh = zebra_info[zebra_name]["points"][max_anim_len - timeslot] * scale / 100
-	zebra = {"name": zebra_name, "time": timeslot, "used_frame": max_anim_len - timeslot + 1,
-	                          "scale": scale, "box": trimesh.PointCloud(points_in_mesh).bounding_box.vertices,
-	                          "path": zebra_path}
+	zebra = {
+		"name": zebra_name,
+		"time": timeslot,
+		"used_frame": max_anim_len - timeslot + 1,
+		"scale": scale,
+		"box": trimesh.PointCloud(points_in_mesh).bounding_box.vertices,
+		"path": zebra_path,
+		"sequence_path": sequence_path,
+	}
 	return zebra
 
-def preload_all_zebras(config, rng, zebra_files, zebra_info, simulation_context, sequencer_drop_controller, max_anim_len,
-                hidden_position):
+
+def preload_all_zebras(
+	config,
+	rng,
+	zebra_files,
+	zebra_info,
+	simulation_context,
+	sequencer_drop_controller,
+	max_anim_len,
+	hidden_position,
+	sequence_prim_path="/World/Sequence",
+):
 	stage = omni.usd.get_context().get_stage()
 
 	# load a random number of zebras between min_number_zebra and max_number_zebra
@@ -173,16 +214,31 @@ def preload_all_zebras(config, rng, zebra_files, zebra_info, simulation_context,
 
 		add_semantics(stage.GetPrimAtPath(zebra_path), "zebra")
 		timeslot = max_anim_len - rng.integers(0, zebra_info[zebra_name]["length"])
-		sequencer_drop_controller.sequencer_drop(stage.GetPrimAtPath("/World/Sequence"), zebra_path, float(timeslot))
-		prim = stage.GetPrimAtPath(f"/World/Sequence{zebra_path}{zebra_path}_Clip")
-		prim.GetAttribute("startTime").Set(Sdf.TimeCode(timeslot * 1.0))
-		prim.GetAttribute("endTime").Set(
-			Sdf.TimeCode(float(max(timeslot + zebra_info[zebra_name]["length"], max_anim_len))))
+
+		if sequence_prim_path:
+			try:
+				if sequencer_drop_controller is not None and hasattr(sequencer_drop_controller, "sequencer_drop"):
+					sequencer_drop_controller.sequencer_drop(stage.GetPrimAtPath(sequence_prim_path), zebra_path, float(timeslot))
+				else:
+					_sequencer_drop_fallback(sequence_prim_path, zebra_path, float(timeslot))
+			except Exception as e:
+				print(f"[WARN] Sequencer drop failed for {zebra_path}; continuing with static zebra. Error: {e}")
+
+		prim = stage.GetPrimAtPath(f"{sequence_prim_path}{zebra_path}{zebra_path}_Clip") if sequence_prim_path else None
+		if prim and prim.IsValid():
+			prim.GetAttribute("startTime").Set(Sdf.TimeCode(timeslot * 1.0))
+			prim.GetAttribute("endTime").Set(Sdf.TimeCode(float(max(timeslot + zebra_info[zebra_name]["length"], max_anim_len))))
 		points_in_mesh = zebra_info[zebra_name]["points"][max_anim_len - timeslot] * scale / 100
 
-		frame_info[zebra_path] = {"name": zebra_name, "time": timeslot, "used_frame": max_anim_len - timeslot + 1,
-		                          "scale": scale, "box": trimesh.PointCloud(points_in_mesh).bounding_box.vertices,
-		                          "path": zebra_path}
+		frame_info[zebra_path] = {
+			"name": zebra_name,
+			"time": timeslot,
+			"used_frame": max_anim_len - timeslot + 1,
+			"scale": scale,
+			"box": trimesh.PointCloud(points_in_mesh).bounding_box.vertices,
+			"path": zebra_path,
+			"sequence_path": sequence_prim_path or "",
+		}
 		simulation_context.step(render=False)
 		simulation_context.render()
 

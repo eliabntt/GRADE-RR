@@ -1,9 +1,10 @@
 # GENERAL NOTE the paths need to be ABSOLUTE!
-env_path: "3DFRONT/USD-exports"
+# Use a local folder with USD environments
+env_path: "GRADE-RR/usds"
 #env_path: "/media/ebonetto/WindowsData/Demo_GRADE"
 use_stl: True # this disable stl loading thus placement AND robot heading
 human_path: "cloth3d/exported_usd/"
-base_env_path: "../usds/env_base.usd"
+base_env_path: "GRADE-RR/usds/empty.usd"
 meters_per_unit: 1
 clean_base_env: False
 robot_mesh_path: "../meshes/drone.dae"

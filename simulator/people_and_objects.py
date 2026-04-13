@@ -53,16 +53,16 @@ for _ in range(10):
 	og.Controller.evaluate_sync(_clock_graph)
 simulation_context.stop()
 
-import utils.misc_utils
-from utils.misc_utils import *
-from utils.robot_utils import *
-from utils.simulation_utils import *
-from utils.objects_utils import *
-from utils.human_utils import *
+import grade_utils.misc_utils
+from grade_utils.misc_utils import *
+from grade_utils.robot_utils import *
+from grade_utils.simulation_utils import *
+from grade_utils.objects_utils import *
+from grade_utils.human_utils import *
 
 simulation_environment_setup(need_ros = True) 
 if base_world_path != "":
-	from utils.environment_utils import *
+	from grade_utils.environment_utils import *
 	print("Loading environment...")
 	environment = environment(config, meters_per_unit=meters_per_unit) 
 	env_prim_path = environment.load_and_center(config["env_prim_path"].get())

@@ -1,7 +1,7 @@
 # GENERAL NOTE the paths need to be ABSOLUTE!
 env_path: "/media/ebonetto/WindowsData/Demo_GRADE"
 use_stl: False # this disable stl loading thus placement AND robot heading
-base_env_path: "/media/ebonetto/WindowsData/ov/isaac_sim-2022.2.1/GRADE-RR/usds/env_base.usd"
+base_env_path: "GRADE-RR/usds/env_base_saved.usd"
 clean_base_env: True
 only_placement: True
 robot_mesh_path: "/media/ebonetto/WindowsData/ov/isaac_sim-2022.2.1/GRADE-RR/meshes/drone.dae"

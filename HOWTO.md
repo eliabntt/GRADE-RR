@@ -1,5 +1,8 @@
 ## Requirements and basic software installation
 
+I used this article to set it up (Ubuntu 24.04 + Isaac Sim):
+https://koheiotsuka701.medium.com/running-isaac-sim-and-isaac-ros-on-ubuntu-24-04-bf9eaf550837
+
 Please check the [requirements](https://docs.omniverse.nvidia.com/app_isaacsim/app_isaacsim/requirements.html) on the official page.
 
 Then download the omniverse launcher and install Nucleus, Cache, and Isaac Sim.
@@ -42,7 +45,7 @@ To launch Isaac you can run `./isaac-sim.sh` from the main installation folder t
 
 To control the simulation with your own code the general process is `./python.sh python_script args`. In `args` you can specify either python arguments arguments for the Isaac simulator itself (e.g. ` --/renderer/enabled='iray'`).
 
-The functions that we use in our scripts are all contained in the `simulator/utils` folder. An explanation of each one of the function is given in their comment, while a brief overview is given [here](https://github.com/eliabntt/GRADE-RR/blob/main/simulator/utils/UTILS.md).
+The functions that we use in our scripts are all contained in the `simulator/grade_utils` folder.
 
 ## Main concept
 
@@ -75,9 +78,7 @@ Before adventuring here, please be sure to download our sample [world]() and [an
 
 We marked _Optional_ what can be skipped in future iterations of _your_ code, but still, please go through them. They will go step by step from the general environment to the animated house.
 
-**Beore launching any simulation that need ros you need to start `roscore` if using ROS preferably with sim time set to true (`rosparam set use_sim_time true`)**
-
-In these codes, we consider our provided sampled world, the animated assets, and the drone provided with this repository. For the objects, you will find a note in the corresponding tutorial details. Additional samples (our used code, adapted from v2021), will be added in the next section.
+In these codes, we consider our provided sampled world, the animated assets, and the drone provided with this repository. For the objects, you will find a note in the corresponding tutorial details.
 
 ##### Still WIP, need to add links and make sure that the code works. But most of it should work rn.
 
@@ -88,7 +89,7 @@ In these codes, we consider our provided sampled world, the animated assets, and
     - The world can be either empty (thus you can skip loading), just with static objects, or with pre-placed animated objects (as in the zebra case). The world needs to be placed into a subfolder, e.g. `worlds/Savana/...`. Inside, you could (not mandatory) have:
         - `npy` file with the limits of the environment
         - `stl` file with the 3D occupancy of the environment
-    If you do NOT have those, just disable the flags in the config file (see last point of this list). Otherwise, they will be used as shown [here](https://github.com/eliabntt/GRADE-RR/blob/455891d5021009695a5da13c4feda0ceb258d476/simulator/utils/environment_utils.py).
+    If you do NOT have those, just disable the flags in the config file (see last point of this list).
     - You will also see how to add colliders to the environment, how to generate a 2D occupancy map, how to use the meters per unit, how to move the robot before starting the simulation (by moving the joints).
     - Launch this with `./python.sh simulator/world_and_robot.py --config="/your_full_path/simulator/world_and_robot.yaml" --fix_env=Something`. `--config` is mandatory, `--fix_env` will tell to the system to select the `Something` world from the `world` environments folder, e.g. `Sample_house`
     </details closed>
@@ -96,9 +97,9 @@ In these codes, we consider our provided sampled world, the animated assets, and
 - [Optional] Fix the rendering engine, add and publish some ROS components to the robot itself [here](https://github.com/eliabntt/GRADE-RR/blob/main/simulator/robot_with_ros.py).  
     <details closed>
 
-    - You will see how to add the clock to the simulation. Thanks to how we define it [here](https://github.com/eliabntt/GRADE-RR/blob/455891d5021009695a5da13c4feda0ceb258d476/simulator/utils/robot_utils.py#L274) the clock will tick with pysics steps, but will need to be manually published.
+    - You will see how to add the clock to the simulation; it ticks with physics steps and is manually published.
     - Our phylosophy is to manually publish ROS messages for better flexibility
-    - We will show both how to add single components, or a batch of them, i.e. through custom "add all sensors" functions as we have done [here](https://github.com/eliabntt/GRADE-RR/blob/7d9cb9a3d75d57628adacb9b9f969909d7663f3d/simulator/utils/robot_utils.py#L557).
+    - We will show both how to add single components, or a batch of them, i.e. through custom "add all sensors" functions.
     - How to publish data (either manually with ROS messages or using the internal Isaac Components)
     - You can then fix the rendering engine (path vs raytracing), and get to know the `sleeping` function
     - Place a breakpoint somewhere and try to manually render the environment while the timeline is playing (not using sleeping). Note how the rendering will advance the timeline of more than what you want. This does not affect the physics, but will affect the animations. Keep this in mind. See [here](https://github.com/eliabntt/GRADE-RR/blob/6e42652201509ed7ad95624d9a551e24fe5ce03c/TipsAndTricks.md#L38) for more details. 
@@ -110,8 +111,8 @@ In these codes, we consider our provided sampled world, the animated assets, and
     - You can get a sample human from [here](). Soon, we will upload our collection. Since then, you can follow our other repository [here](https://github.com/eliabntt/animated_human_SMPL_to_USD) to convert your SMPL models to USD. The preferred folder structure is `main/dataset/ID`, you will provide the `main` folder to allow the randomizer to work.
     - You can either place the models manually into your world beforehand (see the zebra case), use pre-fixed (or random) locations, or use a placement technique. Our placement technique will be explored in the additional scripts since it requires setting up the catkin workspace as well.
     - For the objects please download at least some assets from ShapeNetv2 or GSO websites. If not, please comment out that part of the code, or adapt it to your own assets. We think the GSO part can be made general quite easily. Paths should be `../gso/folders_of_the_objects` and `../shapenet/synsetIds/...`. For ShapeNet please also add `../shapenet/v1_csv/all_of_the_synset_csvs`. In the config add the `gso` and the `shapenet` folders. Additional options are there.
-    - The animation will use the timeline interface see [here](https://github.com/eliabntt/GRADE-RR/blob/064c1b888727c6faa191f88519184dc272a8b950/simulator/utils/objects_utils.py#L135).
-    - The objects loading code is [here](https://github.com/eliabntt/GRADE-RR/blob/064c1b888727c6faa191f88519184dc272a8b950/simulator/utils/objects_utils.py), for both shapenet and google scanned objects. You can see how the conversion works [here](https://github.com/eliabntt/GRADE-RR/blob/064c1b888727c6faa191f88519184dc272a8b950/simulator/utils/objects_utils.py#L65). The system will automatically save the converted USD for backup and to avoid re-conversion.
+    - The animation uses the timeline interface.
+    - The objects loading code is in `simulator/grade_utils/objects_utils.py`, for both shapenet and google scanned objects. The system will automatically save converted USDs for backup and to avoid re-conversion.
      - Launch this with `./python.sh simulator/people_and_objects.py --config="/your_full_path/simulator/humans_and_objects.yaml" --fix_env=Something`. `--config` is mandatory, `--fix_env` will tell to the system to select the `Something` world from the `world` environments folder, e.g. `Sample_house`
     </details closed>
 
@@ -127,7 +128,7 @@ In these codes, we consider our provided sampled world, the animated assets, and
 ### Zebra data generation and Animation Sequences
 
 [This](https://github.com/eliabntt/GRADE-RR/blob/7d9cb9a3d75d57628adacb9b9f969909d7663f3d/simulator/zebra_datagen.py) is the code that we used to generate the data for the Zebra paper. Unfortunately, we cannot share the USDs of the environments, whith the exception of the Savanna one, due to licensing limitations.
-You can however explore how to access low level animation sequences [link](https://github.com/eliabntt/GRADE-RR/blob/455891d5021009695a5da13c4feda0ceb258d476/simulator/utils/zebra_utils.py#L136) and how we managed to generate our data for the [Synthetic Data-based Detection of Zebras in Drone Imagery paper](https://arxiv.org/abs/2305.00432). Run it with `./python.sh GRADE-RR/simulator/zebra_datagen.py --/renderer/enabled='rtx,iray'  --config='configs/config_zebra_datagen.yaml' --headless=False --fix_env=Savana`
+You can however explore how to access low level animation sequences in `simulator/grade_utils/zebra_utils.py` and how we managed to generate our data for the [Synthetic Data-based Detection of Zebras in Drone Imagery paper](https://arxiv.org/abs/2305.00432). Run it with `./python.sh GRADE-RR/simulator/zebra_datagen.py --/renderer/enabled='rtx,iray'  --config='configs/config_zebra_datagen.yaml' --headless=False --fix_env=Savana`
 
 ### Replay experiment
 
@@ -157,6 +158,6 @@ You need some information to be able to repeat an experiment. Namely, the joint 
 3. Pose information is wrong for some moving objects. The code [here](https://github.com/eliabntt/GRADE-RR/blob/main/simulator/correct_data.py#L224) will solve this.
 4. Collisions for dynamic objects are not computed most of the times due to PhysX limitations. This is addressed by the new LiDAR-RTX of the new Isaac Sim version. However, its management is not intuitive.
 5. The rendering is not blocking. Multiple calls (especially for path tracing) are necessary. Thus, this usually disrupt the motion-vector data. A possible workaround is to do two rendering steps and save the motion-vector data, and then finish rendering to save the rgb information. See [here](https://github.com/eliabntt/GRADE-RR/blob/main/simulator/replay_experiment.py#L390) an example on how to do that. Note that a rendering call is done just after the clocking.
-6. In the v2022 it is not possible to set indipendent vfov of the cameras. It will take the hfov and use the AR to have a "correct" vfov.
-7. In the v2022 the internal PD control for the joints will NOT work using position setpoints. Also, the maximum velocity set is not considered.
-8. In the v2022 the timeline gets updated automatically even if you do not want it. You need to keep track of the ctime and constantly re-update it to correctly generate the data you want.
+6. It is not possible to set independent vfov of the cameras in all configurations. It may derive vfov from hfov and aspect ratio.
+7. Internal PD control for joints may not always follow position setpoints as expected. Maximum velocity limits may also be ignored in some setups.
+8. Timeline updates may advance even when not desired. Keep track of current time and reset it when needed during data generation.

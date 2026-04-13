@@ -4,11 +4,41 @@ The init function should be used to load the environment.
 It will get the environment from a given folder and create the necessary support variables.
 """
 
-from omni.isaac.occupancy_map import _occupancy_map
-from omni.isaac.occupancy_map.scripts.utils import update_location, compute_coordinates, generate_image
+try:
+	from omni.isaac.occupancy_map import _occupancy_map
+	from omni.isaac.occupancy_map.scripts.utils import update_location, compute_coordinates, generate_image
+except ModuleNotFoundError:
+	_occupancy_map = None
+	update_location = None
+	compute_coordinates = None
+	generate_image = None
 
-import utils.misc_utils
-from utils.misc_utils import *
+
+
+# Robust import for get_area regardless of entry point
+import sys
+import os
+import numpy as np
+import omni
+try:
+	from geometry_msgs.msg import Point
+except ImportError:
+	class Point:
+		def __init__(self, *args, x=0, y=0, z=0):
+			if len(args) >= 1:
+				x = args[0]
+			if len(args) >= 2:
+				y = args[1]
+			if len(args) >= 3:
+				z = args[2]
+			self.x = x
+			self.y = y
+			self.z = z
+current_dir = os.path.dirname(os.path.abspath(__file__))
+simulator_dir = os.path.abspath(os.path.join(current_dir, '..'))
+if simulator_dir not in sys.path:
+	sys.path.insert(0, simulator_dir)
+from grade_utils.misc_utils import get_area, clear_properties, set_translate
 
 
 class environment:
@@ -22,40 +52,93 @@ class environment:
 	def get_environment(self, config, rng: np.random.default_rng, local_file_prefix: str):
 		"""
 		If the name is not specified the environment will be taken at random using the rng.
-		Based on the config one can decide if
-		1. loading the stl of the environment
-		2. loading the environment limits with the npy file [note that this is preferable, otherwise default values will be used]
-		3. Using the limits the system will compute the necessary translations to center the environment in 0,0,0
-
-		config: the configuration processed by the main algorithm
-		rng: global rng
-		local_file_prefix: necessary to access the local storage from isaacsim
+		Supports both subdirectory and flat USD file layouts.
 		"""
+		import os
+		base_env_path = None
+		try:
+			base_env_path = config["base_env_path"].get()
+		except Exception:
+			base_env_path = None
+		if base_env_path:
+			abs_base_env_path = os.path.abspath(base_env_path)
+			if not os.path.isfile(abs_base_env_path):
+				raise FileNotFoundError(f"[ERROR] base_env_path does not exist: {abs_base_env_path}")
+			self.env_name = os.path.splitext(os.path.basename(abs_base_env_path))[0]
+			self.env_path = local_file_prefix + abs_base_env_path
+			self.env_stl_path = None
+			self.env_mesh = None
+			self.env_info = [0, 0, 0, 0, 0, 0, np.array([[-1000, -1000], [-1000, 1000], [1000, 1000], [1000, -1000]])]
+			self.env_limits = self.env_info[0:6]
+			self.shifts = [(self.env_limits[0] + self.env_limits[3]) / 2, (self.env_limits[1] + self.env_limits[4]) / 2, self.env_limits[2]]
+			self.env_limits_shifted = [self.env_limits[i] - self.shifts[i % 3] for i, _ in enumerate(self.env_limits)]
+			self.area_polygon = get_area(self.env_info[6])
+			self.env_polygon = [Point(x=i[0], y=i[1], z=0) for i in self.env_info[-1]]
+			return
 		self.env_usd_export_folder = config["env_path"].get()
-		if config["fix_env"].get() != "":
-			self.env_name = config["fix_env"].get()
+		abs_env_path = os.path.abspath(self.env_usd_export_folder)
+		print(f"[DEBUG] env_path from config: {self.env_usd_export_folder}")
+		print(f"[DEBUG] Absolute env_path: {abs_env_path}")
+		print(f"[DEBUG] Current working directory: {os.getcwd()}")
+		if not os.path.exists(abs_env_path):
+			raise FileNotFoundError(f"[ERROR] Environment path does not exist: {abs_env_path}")
+		env_files = [f for f in os.listdir(abs_env_path) if f.endswith('.usd') and not f.startswith('.')]
+		env_dirs = [d for d in os.listdir(abs_env_path) if os.path.isdir(os.path.join(abs_env_path, d)) and not d.startswith('.')]
+
+		# Determine available environments
+		available_envs = []
+		env_map = {}  # env_name -> (is_dir, path)
+		# Add flat USD files
+		for usd_file in env_files:
+			name = os.path.splitext(usd_file)[0]
+			available_envs.append(name)
+			env_map[name] = (False, os.path.join(self.env_usd_export_folder, usd_file))
+		# Add subdirectories with matching USD file
+		for d in env_dirs:
+			usd_path = os.path.join(self.env_usd_export_folder, d, d + ".usd")
+			if os.path.isfile(usd_path):
+				available_envs.append(d)
+				env_map[d] = (True, usd_path)
+
+		# Pick environment
+		fix_env = config["fix_env"].get()
+		if fix_env and fix_env in available_envs:
+			self.env_name = fix_env
+		elif available_envs:
+			self.env_name = rng.choice(available_envs)
 		else:
-			self.env_name = rng.choice([f for f in os.listdir(self.env_usd_export_folder) if not f.startswith('.')])
-		self.env_path = local_file_prefix + os.path.join(self.env_usd_export_folder, self.env_name, self.env_name + ".usd")
-		if config["use_stl"].get():
-			self.env_stl_path = os.path.join(self.env_usd_export_folder, self.env_name, self.env_name + ".stl")
-			self.env_mesh = trimesh.load(os.path.join(self.env_usd_export_folder, self.env_name, self.env_name + ".stl"))
+			raise FileNotFoundError(f"No environments found in {self.env_usd_export_folder}")
+
+		is_dir, usd_path = env_map[self.env_name]
+		self.env_path = local_file_prefix + usd_path
+
+		# STL and NPY support (only if subdirectory layout)
+		if is_dir:
+			base_dir = os.path.join(self.env_usd_export_folder, self.env_name)
+			if config["use_stl"].get():
+				self.env_stl_path = os.path.join(base_dir, self.env_name + ".stl")
+				self.env_mesh = trimesh.load(self.env_stl_path)
+			else:
+				self.env_stl_path = None
+				self.env_mesh = None
+			if config.get("use_npy", None) and config["use_npy"].get():
+				npy_path = os.path.join(base_dir, self.env_name + ".npy")
+				if os.path.isfile(npy_path):
+					self.env_info = np.load(npy_path, allow_pickle=True).tolist()
+				else:
+					self.env_info = [0, 0, 0, 0, 0, 0, np.array([[-1000, -1000], [-1000, 1000], [1000, 1000], [1000, -1000]])]
+			else:
+				self.env_info = [0, 0, 0, 0, 0, 0, np.array([[-1000, -1000], [-1000, 1000], [1000, 1000], [1000, -1000]])]
 		else:
 			self.env_stl_path = None
 			self.env_mesh = None
-		if config["use_npy"].get():
-			self.env_info = np.load(os.path.join(self.env_usd_export_folder, self.env_name, self.env_name + ".npy"),
-			                        allow_pickle=True)
-			self.env_info = self.env_info.tolist()
-		else:
 			self.env_info = [0, 0, 0, 0, 0, 0, np.array([[-1000, -1000], [-1000, 1000], [1000, 1000], [1000, -1000]])]
-		self.env_limits = self.env_info[0:6]
 
-		self.shifts = [(self.env_limits[0] + self.env_limits[3]) / 2, (self.env_limits[1] + self.env_limits[4]) / 2,
-		               self.env_limits[2]]
+		self.env_limits = self.env_info[0:6]
+		self.shifts = [(self.env_limits[0] + self.env_limits[3]) / 2, (self.env_limits[1] + self.env_limits[4]) / 2, self.env_limits[2]]
 		self.env_limits_shifted = [self.env_limits[i] - self.shifts[i % 3] for i, _ in enumerate(self.env_limits)]
 		self.area_polygon = get_area(self.env_info[6])
-		self.env_polygon = [Point(i[0], i[1], 0) for i in self.env_info[-1]]
+		self.env_polygon = [Point(x=i[0], y=i[1], z=0) for i in self.env_info[-1]]
 
 	def generate_map(self, out_path: str, zlim=[0, 1], cell_size = 0.05, origin=[0, 0, 0]):
 		"""
@@ -138,15 +221,15 @@ class environment:
 		# from omni.isaac.core.utils.nucleus import find_nucleus_server
 		# result, nucleus_server = find_nucleus_server()
 		res, _ = omni.kit.commands.execute('CreateReferenceCommand',
-		                                   usd_context=omni.usd.get_context(),
-		                                   path_to=prim_path,
-		                                   asset_path=self.env_path,
-		                                   # asset_path= nucleus_server + "/Isaac/Environments/Simple_Warehouse/warehouse.usd",
-		                                   instanceable=True)
+										   usd_context=omni.usd.get_context(),
+										   path_to=prim_path,
+										   asset_path=self.env_path,
+										   # asset_path= nucleus_server + "/Isaac/Environments/Simple_Warehouse/warehouse.usd",
+										   instanceable=True)
 		if res:
 			clear_properties(prim_path)
 			if correct_paths_req:
-				print("Correcting paths... --- note that you might want to change utils/misc_utils.py:correct_paths")
+				print("Correcting paths... --- note that you might want to change grade_utils/misc_utils.py:correct_paths")
 				try:
 					correct_paths(prim_path)
 				except:
