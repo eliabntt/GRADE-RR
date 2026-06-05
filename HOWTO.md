@@ -1,35 +1,62 @@
 ## Requirements and basic software installation
+This walks you through setting up a clean environment for the GRADE-RR project on Ubuntu 24.04
 
-I used this article to set it up (Ubuntu 24.04 + Isaac Sim):
-https://koheiotsuka701.medium.com/running-isaac-sim-and-isaac-ros-on-ubuntu-24-04-bf9eaf550837
+Before installing the project dependencies, ensure your base compute stack (NVIDIA Drivers, CUDA 13, and TensorRT) is fully set up. If you have not configured these on your device yet, follow this guide:
+👉 [Running Isaac Sim and Isaac ROS on Ubuntu 24.04](https://koheiotsuka701.medium.com/running-isaac-sim-and-isaac-ros-on-ubuntu-24-04-bf9eaf550837)
 
-Please check the [requirements](https://docs.omniverse.nvidia.com/app_isaacsim/app_isaacsim/requirements.html) on the official page.
 
-Then download the omniverse launcher and install Nucleus, Cache, and Isaac Sim.
+1. Environment Setup (Conda & Python)
+We use Conda to isolate the Python environment for Isaac Sim 5.1.0.
 
-From now on, we will assume that you installed Isaac Sim within a `ISAAC_FOLDER`. Default location is `~/.local/share/ov/pkg/isaac-version/`.
+```bash
+# Create and activate the isolated environment
+conda create -n isaac_env python=3.11 -y
+conda activate isaac_env
 
-Clone this repository. You can clone this wherever you prefer. For simplicity, we usually download it within the `isaac` folder.
+# Upgrade pip and install the full Isaac Sim engine wheelhouse
+pip install --upgrade pip
+pip install "isaacsim[all,extscache]==5.1.0" --extra-index-url [https://pypi.nvidia.com](https://pypi.nvidia.com)
 
-However, by using global paths you should be able to run this code anywhere in your PC.
-
-_Note_ Isaac will have its own python installation, if you need packages and you run software within the Isaac python executable remember that. To do so, you usually do something like
-
+# Install extra GRADE Python dependencies
+pip install rtree pyquaternion ipdb rospkg confuse defusedxml mesh numpy-stl trimesh netifaces pyyaml pycryptodomex gnupg opencv-python
 ```
-cd $ISAAC_FOLDER
-./python.sh -m pip install ...
-# or
-./python.sh python_file.py
+2. ROS 2 & Hardware Acceleration 
+
+Because ROS 2 Jazzy and NVIDIA hardware acceleration engines compile natively against the operating system, these packages must be installed globally.
+
+```bash
+# Install the ROS Jazzy UNet perception package
+sudo apt-get install -y ros-jazzy-isaac-ros-unet
+
+# Add the NVIDIA Jetson x86 repository and install VPI libraries
+sudo add-apt-repository -y 'deb [https://repo.download.nvidia.com/jetson/x86_64/noble](https://repo.download.nvidia.com/jetson/x86_64/noble) r38.2 main'
+sudo apt update
+sudo apt install -y libnvvpi4 vpi4-dev vpi4-samples
 ```
+3. CV-CUDA Installation
 
-We have some dependencies which are not installed by default. To install them run `sh req.sh $ISAAC_FOLDER`. (This will simply use the main Isaac `python.sh` to install everything via `pip`).
+    Manually download the matching CUDA 13 Debian assets from the [CV-CUDA GitHub Releases](https://github.com/CVCUDA/CV-CUDA/releases).
 
-Independently on where you cloned the repository you need to run
-`sh cp_local_to_different_folder.sh $CLONE_FOLDER $ISAAC_FOLDER`
+    Open your terminal in the directory where the files were downloaded and run:
 
-This will copy the edited files from $1 (source) to the $2 (destination). You can use it in reverse (from Isaac to repo), or with any couple of folders.
+```bash
+sudo apt install -y ./cvcuda-lib-0.16.0-cuda13-x86_64-linux.deb ./cvcuda-dev-0.16.0-cuda13-x86_64-linux.deb
+```
+4. Clone the Repository
+```bash
+git clone git@github.com:eliabntt/GRADE-RR.git
+cd GRADE-RR
+```
+5. Download Project Assets
+Download additional assets and place them directly into the root directory of the project:
+[Savana environment](https://grade.is.tue.mpg.de/download.php), [Zebra animations](https://grade.is.tue.mpg.de/download.php)
 
+Now you can run scripts with different flags (roaming around, recording data) in different environments or zou write your own scripts!
+```bash
+conda activate isaac_env
 
+python simulator/zebra_datagen.py --config_file simulator/configs/config_zebra_datagen.yaml --mode roam --headless False --record False
+```
 ## Misc
 
 A general note: every script has been more or less commented and almost each piece of code should be self-explanatory. If you don't find it like that please **open an issue**.
